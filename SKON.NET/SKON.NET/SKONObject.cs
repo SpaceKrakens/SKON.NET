@@ -17,6 +17,8 @@ namespace SKON.NET
     /// </summary>
     public class SKONObject
     {
+        public static SKONObject empty = new SKONObject();
+
         /// <summary>
         /// Backing string value.
         /// </summary>
@@ -109,7 +111,7 @@ namespace SKON.NET
         {
             get
             {
-                return null;
+                return empty;
             }
         }
 
@@ -122,7 +124,7 @@ namespace SKON.NET
         {
             get
             {
-                return null;
+                return empty;
             }
         }
 
