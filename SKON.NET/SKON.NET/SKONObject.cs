@@ -17,8 +17,6 @@ namespace SKON.NET
     /// </summary>
     public class SKONObject
     {
-        public static SKONObject empty = new SKONObject();
-
         /// <summary>
         /// Backing string value.
         /// </summary>
@@ -106,6 +104,17 @@ namespace SKON.NET
         public bool IsEmpty { get; internal set; }
 
         /// <summary>
+        /// Gets an empty SKONObject.
+        /// </summary>
+        public static SKONObject Empty
+        {
+            get
+            {
+                return new SKONObject();
+            }
+        }
+
+        /// <summary>
         /// Dummy implementation of an Array accessor. Should never be called by itself.
         /// </summary>
         /// <param name="i">The index to get a value for.</param>
@@ -114,7 +123,7 @@ namespace SKON.NET
         {
             get
             {
-                return empty;
+                return Empty;
             }
         }
 
@@ -127,7 +136,7 @@ namespace SKON.NET
         {
             get
             {
-                return empty;
+                return Empty;
             }
         }
 
