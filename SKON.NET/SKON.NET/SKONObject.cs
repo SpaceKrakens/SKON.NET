@@ -50,6 +50,7 @@ namespace SKON.NET
         /// </summary>
         internal SKONObject()
         {
+            IsEmpty = true;
         }
 
         /// <summary>
@@ -101,6 +102,8 @@ namespace SKON.NET
         {
             this.dateTimeValue = dateTimeValue;
         }
+
+        public bool IsEmpty { get; internal set; }
 
         /// <summary>
         /// Dummy implementation of an Array accessor. Should never be called by itself.

@@ -6,7 +6,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{FCDCFE5B-FB69-46E9-B027-03DF14F11B4C}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SKON.NET</RootNamespace>
     <AssemblyName>SKON.NET</AssemblyName>
@@ -15,6 +15,8 @@
     <StyleCopTreatErrorsAsWarnings>True</StyleCopTreatErrorsAsWarnings>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,6 +35,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SKON.NET.Skon</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr4.Runtime, Version=4.5.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
       <HintPath>..\packages\Antlr4.Runtime.4.5.3\lib\net35-client\Antlr4.Runtime.dll</HintPath>
@@ -41,11 +46,28 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SKONGrammar\obj\Debug\SKONBaseListener.cs">
+      <Link>GeneratedFiles\SKONBaseListener.cs</Link>
+    </Compile>
+    <Compile Include="..\SKONGrammar\obj\Debug\SKONBaseVisitor.cs">
+      <Link>GeneratedFiles\SKONBaseVisitor.cs</Link>
+    </Compile>
+    <Compile Include="..\SKONGrammar\obj\Debug\SKONLexer.cs">
+      <Link>GeneratedFiles\SKONLexer.cs</Link>
+    </Compile>
+    <Compile Include="..\SKONGrammar\obj\Debug\SKONListener.cs">
+      <Link>GeneratedFiles\SKONListener.cs</Link>
+    </Compile>
+    <Compile Include="..\SKONGrammar\obj\Debug\SKONParser.cs">
+      <Link>GeneratedFiles\SKONParser.cs</Link>
+    </Compile>
+    <Compile Include="..\SKONGrammar\obj\Debug\SKONVisitor.cs">
+      <Link>GeneratedFiles\SKONVisitor.cs</Link>
+    </Compile>
     <Compile Include="Skon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Array.cs" />
@@ -53,8 +75,12 @@
     <Compile Include="SKONObject.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="app.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
