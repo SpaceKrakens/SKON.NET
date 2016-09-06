@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="Array.cs" company="SpaceKraken">
+// <copyright file="Array.cs" company="SpaceKrakens">
 //     MIT Licence
 //     Copyright (C) 2016 SpaceKrakens
 // </copyright>
