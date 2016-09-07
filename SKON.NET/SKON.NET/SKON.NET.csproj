@@ -5,9 +5,8 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C36632F7-2BD3-4D6E-9207-51EE03A054E1}</ProjectGuid>
-
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{FCDCFE5B-FB69-46E9-B027-03DF14F11B4C}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SKON.NET</RootNamespace>
     <AssemblyName>SKON.NET</AssemblyName>
@@ -37,7 +36,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SKON.NET.Skon</StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr4.Runtime, Version=4.5.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
