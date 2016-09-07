@@ -5,7 +5,8 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FCDCFE5B-FB69-46E9-B027-03DF14F11B4C}</ProjectGuid>
+    <ProjectGuid>{C36632F7-2BD3-4D6E-9207-51EE03A054E1}</ProjectGuid>
+
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SKON.NET</RootNamespace>
