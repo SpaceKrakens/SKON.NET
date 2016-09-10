@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace SKON.NET
@@ -31,6 +30,8 @@ namespace SKON.NET
         {
             this.arrayValues = arrayValues;
         }
+
+        public int Length { get { return arrayValues.Length; } }
 
         /// <summary>
         /// Returns the value of the SKON Array found at the given index.

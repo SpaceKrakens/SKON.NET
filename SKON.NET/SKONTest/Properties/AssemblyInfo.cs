@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SKONGrammar")]
+[assembly: AssemblyTitle("SKONTest")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SKONGrammar")]
+[assembly: AssemblyProduct("SKONTest")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("11b262ed-b8eb-42c8-b1a8-323b17edc01a")]
+[assembly: Guid("781434c0-6108-48af-ae09-0f4742c99cd6")]
 
 // Version information for an assembly consists of the following four values:
 //

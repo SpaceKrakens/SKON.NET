@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace SKON.NET
@@ -30,6 +29,11 @@ namespace SKON.NET
         internal Map(Dictionary<string, SKONObject> mapValues)
         {
             this.mapValues = mapValues;
+        }
+
+        public Dictionary<string, SKONObject>.KeyCollection Keys()
+        {
+            return mapValues.Keys;
         }
 
         /// <summary>

@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace SKON.NET
@@ -17,6 +16,19 @@ namespace SKON.NET
     /// </summary>
     public class SKONObject
     {
+
+        public enum Type
+        {
+            EMPTY,
+            STRING,
+            INTEGER,
+            DOUBLE,
+            BOOLEAN,
+            DATETIME
+        }
+
+        public readonly Type type;
+
         /// <summary>
         /// Backing string value.
         /// </summary>
@@ -25,22 +37,22 @@ namespace SKON.NET
         /// <summary>
         /// Backing integer value.
         /// </summary>
-        private int? intValue;
+        private int intValue;
 
         /// <summary>
         /// Backing float value.
         /// </summary>
-        private float? floatValue;
+        private double doubleValue;
 
         /// <summary>
         /// Backing boolean value.
         /// </summary>
-        private bool? booleanValue;
+        private bool booleanValue;
 
         /// <summary>
         /// Backing DateTime value.
         /// </summary>
-        private DateTime? dateTimeValue;
+        private DateTime dateTimeValue;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="SKONObject"/> class.
@@ -49,6 +61,7 @@ namespace SKON.NET
         internal SKONObject()
         {
             IsEmpty = true;
+            type = Type.EMPTY;
         }
 
         /// <summary>
@@ -59,6 +72,7 @@ namespace SKON.NET
         internal SKONObject(string stringValue)
         {
             this.stringValue = stringValue;
+            type = Type.STRING;
         }
 
         /// <summary>
@@ -69,6 +83,7 @@ namespace SKON.NET
         internal SKONObject(int intValue)
         {
             this.intValue = intValue;
+            type = Type.INTEGER;
         }
 
         /// <summary>
@@ -76,9 +91,10 @@ namespace SKON.NET
         /// Constructs a SKONObject holding a float value.
         /// </summary>
         /// <param name="floatValue">The float value.</param>
-        internal SKONObject(float floatValue)
+        internal SKONObject(double doubleValue)
         {
-            this.floatValue = floatValue;
+            this.doubleValue = doubleValue;
+            type = Type.DOUBLE;
         }
 
         /// <summary>
@@ -89,6 +105,7 @@ namespace SKON.NET
         internal SKONObject(bool booleanValue)
         {
             this.booleanValue = booleanValue;
+            type = Type.BOOLEAN;
         }
 
         /// <summary>
@@ -99,6 +116,7 @@ namespace SKON.NET
         internal SKONObject(DateTime dateTimeValue)
         {
             this.dateTimeValue = dateTimeValue;
+            type = Type.DATETIME;
         }
 
         public bool IsEmpty { get; internal set; }
@@ -106,7 +124,7 @@ namespace SKON.NET
         /// <summary>
         /// Gets an empty SKONObject.
         /// </summary>
-        public static SKONObject Empty
+        internal static SKONObject Empty
         {
             get
             {
@@ -146,6 +164,10 @@ namespace SKON.NET
         /// <param name="obj">The SKONObject to convert.</param>
         public static explicit operator string(SKONObject obj)
         {
+            if (obj.type != Type.STRING)
+            {
+                return null;
+            }
             return obj.stringValue;
         }
 
@@ -155,6 +177,10 @@ namespace SKON.NET
         /// <param name="obj">The SKONObject to convert.</param>
         public static explicit operator int?(SKONObject obj)
         {
+            if (obj.type != Type.INTEGER)
+            {
+                return null;
+            }
             return obj.intValue;
         }
 
@@ -162,9 +188,13 @@ namespace SKON.NET
         /// Converts a SKONObject into a float.
         /// </summary>
         /// <param name="obj">The SKONObject to convert.</param>
-        public static explicit operator float?(SKONObject obj)
+        public static explicit operator double?(SKONObject obj)
         {
-            return obj.floatValue;
+            if (obj.type != Type.DOUBLE)
+            {
+                return null;
+            }
+            return obj.doubleValue;
         }
 
         /// <summary>
@@ -173,6 +203,10 @@ namespace SKON.NET
         /// <param name="obj">The SKONObject to convert.</param>
         public static explicit operator bool?(SKONObject obj)
         {
+            if (obj.type != Type.BOOLEAN)
+            {
+                return null;
+            }
             return obj.booleanValue;
         }
 
@@ -182,7 +216,32 @@ namespace SKON.NET
         /// <param name="obj">The SKONObject to convert.</param>
         public static explicit operator DateTime?(SKONObject obj)
         {
+            if (obj.type != Type.DATETIME)
+            {
+                return null;
+            }
             return obj.dateTimeValue;
+        }
+
+        public override string ToString()
+        {
+            switch (type)
+            {
+                case Type.EMPTY:
+                    return "Empty";
+                case Type.STRING:
+                    return stringValue;
+                case Type.INTEGER:
+                    return intValue.ToString();
+                case Type.DOUBLE:
+                    return doubleValue.ToString();
+                case Type.BOOLEAN:
+                    return booleanValue.ToString();
+                case Type.DATETIME:
+                    return dateTimeValue.ToString();
+                default:
+                    return "Invalid type!";
+            }
         }
     }
 }
