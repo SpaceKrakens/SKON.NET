@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="SKONObject.cs" company="SpaceKraken">
+// <copyright file="SKONObject.cs" company="SpaceKrakens">
 //     MIT Licence
 //     Copyright (C) 2016 SpaceKrakens
 // </copyright>
@@ -119,8 +119,6 @@ namespace SKON.NET
             type = Type.DATETIME;
         }
 
-        public bool IsEmpty { get; internal set; }
-
         /// <summary>
         /// Gets an empty SKONObject.
         /// </summary>
@@ -131,6 +129,11 @@ namespace SKON.NET
                 return new SKONObject();
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this SKONObject is empty or not.
+        /// </summary>
+        public bool IsEmpty { get; internal set; }
 
         /// <summary>
         /// Dummy implementation of an Array accessor. Should never be called by itself.

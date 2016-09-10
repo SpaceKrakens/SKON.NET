@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="Skon.cs" company="SpaceKraken">
+// <copyright file="Skon.cs" company="SpaceKrakens">
 //     MIT Licence
 //     Copyright (C) 2016 SpaceKrakens
 // </copyright>
