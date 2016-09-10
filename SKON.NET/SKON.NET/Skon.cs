@@ -7,8 +7,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using System.Text;
 
 namespace SKON.NET
 {
@@ -17,6 +17,11 @@ namespace SKON.NET
     /// </summary>
     public class Skon
     {
+        /// <summary>
+        /// Loads a text file as a SKON Map.
+        /// </summary>
+        /// <param name="path">Full FilePath to the SKON text file.</param>
+        /// <returns>The root map containing all SKONObjects.</returns>
         public static Map LoadFile(string path)
         {
             if (File.Exists(path))

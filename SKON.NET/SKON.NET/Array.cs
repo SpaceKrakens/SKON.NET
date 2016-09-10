@@ -31,7 +31,16 @@ namespace SKON.NET
             this.arrayValues = arrayValues;
         }
 
-        public int Length { get { return arrayValues.Length; } }
+        /// <summary>
+        /// Gets the length of this SKON Array.
+        /// </summary>
+        public int Length
+        {
+            get
+            {
+                return this.arrayValues.Length;
+            }
+        }
 
         /// <summary>
         /// Returns the value of the SKON Array found at the given index.
