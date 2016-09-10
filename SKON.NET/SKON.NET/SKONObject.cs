@@ -16,18 +16,10 @@ namespace SKON.NET
     /// </summary>
     public class SKONObject
     {
-
-        public enum Type
-        {
-            EMPTY,
-            STRING,
-            INTEGER,
-            DOUBLE,
-            BOOLEAN,
-            DATETIME
-        }
-
-        public readonly Type type;
+        /// <summary>
+        /// The type of this SKONObject.
+        /// </summary>
+        public readonly ValueType Type;
 
         /// <summary>
         /// Backing string value.
@@ -60,8 +52,8 @@ namespace SKON.NET
         /// </summary>
         internal SKONObject()
         {
-            IsEmpty = true;
-            type = Type.EMPTY;
+            this.IsEmpty = true;
+            this.Type = ValueType.EMPTY;
         }
 
         /// <summary>
@@ -72,7 +64,7 @@ namespace SKON.NET
         internal SKONObject(string stringValue)
         {
             this.stringValue = stringValue;
-            type = Type.STRING;
+            this.Type = ValueType.STRING;
         }
 
         /// <summary>
@@ -83,18 +75,18 @@ namespace SKON.NET
         internal SKONObject(int intValue)
         {
             this.intValue = intValue;
-            type = Type.INTEGER;
+            this.Type = ValueType.INTEGER;
         }
 
         /// <summary>
         /// Initialises a new instance of the <see cref="SKONObject"/> class.
-        /// Constructs a SKONObject holding a float value.
+        /// Constructs a SKONObject holding a double value.
         /// </summary>
-        /// <param name="floatValue">The float value.</param>
+        /// <param name="doubleValue">The double value.</param>
         internal SKONObject(double doubleValue)
         {
             this.doubleValue = doubleValue;
-            type = Type.DOUBLE;
+            this.Type = ValueType.DOUBLE;
         }
 
         /// <summary>
@@ -105,7 +97,7 @@ namespace SKON.NET
         internal SKONObject(bool booleanValue)
         {
             this.booleanValue = booleanValue;
-            type = Type.BOOLEAN;
+            this.Type = ValueType.BOOLEAN;
         }
 
         /// <summary>
@@ -116,8 +108,49 @@ namespace SKON.NET
         internal SKONObject(DateTime dateTimeValue)
         {
             this.dateTimeValue = dateTimeValue;
-            type = Type.DATETIME;
+            this.Type = ValueType.DATETIME;
         }
+
+        /// <summary>
+        /// All SKONObject value types.
+        /// </summary>
+        public enum ValueType
+        {
+            /// <summary>
+            /// An empty value.
+            /// </summary>
+            EMPTY,
+
+            /// <summary>
+            /// A string value.
+            /// </summary>
+            STRING,
+
+            /// <summary>
+            /// An integer value.
+            /// </summary>
+            INTEGER,
+
+            /// <summary>
+            /// A double value.
+            /// </summary>
+            DOUBLE,
+
+            /// <summary>
+            /// A boolean value.
+            /// </summary>
+            BOOLEAN,
+
+            /// <summary>
+            /// A DateTime value.
+            /// </summary>
+            DATETIME
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this SKONObject is empty or not.
+        /// </summary>
+        public bool IsEmpty { get; internal set; }
 
         /// <summary>
         /// Gets an empty SKONObject.
@@ -129,11 +162,6 @@ namespace SKON.NET
                 return new SKONObject();
             }
         }
-
-        /// <summary>
-        /// Gets a value indicating whether this SKONObject is empty or not.
-        /// </summary>
-        public bool IsEmpty { get; internal set; }
 
         /// <summary>
         /// Dummy implementation of an Array accessor. Should never be called by itself.
@@ -167,10 +195,11 @@ namespace SKON.NET
         /// <param name="obj">The SKONObject to convert.</param>
         public static explicit operator string(SKONObject obj)
         {
-            if (obj.type != Type.STRING)
+            if (obj.Type != ValueType.STRING)
             {
                 return null;
             }
+
             return obj.stringValue;
         }
 
@@ -180,10 +209,11 @@ namespace SKON.NET
         /// <param name="obj">The SKONObject to convert.</param>
         public static explicit operator int?(SKONObject obj)
         {
-            if (obj.type != Type.INTEGER)
+            if (obj.Type != ValueType.INTEGER)
             {
                 return null;
             }
+
             return obj.intValue;
         }
 
@@ -193,10 +223,11 @@ namespace SKON.NET
         /// <param name="obj">The SKONObject to convert.</param>
         public static explicit operator double?(SKONObject obj)
         {
-            if (obj.type != Type.DOUBLE)
+            if (obj.Type != ValueType.DOUBLE)
             {
                 return null;
             }
+
             return obj.doubleValue;
         }
 
@@ -206,10 +237,11 @@ namespace SKON.NET
         /// <param name="obj">The SKONObject to convert.</param>
         public static explicit operator bool?(SKONObject obj)
         {
-            if (obj.type != Type.BOOLEAN)
+            if (obj.Type != ValueType.BOOLEAN)
             {
                 return null;
             }
+
             return obj.booleanValue;
         }
 
@@ -219,29 +251,34 @@ namespace SKON.NET
         /// <param name="obj">The SKONObject to convert.</param>
         public static explicit operator DateTime?(SKONObject obj)
         {
-            if (obj.type != Type.DATETIME)
+            if (obj.Type != ValueType.DATETIME)
             {
                 return null;
             }
+
             return obj.dateTimeValue;
         }
 
+        /// <summary>
+        /// Returns the value of this SKONObject as a string.
+        /// </summary>
+        /// <returns>A string description of this SKONObject.</returns>
         public override string ToString()
         {
-            switch (type)
+            switch (this.Type)
             {
-                case Type.EMPTY:
+                case ValueType.EMPTY:
                     return "Empty";
-                case Type.STRING:
-                    return stringValue;
-                case Type.INTEGER:
-                    return intValue.ToString();
-                case Type.DOUBLE:
-                    return doubleValue.ToString();
-                case Type.BOOLEAN:
-                    return booleanValue.ToString();
-                case Type.DATETIME:
-                    return dateTimeValue.ToString();
+                case ValueType.STRING:
+                    return this.stringValue;
+                case ValueType.INTEGER:
+                    return this.intValue.ToString();
+                case ValueType.DOUBLE:
+                    return this.doubleValue.ToString();
+                case ValueType.BOOLEAN:
+                    return this.booleanValue.ToString();
+                case ValueType.DATETIME:
+                    return this.dateTimeValue.ToString();
                 default:
                     return "Invalid type!";
             }
