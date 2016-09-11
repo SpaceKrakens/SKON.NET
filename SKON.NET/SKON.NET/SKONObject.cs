@@ -262,8 +262,7 @@ namespace SKON
         {
             get
             {
-                bool containsKey = this.mapValues?.ContainsKey(key) ?? false;
-                if (containsKey)
+                if (this.mapValues?.ContainsKey(key) ?? false)
                 {
                     return this.mapValues[key];
                 }
@@ -355,8 +354,7 @@ namespace SKON
         /// <returns>Either the proper value or the default value.</returns>
         public T Get<T>(string key, T defaultValue)
         {
-            bool containsKey = this.mapValues?.ContainsKey(key) ?? false;
-            if (containsKey)
+            if (this.mapValues?.ContainsKey(key) ?? false)
             {
                 System.Type sourceType = typeof(T);
                 MethodInfo[] ops = sourceType.GetMethods();
@@ -384,8 +382,7 @@ namespace SKON
         /// <returns>True if it succeeds, otherwise false.</returns>
         public bool TryGet<T>(string key, T defaultValue, out T result)
         {
-            bool containsKey = this.mapValues?.ContainsKey(key) ?? false;
-            if (containsKey)
+            if (this.mapValues?.ContainsKey(key) ?? false)
             {
                 System.Type sourceType = typeof(T);
                 MethodInfo[] ops = sourceType.GetMethods();
