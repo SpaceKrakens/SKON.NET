@@ -221,6 +221,89 @@ namespace SKON
         /// Gets the type of this SKONObject.
         /// </summary>
         public ValueType Type { get; internal set; }
+        
+        /// <summary>
+        /// Gets the string value of this SKONObject, should it be a string.
+        /// </summary>
+        public string String
+        {
+            get
+            {
+                return this.Type == ValueType.STRING ? this.stringValue : null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the integer value of this SKONObject, should it be an integer.
+        /// </summary>
+        public int? Int
+        {
+            get
+            {
+                if (this.Type == ValueType.INTEGER)
+                {
+                    return this.intValue;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the double value of this SKONObject, should it be a double.
+        /// </summary>
+        public double? Double
+        {
+            get
+            {
+                if (this.Type == ValueType.DOUBLE)
+                {
+                    return this.doubleValue;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the boolean value of this SKONObject, should it be a boolean.
+        /// </summary>
+        public bool? Boolean
+        {
+            get
+            {
+                if (this.Type == ValueType.BOOLEAN)
+                {
+                    return this.booleanValue;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the DateTime value of this SKONObject, should it be a DateTime.
+        /// </summary>
+        public DateTime? DateTime
+        {
+            get
+            {
+                if (this.Type == ValueType.DATETIME)
+                {
+                    return this.dateTimeValue;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets an empty SKONObject.
@@ -269,74 +352,6 @@ namespace SKON
                 else
                 {
                     return Empty;
-                }
-            }
-        }
-        
-        public string String
-        {
-            get
-            {
-                return this.Type == ValueType.STRING ? stringValue : null;
-            }
-        }
-        
-        public int? Int
-        {
-            get
-            {
-                if (Type == ValueType.INTEGER)
-                {
-                    return intValue;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        public double? Double
-        {
-            get
-            {
-                if (Type == ValueType.DOUBLE)
-                {
-                    return doubleValue;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        public bool? Boolean
-        {
-            get
-            {
-                if (Type == ValueType.BOOLEAN)
-                {
-                    return booleanValue;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        public DateTime? DateTime
-        {
-            get
-            {
-                if (Type == ValueType.DATETIME)
-                {
-                    return dateTimeValue;
-                }
-                else
-                {
-                    return null;
                 }
             }
         }
