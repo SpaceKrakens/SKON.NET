@@ -273,76 +273,72 @@ namespace SKON
             }
         }
         
-        /// <summary>
-        /// Converts a SKONObject into a string.
-        /// </summary>
-        /// <param name="obj">The SKONObject to convert.</param>
-        public static implicit operator string(SKONObject obj)
+        public string String
         {
-            if (obj.Type != ValueType.STRING)
+            get
             {
-                // Will this lead to weirdness? Always being able to cast to a string that will never be 'null'
-                // Should string cast be explicit instead?
-                return obj.ToString();
+                return this.Type == ValueType.STRING ? stringValue : null;
             }
-
-            return obj.stringValue;
+        }
+        
+        public int? Int
+        {
+            get
+            {
+                if (Type == ValueType.INTEGER)
+                {
+                    return intValue;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
-        /// <summary>
-        /// Converts a SKONObject into an integer.
-        /// </summary>
-        /// <param name="obj">The SKONObject to convert.</param>
-        public static implicit operator int?(SKONObject obj)
+        public double? Double
         {
-            if (obj.Type != ValueType.INTEGER)
+            get
             {
-                return null;
+                if (Type == ValueType.DOUBLE)
+                {
+                    return doubleValue;
+                }
+                else
+                {
+                    return null;
+                }
             }
-
-            return obj.intValue;
         }
 
-        /// <summary>
-        /// Converts a SKONObject into a float.
-        /// </summary>
-        /// <param name="obj">The SKONObject to convert.</param>
-        public static implicit operator double?(SKONObject obj)
+        public bool? Boolean
         {
-            if (obj.Type != ValueType.DOUBLE)
+            get
             {
-                return null;
+                if (Type == ValueType.BOOLEAN)
+                {
+                    return booleanValue;
+                }
+                else
+                {
+                    return null;
+                }
             }
-
-            return obj.doubleValue;
         }
 
-        /// <summary>
-        /// Converts a SKONObject into a boolean.
-        /// </summary>
-        /// <param name="obj">The SKONObject to convert.</param>
-        public static implicit operator bool?(SKONObject obj)
+        public DateTime? DateTime
         {
-            if (obj.Type != ValueType.BOOLEAN)
+            get
             {
-                return null;
+                if (Type == ValueType.DATETIME)
+                {
+                    return dateTimeValue;
+                }
+                else
+                {
+                    return null;
+                }
             }
-
-            return obj.booleanValue;
-        }
-
-        /// <summary>
-        /// Converts a SKONObject into a DateTime.
-        /// </summary>
-        /// <param name="obj">The SKONObject to convert.</param>
-        public static implicit operator DateTime?(SKONObject obj)
-        {
-            if (obj.Type != ValueType.DATETIME)
-            {
-                return null;
-            }
-
-            return obj.dateTimeValue;
         }
         
         /// <summary>
