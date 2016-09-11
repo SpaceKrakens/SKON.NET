@@ -377,10 +377,9 @@ namespace SKON
         /// </summary>
         /// <typeparam name="T">The expected data type for the desired value.</typeparam>
         /// <param name="key">The key to search the respective value for.</param>
-        /// <param name="defaultValue">A default value, should the key not exist or the SKONObject value not be able to be converted into the proper type.</param>
         /// <param name="result">The variable to set to the proper value. Gets set to the default value, should the operation fail.</param>
-        /// <returns>True if it succeeds, otherwise false.</returns>
-        public bool TryGet<T>(string key, T defaultValue, out T result)
+        /// <returns>True if it succeeds, otherwise false.</returns>        
+        public bool TryGet<T>(string key, out T result)
         {
             if (this.mapValues?.ContainsKey(key) ?? false)
             {
@@ -398,7 +397,7 @@ namespace SKON
                 }
             }
 
-            result = defaultValue;
+            result = default(T);
             return false;
         }
 
