@@ -296,7 +296,7 @@ namespace SKON
             return defaultValue;
         }
         
-        public bool TryGet<T>(string key, T defaultValue, out T result)
+        public bool TryGet<T>(string key, out T result)
         {
             if (this.mapValues != null && this.mapValues.ContainsKey(key))
             {
@@ -314,7 +314,7 @@ namespace SKON
                 }
             }
 
-            result = defaultValue;
+            result = default(T);
             return false;
         }
 
