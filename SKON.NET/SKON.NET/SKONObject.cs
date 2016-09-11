@@ -7,28 +7,28 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
-namespace SKON.NET
+namespace SKON
 {
+    public enum Type
+    {
+        EMPTY,
+        STRING,
+        INTEGER,
+        DOUBLE,
+        BOOLEAN,
+        DATETIME,
+        MAP,
+        ARRAY
+    }
+
     /// <summary>
     /// A SKONObject. Every value in a SKON file is handled internally as a SKONObject.
     /// </summary>
     public class SKONObject
     {
-
-        public enum Type
-        {
-            EMPTY,
-            STRING,
-            INTEGER,
-            DOUBLE,
-            BOOLEAN,
-            DATETIME
-        }
-
-        public readonly Type type;
-
         /// <summary>
         /// Backing string value.
         /// </summary>
@@ -54,14 +54,17 @@ namespace SKON.NET
         /// </summary>
         private DateTime dateTimeValue;
 
+        private Dictionary<string, SKONObject> mapValues;
+
+        private SKONObject[] arrayValues;
+
         /// <summary>
         /// Initialises a new instance of the <see cref="SKONObject"/> class.
         /// Dummy SKONObject constructor, probably not done and at this time not even used.
         /// </summary>
         internal SKONObject()
         {
-            IsEmpty = true;
-            type = Type.EMPTY;
+            Type = Type.EMPTY;
         }
 
         /// <summary>
@@ -72,7 +75,7 @@ namespace SKON.NET
         internal SKONObject(string stringValue)
         {
             this.stringValue = stringValue;
-            type = Type.STRING;
+            Type = Type.STRING;
         }
 
         /// <summary>
@@ -83,7 +86,7 @@ namespace SKON.NET
         internal SKONObject(int intValue)
         {
             this.intValue = intValue;
-            type = Type.INTEGER;
+            Type = Type.INTEGER;
         }
 
         /// <summary>
@@ -94,7 +97,7 @@ namespace SKON.NET
         internal SKONObject(double doubleValue)
         {
             this.doubleValue = doubleValue;
-            type = Type.DOUBLE;
+            Type = Type.DOUBLE;
         }
 
         /// <summary>
@@ -105,7 +108,7 @@ namespace SKON.NET
         internal SKONObject(bool booleanValue)
         {
             this.booleanValue = booleanValue;
-            type = Type.BOOLEAN;
+            Type = Type.BOOLEAN;
         }
 
         /// <summary>
@@ -116,7 +119,19 @@ namespace SKON.NET
         internal SKONObject(DateTime dateTimeValue)
         {
             this.dateTimeValue = dateTimeValue;
-            type = Type.DATETIME;
+            Type = Type.DATETIME;
+        }
+
+        internal SKONObject(Dictionary<string, SKONObject> mapValues)
+        {
+            this.mapValues = mapValues;
+            Type = Type.MAP;
+        }
+
+        internal SKONObject(SKONObject[] arrayValues)
+        {
+            this.arrayValues = arrayValues;
+            Type = Type.ARRAY;
         }
 
         /// <summary>
@@ -130,34 +145,62 @@ namespace SKON.NET
             }
         }
 
+        public Type Type { get; internal set; }
+
         /// <summary>
         /// Gets a value indicating whether this SKONObject is empty or not.
         /// </summary>
-        public bool IsEmpty { get; internal set; }
-
-        /// <summary>
-        /// Dummy implementation of an Array accessor. Should never be called by itself.
-        /// </summary>
-        /// <param name="i">The index to get a value for.</param>
-        /// <returns>Null, since SKONObject does not implement Array behaviour.</returns>
-        public virtual SKONObject this[int i]
+        public bool IsEmpty
         {
             get
             {
-                return Empty;
+                return Type == Type.EMPTY;
+            }
+        }
+        
+        public ICollection<string> Keys
+        {
+            get
+            {
+                return mapValues != null ? mapValues.Keys : null;
             }
         }
 
-        /// <summary>
-        /// Dummy implementation of a Map accessor. Should never be called by itself.
-        /// </summary>
-        /// <param name="key">The key to get a value for.</param>
-        /// <returns>Null, since SKONObject does not implement Map behaviour.</returns>
-        public virtual SKONObject this[string key]
+        public int Length
         {
             get
             {
-                return Empty;
+                return arrayValues != null ? arrayValues.Length : -1;
+            }
+        }
+
+        public SKONObject this[int i]
+        {
+            get
+            {
+                if (i >= 0 && i < arrayValues.Length)
+                {
+                    return arrayValues[i];
+                }
+                else
+                {
+                    return Empty;
+                }
+            }
+        }
+
+        public SKONObject this[string key]
+        {
+            get
+            {
+                if (mapValues != null && mapValues.ContainsKey(key))
+                {
+                    return mapValues[key];
+                }
+                else
+                {
+                    return Empty;
+                }
             }
         }
 
@@ -165,11 +208,13 @@ namespace SKON.NET
         /// Converts a SKONObject into a string.
         /// </summary>
         /// <param name="obj">The SKONObject to convert.</param>
-        public static explicit operator string(SKONObject obj)
+        public static implicit operator string(SKONObject obj)
         {
-            if (obj.type != Type.STRING)
+            if (obj.Type != Type.STRING)
             {
-                return null;
+                // Will this lead to weirdness? Always being able to cast to a string that will never be 'null'
+                // Should string cast be explicit instead?
+                return obj.ToString();
             }
             return obj.stringValue;
         }
@@ -178,9 +223,9 @@ namespace SKON.NET
         /// Converts a SKONObject into an integer.
         /// </summary>
         /// <param name="obj">The SKONObject to convert.</param>
-        public static explicit operator int?(SKONObject obj)
+        public static implicit operator int?(SKONObject obj)
         {
-            if (obj.type != Type.INTEGER)
+            if (obj.Type != Type.INTEGER)
             {
                 return null;
             }
@@ -191,9 +236,9 @@ namespace SKON.NET
         /// Converts a SKONObject into a float.
         /// </summary>
         /// <param name="obj">The SKONObject to convert.</param>
-        public static explicit operator double?(SKONObject obj)
+        public static implicit operator double?(SKONObject obj)
         {
-            if (obj.type != Type.DOUBLE)
+            if (obj.Type != Type.DOUBLE)
             {
                 return null;
             }
@@ -204,9 +249,9 @@ namespace SKON.NET
         /// Converts a SKONObject into a boolean.
         /// </summary>
         /// <param name="obj">The SKONObject to convert.</param>
-        public static explicit operator bool?(SKONObject obj)
+        public static implicit operator bool?(SKONObject obj)
         {
-            if (obj.type != Type.BOOLEAN)
+            if (obj.Type != Type.BOOLEAN)
             {
                 return null;
             }
@@ -217,31 +262,73 @@ namespace SKON.NET
         /// Converts a SKONObject into a DateTime.
         /// </summary>
         /// <param name="obj">The SKONObject to convert.</param>
-        public static explicit operator DateTime?(SKONObject obj)
+        public static implicit operator DateTime?(SKONObject obj)
         {
-            if (obj.type != Type.DATETIME)
+            if (obj.Type != Type.DATETIME)
             {
                 return null;
             }
             return obj.dateTimeValue;
         }
+        
+        public T Get<T>(string key, T defaultValue)
+        {
+            if (mapValues != null && mapValues.ContainsKey(key))
+            {
+                System.Type sourceType = typeof(T);
+                MethodInfo[] ops = sourceType.GetMethods();
+                
+                for (int i = 0; i < ops.Length; i++)
+                {
+                    MethodInfo op = ops[i];
+                    if (op.ReturnType == typeof(T) && (op.Name == "op_Implicit" || op.Name == "op_Explicit"))
+                    {
+                        return (T) op.Invoke(null, new[] { mapValues[key] });
+                    }
+                }
+            }
+
+            return defaultValue;
+        }
+        
+        public bool TryGet<T>(string key, T defaultValue, out T result)
+        {
+            if (mapValues != null && mapValues.ContainsKey(key))
+            {
+                System.Type sourceType = typeof(T);
+                MethodInfo[] ops = sourceType.GetMethods();
+
+                for (int i = 0; i < ops.Length; i++)
+                {
+                    MethodInfo op = ops[i];
+                    if (op.ReturnType == typeof(T) && (op.Name == "op_Implicit" || op.Name == "op_Explicit"))
+                    {
+                        result = (T) op.Invoke(null, new[] { mapValues[key] });
+                        return true;
+                    }
+                }
+            }
+
+            result = defaultValue;
+            return false;
+        }
 
         public override string ToString()
         {
-            switch (type)
+            switch (Type)
             {
                 case Type.EMPTY:
                     return "Empty";
                 case Type.STRING:
                     return stringValue;
                 case Type.INTEGER:
-                    return intValue.ToString();
+                    return "int: " + intValue.ToString();
                 case Type.DOUBLE:
-                    return doubleValue.ToString();
+                    return "double: " + doubleValue.ToString();
                 case Type.BOOLEAN:
-                    return booleanValue.ToString();
+                    return "bool: " + booleanValue.ToString();
                 case Type.DATETIME:
-                    return dateTimeValue.ToString();
+                    return "datetime: " + dateTimeValue.ToString();
                 default:
                     return "Invalid type!";
             }

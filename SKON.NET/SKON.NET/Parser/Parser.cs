@@ -5,7 +5,7 @@ using System.Globalization;
 
 using System;
 
-namespace SKON.NET {
+namespace SKON.Internal {
 
 
 
@@ -36,7 +36,7 @@ public class Parser {
 	public Token la;   // lookahead token
 	int errDist = minErrDist;
 
-public Map map;
+public SKONObject data;
 
 	private string[] dateTimeFormats = {
         "yyyy-MM-dd",
@@ -82,7 +82,7 @@ public Map map;
 	 * like the last one in: a, b, c,            */
 	bool NotFinalComma () {
 		int peek = Peek(1).kind;
-		return la.kind == _comma && peek != _rbrace && peek != _rbracket;
+		return la.kind == _comma && peek != _rbrace && peek != _rbracket && peek != _EOF;
 	}
 
 /*-------------------------------------------------------------------------*/
@@ -149,7 +149,6 @@ public Map map;
 		Dictionary<string, SKONObject> mapElements;
 		string key; SKONObject value;
 		mapElements = new Dictionary<string, SKONObject>();
-		int n = 0;
 		
 		if (la.kind == 7) {
 			map_element(out key, out value);
@@ -163,7 +162,7 @@ public Map map;
 				Get();
 			}
 		}
-		this.map = new Map(mapElements); 
+		this.data = new SKONObject(mapElements); 
 	}
 
 	void map_element(out string key, out SKONObject obj) {
@@ -175,11 +174,11 @@ public Map map;
 		obj = skonObject; 
 	}
 
-	void skon_map(out Map map) {
+	void skon_map(out SKONObject map) {
 		Dictionary<string, SKONObject> mapElements; 
 		Expect(3);
 		open_map(out mapElements);
-		map = new Map(mapElements); 
+		map = new SKONObject(mapElements); 
 		Expect(4);
 	}
 
@@ -199,11 +198,11 @@ public Map map;
 		}
 	}
 
-	void skon_array(out Array array) {
+	void skon_array(out SKONObject array) {
 		List<SKONObject> arrayElements; 
 		Expect(5);
 		open_array(out arrayElements);
-		array = new Array(arrayElements.ToArray()); 
+		array = new SKONObject(arrayElements.ToArray()); 
 		Expect(6);
 	}
 
@@ -252,13 +251,13 @@ public Map map;
 			break;
 		}
 		case 3: {
-			Map map; 
+			SKONObject map; 
 			skon_map(out map);
 			skonObject = map; 
 			break;
 		}
 		case 5: {
-			Array array; 
+			SKONObject array; 
 			skon_array(out array);
 			skonObject = array; 
 			break;

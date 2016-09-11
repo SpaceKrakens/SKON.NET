@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Collections;
 
-namespace SKON.NET {
+namespace SKON.Internal {
 
 public class Token {
 	public int kind;    // token kind

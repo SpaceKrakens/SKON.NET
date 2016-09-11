@@ -40,8 +40,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -50,8 +48,6 @@
     <Compile Include="Parser\Scanner.cs" />
     <Compile Include="Skon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Array.cs" />
-    <Compile Include="Map.cs" />
     <Compile Include="SKONObject.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,4 @@
-coco SKON.ATG -namespace SKON.NET
-
+coco SKON.ATG -namespace SKON.Internal
 setlocal
 call :FindReplace "Array.Copy" "System.Array.Copy" Scanner.cs
 

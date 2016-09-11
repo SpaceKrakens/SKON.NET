@@ -5,19 +5,17 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using SKON.Internal;
 
-namespace SKON.NET
+namespace SKON
 {
     /// <summary>
     /// TODO: Add documentation.
     /// </summary>
     public class Skon
     {
-        public static Map LoadFile(string path)
+        public static SKONObject LoadFile(string path)
         {
             if (File.Exists(path))
             {
@@ -26,7 +24,7 @@ namespace SKON.NET
 
                 parser.Parse();
 
-                return parser.map;
+                return parser.data;
             }
             else
             {
