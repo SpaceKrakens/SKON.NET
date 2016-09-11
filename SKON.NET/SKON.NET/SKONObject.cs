@@ -12,7 +12,7 @@ using System.Text;
 
 namespace SKON
 {
-    public enum Type
+    public enum ValueType
     {
         EMPTY,
         STRING,
@@ -64,7 +64,7 @@ namespace SKON
         /// </summary>
         internal SKONObject()
         {
-            Type = Type.EMPTY;
+            this.Type = ValueType.EMPTY;
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace SKON
         internal SKONObject(string stringValue)
         {
             this.stringValue = stringValue;
-            Type = Type.STRING;
+            this.Type = ValueType.STRING;
         }
 
         /// <summary>
@@ -86,18 +86,18 @@ namespace SKON
         internal SKONObject(int intValue)
         {
             this.intValue = intValue;
-            Type = Type.INTEGER;
+            this.Type = ValueType.INTEGER;
         }
 
         /// <summary>
         /// Initialises a new instance of the <see cref="SKONObject"/> class.
-        /// Constructs a SKONObject holding a float value.
+        /// Constructs a SKONObject holding a double value.
         /// </summary>
-        /// <param name="floatValue">The float value.</param>
+        /// <param name="doubleValue">The double value.</param>
         internal SKONObject(double doubleValue)
         {
             this.doubleValue = doubleValue;
-            Type = Type.DOUBLE;
+            this.Type = ValueType.DOUBLE;
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace SKON
         internal SKONObject(bool booleanValue)
         {
             this.booleanValue = booleanValue;
-            Type = Type.BOOLEAN;
+            this.Type = ValueType.BOOLEAN;
         }
 
         /// <summary>
@@ -119,20 +119,49 @@ namespace SKON
         internal SKONObject(DateTime dateTimeValue)
         {
             this.dateTimeValue = dateTimeValue;
-            Type = Type.DATETIME;
+            this.Type = ValueType.DATETIME;
         }
 
         internal SKONObject(Dictionary<string, SKONObject> mapValues)
         {
             this.mapValues = mapValues;
-            Type = Type.MAP;
+            this.Type = ValueType.MAP;
         }
 
         internal SKONObject(SKONObject[] arrayValues)
         {
             this.arrayValues = arrayValues;
-            Type = Type.ARRAY;
+            this.Type = ValueType.ARRAY;
         }
+        
+        /// <summary>
+        /// Gets a value indicating whether this SKONObject is empty or not.
+        /// </summary>
+        public bool IsEmpty
+        {
+            get
+            {
+                return this.Type == ValueType.EMPTY;
+            }
+        }
+        
+        public ICollection<string> Keys
+        {
+            get
+            {
+                return this.mapValues != null ? this.mapValues.Keys : null;
+            }
+        }
+
+        public int Length
+        {
+            get
+            {
+                return this.arrayValues != null ? this.arrayValues.Length : -1;
+            }
+        }
+        
+        public ValueType Type { get; internal set; }
 
         /// <summary>
         /// Gets an empty SKONObject.
@@ -145,42 +174,13 @@ namespace SKON
             }
         }
 
-        public Type Type { get; internal set; }
-
-        /// <summary>
-        /// Gets a value indicating whether this SKONObject is empty or not.
-        /// </summary>
-        public bool IsEmpty
-        {
-            get
-            {
-                return Type == Type.EMPTY;
-            }
-        }
-        
-        public ICollection<string> Keys
-        {
-            get
-            {
-                return mapValues != null ? mapValues.Keys : null;
-            }
-        }
-
-        public int Length
-        {
-            get
-            {
-                return arrayValues != null ? arrayValues.Length : -1;
-            }
-        }
-
         public SKONObject this[int i]
         {
             get
             {
-                if (i >= 0 && i < arrayValues.Length)
+                if (i >= 0 && i < this.arrayValues.Length)
                 {
-                    return arrayValues[i];
+                    return this.arrayValues[i];
                 }
                 else
                 {
@@ -193,9 +193,9 @@ namespace SKON
         {
             get
             {
-                if (mapValues != null && mapValues.ContainsKey(key))
+                if (this.mapValues != null && this.mapValues.ContainsKey(key))
                 {
-                    return mapValues[key];
+                    return this.mapValues[key];
                 }
                 else
                 {
@@ -203,19 +203,20 @@ namespace SKON
                 }
             }
         }
-
+        
         /// <summary>
         /// Converts a SKONObject into a string.
         /// </summary>
         /// <param name="obj">The SKONObject to convert.</param>
         public static implicit operator string(SKONObject obj)
         {
-            if (obj.Type != Type.STRING)
+            if (obj.Type != ValueType.STRING)
             {
                 // Will this lead to weirdness? Always being able to cast to a string that will never be 'null'
                 // Should string cast be explicit instead?
                 return obj.ToString();
             }
+
             return obj.stringValue;
         }
 
@@ -225,10 +226,11 @@ namespace SKON
         /// <param name="obj">The SKONObject to convert.</param>
         public static implicit operator int?(SKONObject obj)
         {
-            if (obj.Type != Type.INTEGER)
+            if (obj.Type != ValueType.INTEGER)
             {
                 return null;
             }
+
             return obj.intValue;
         }
 
@@ -238,10 +240,11 @@ namespace SKON
         /// <param name="obj">The SKONObject to convert.</param>
         public static implicit operator double?(SKONObject obj)
         {
-            if (obj.Type != Type.DOUBLE)
+            if (obj.Type != ValueType.DOUBLE)
             {
                 return null;
             }
+
             return obj.doubleValue;
         }
 
@@ -251,10 +254,11 @@ namespace SKON
         /// <param name="obj">The SKONObject to convert.</param>
         public static implicit operator bool?(SKONObject obj)
         {
-            if (obj.Type != Type.BOOLEAN)
+            if (obj.Type != ValueType.BOOLEAN)
             {
                 return null;
             }
+
             return obj.booleanValue;
         }
 
@@ -264,16 +268,17 @@ namespace SKON
         /// <param name="obj">The SKONObject to convert.</param>
         public static implicit operator DateTime?(SKONObject obj)
         {
-            if (obj.Type != Type.DATETIME)
+            if (obj.Type != ValueType.DATETIME)
             {
                 return null;
             }
+
             return obj.dateTimeValue;
         }
         
         public T Get<T>(string key, T defaultValue)
         {
-            if (mapValues != null && mapValues.ContainsKey(key))
+            if (this.mapValues != null && this.mapValues.ContainsKey(key))
             {
                 System.Type sourceType = typeof(T);
                 MethodInfo[] ops = sourceType.GetMethods();
@@ -283,7 +288,7 @@ namespace SKON
                     MethodInfo op = ops[i];
                     if (op.ReturnType == typeof(T) && (op.Name == "op_Implicit" || op.Name == "op_Explicit"))
                     {
-                        return (T) op.Invoke(null, new[] { mapValues[key] });
+                        return (T) op.Invoke(null, new[] { this.mapValues[key] });
                     }
                 }
             }
@@ -293,7 +298,7 @@ namespace SKON
         
         public bool TryGet<T>(string key, T defaultValue, out T result)
         {
-            if (mapValues != null && mapValues.ContainsKey(key))
+            if (this.mapValues != null && this.mapValues.ContainsKey(key))
             {
                 System.Type sourceType = typeof(T);
                 MethodInfo[] ops = sourceType.GetMethods();
@@ -303,7 +308,7 @@ namespace SKON
                     MethodInfo op = ops[i];
                     if (op.ReturnType == typeof(T) && (op.Name == "op_Implicit" || op.Name == "op_Explicit"))
                     {
-                        result = (T) op.Invoke(null, new[] { mapValues[key] });
+                        result = (T) op.Invoke(null, new[] { this.mapValues[key] });
                         return true;
                     }
                 }
@@ -313,22 +318,30 @@ namespace SKON
             return false;
         }
 
+        /// <summary>
+        /// Returns the value of this SKONObject as a string.
+        /// </summary>
+        /// <returns>A string description of this SKONObject.</returns>
         public override string ToString()
         {
-            switch (Type)
+            switch (this.Type)
             {
-                case Type.EMPTY:
+                case ValueType.EMPTY:
                     return "Empty";
-                case Type.STRING:
-                    return stringValue;
-                case Type.INTEGER:
-                    return "int: " + intValue.ToString();
-                case Type.DOUBLE:
-                    return "double: " + doubleValue.ToString();
-                case Type.BOOLEAN:
-                    return "bool: " + booleanValue.ToString();
-                case Type.DATETIME:
-                    return "datetime: " + dateTimeValue.ToString();
+                case ValueType.STRING:
+                    return this.stringValue;
+                case ValueType.INTEGER:
+                    return this.intValue.ToString();
+                case ValueType.DOUBLE:
+                    return this.doubleValue.ToString();
+                case ValueType.BOOLEAN:
+                    return this.booleanValue.ToString();
+                case ValueType.DATETIME:
+                    return this.dateTimeValue.ToString();
+                case ValueType.MAP:
+                    return this.mapValues.ToString();
+                case ValueType.ARRAY:
+                    return this.arrayValues.ToString();
                 default:
                     return "Invalid type!";
             }

@@ -31,11 +31,6 @@ namespace SKON.NET
             this.mapValues = mapValues;
         }
 
-        public Dictionary<string, SKONObject>.KeyCollection Keys()
-        {
-            return mapValues.Keys;
-        }
-
         /// <summary>
         /// Returns the value given inside this Map for the specified key.
         /// </summary>
@@ -55,6 +50,15 @@ namespace SKON.NET
                     return null;
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets the keys of this SKON Map.
+        /// </summary>
+        /// <returns>All keys for this Map.</returns>
+        public Dictionary<string, SKONObject>.KeyCollection Keys()
+        {
+            return this.mapValues.Keys;
         }
     }
 }

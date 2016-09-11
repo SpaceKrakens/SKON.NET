@@ -15,6 +15,11 @@ namespace SKON
     /// </summary>
     public class Skon
     {
+        /// <summary>
+        /// Loads a text file as a SKON Map.
+        /// </summary>
+        /// <param name="path">Full FilePath to the SKON text file.</param>
+        /// <returns>The root map containing all SKONObjects.</returns>
         public static SKONObject LoadFile(string path)
         {
             if (File.Exists(path))
