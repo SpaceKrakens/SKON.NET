@@ -172,7 +172,7 @@ open_array<. out List<SKONObject> arrayElements .>				(. SKONObject skonObject; 
 
 /*-------------------------------------------------------------------------*/
 value<out SKONObject skonObject>								(. skonObject = null; .)
-=	string_														(. skonObject = new SKONObject(t.val); .)
+=	string_														(. skonObject = new SKONObject(t.val.Substring(1, t.val.Length - 2)); .)
     | integer_													(. skonObject = new SKONObject(int.Parse(t.val)); .)
     | double_													(. skonObject = new SKONObject(double.Parse(t.val, CultureInfo.InvariantCulture)); .)
     | datetime_													(. skonObject = new SKONObject(ParseDatetime(t.val)); .)

@@ -356,6 +356,27 @@ namespace SKON
             }
         }
         
+        public IEnumerable<SKONObject> Values
+        {
+            get
+            {
+                if (arrayValues != null)
+                {
+                    for (int i = 0; i < arrayValues.Length; i++)
+                    {
+                        yield return arrayValues[i];
+                    }
+
+                    yield break;
+                }
+            }
+        }
+
+        public bool ContainsKey(string key)
+        {
+            return this.mapValues?.ContainsKey(key) ?? false;
+        }
+
         /// <summary>
         /// Gets the value of the SKONObject Map paired with the given key as the desired data type.
         /// </summary>

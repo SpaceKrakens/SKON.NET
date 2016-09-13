@@ -233,7 +233,7 @@ public SKONObject data;
 		switch (la.kind) {
 		case 8: {
 			Get();
-			skonObject = new SKONObject(t.val); 
+			skonObject = new SKONObject(t.val.Substring(1, t.val.Length - 2)); 
 			break;
 		}
 		case 10: {
