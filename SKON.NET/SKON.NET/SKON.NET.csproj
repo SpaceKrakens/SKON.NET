@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="Parser\Parser.cs" />
     <Compile Include="Parser\Scanner.cs" />
-    <Compile Include="Skon.cs" />
+    <Compile Include="SKON.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SKONObject.cs" />
   </ItemGroup>
