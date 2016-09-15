@@ -4,10 +4,12 @@
 //     Copyright (C) 2016 SpaceKrakens
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace SKON
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Reflection;
 
     /// <summary>
@@ -291,7 +293,7 @@ namespace SKON
         internal static SKONObject Empty => new SKONObject();
 
         /// <summary>
-        /// Gets the SKONObject value at the integer index i for a SKONObject Array.
+        /// Gets or sets the SKONObject value at the integer index i for a SKONObject Array.
         /// </summary>
         /// <param name="i">The index to get a SKONObject for.</param>
         /// <returns>The SKONObject found at the given index or an empty SKONObject, should the index be out of bounds.</returns>
@@ -299,12 +301,29 @@ namespace SKON
         {
             get
             {
-                if (i >= 0 && i < this.arrayValues.Length)
+                if (i >= 0 && i < this.arrayValues?.Length)
                 {
                     return this.arrayValues[i];
                 }
 
                 return Empty;
+            }
+
+            set
+            {
+                if (i < 0 || i >= this.arrayValues?.Length)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(i), i, "The given index was out of bounds.");
+                }
+
+                try
+                {
+                    this.arrayValues[i] = value;
+                }
+                catch (NullReferenceException nre)
+                {
+                    throw new NullReferenceException("This SKONObject is not an array, so setting a value at this index is impossible.", nre);
+                }
             }
         }
 
@@ -323,6 +342,25 @@ namespace SKON
                 }
 
                 return Empty;
+            }
+
+            set
+            {
+                if (this.mapValues?.ContainsKey(key) ?? false)
+                {
+                    this.mapValues.Add(key, value);
+                }
+                else
+                {
+                    try
+                    {
+                        this.mapValues[key] = value;
+                    }
+                    catch (NullReferenceException nre)
+                    {
+                        throw new NullReferenceException(string.Format("This SKONObject is not a map, so adding value {0} with key {1} is impossible.", value, key), nre);
+                    }
+                }
             }
         }
 
