@@ -1,19 +1,20 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="Skon.cs" company="SpaceKrakens">
+// <copyright file="SKON.cs" company="SpaceKrakens">
 //     MIT Licence
 //     Copyright (C) 2016 SpaceKrakens
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System.IO;
-using SKON.Internal;
-
 namespace SKON
 {
+    using System.IO;
+
+    using Internal;
+
     /// <summary>
     /// TODO: Add documentation.
     /// </summary>
-    public class Skon
+    public class SKON
     {
         /// <summary>
         /// Loads a text file as a SKON Map.

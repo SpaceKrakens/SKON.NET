@@ -4,14 +4,12 @@
 //     Copyright (C) 2016 SpaceKrakens
 // </copyright>
 //-----------------------------------------------------------------------
-
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-
 namespace SKON
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Reflection;
+
     /// <summary>
     /// All value types a SKONObject could be, including complex values.
     /// </summary>
@@ -36,7 +34,7 @@ namespace SKON
         /// A double value.
         /// </summary>
         DOUBLE,
-        
+
         /// <summary>
         /// A boolean value.
         /// </summary>
@@ -51,7 +49,7 @@ namespace SKON
         /// A (sub-) map value.
         /// </summary>
         MAP,
-        
+
         /// <summary>
         /// An array value.
         /// </summary>
@@ -66,37 +64,37 @@ namespace SKON
         /// <summary>
         /// Backing string value.
         /// </summary>
-        private string stringValue;
+        private readonly string stringValue;
 
         /// <summary>
         /// Backing integer value.
         /// </summary>
-        private int intValue;
+        private readonly int intValue;
 
         /// <summary>
         /// Backing float value.
         /// </summary>
-        private double doubleValue;
+        private readonly double doubleValue;
 
         /// <summary>
         /// Backing boolean value.
         /// </summary>
-        private bool booleanValue;
+        private readonly bool booleanValue;
 
         /// <summary>
         /// Backing DateTime value.
         /// </summary>
-        private DateTime dateTimeValue;
+        private readonly DateTime dateTimeValue;
 
         /// <summary>
         /// Backing string-SKONObject dictionary of Map key-value pairs.
         /// </summary>
-        private Dictionary<string, SKONObject> mapValues;
-        
+        private readonly Dictionary<string, SKONObject> mapValues;
+
         /// <summary>
         /// Backing array of Array values.
         /// </summary>
-        private SKONObject[] arrayValues;
+        private readonly SKONObject[] arrayValues;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="SKONObject"/> class.
@@ -183,55 +181,31 @@ namespace SKON
             this.arrayValues = arrayValues;
             this.Type = ValueType.ARRAY;
         }
-        
+
         /// <summary>
         /// Gets a value indicating whether this SKONObject is empty or not.
         /// </summary>
-        public bool IsEmpty
-        {
-            get
-            {
-                return this.Type == ValueType.EMPTY;
-            }
-        }
-        
+        public bool IsEmpty => this.Type == ValueType.EMPTY;
+
         /// <summary>
         /// Gets the collection of string keys, if this SKONObject is a Map, or null, if it isn't.
         /// </summary>
-        public ICollection<string> Keys
-        {
-            get
-            {
-                return this.mapValues != null ? this.mapValues.Keys : null;
-            }
-        }
+        public ICollection<string> Keys => this.mapValues?.Keys;
 
         /// <summary>
         /// Gets the length of the array, should this SKONObject be one, or null, if it isn't.
         /// </summary>
-        public int Length
-        {
-            get
-            {
-                return this.arrayValues != null ? this.arrayValues.Length : -1;
-            }
-        }
-        
+        public int Length => this.arrayValues?.Length ?? -1;
+
         /// <summary>
         /// Gets the type of this SKONObject.
         /// </summary>
         public ValueType Type { get; internal set; }
-        
+
         /// <summary>
         /// Gets the string value of this SKONObject, should it be a string.
         /// </summary>
-        public string String
-        {
-            get
-            {
-                return this.Type == ValueType.STRING ? this.stringValue : null;
-            }
-        }
+        public string String => this.Type == ValueType.STRING ? this.stringValue : null;
 
         /// <summary>
         /// Gets the integer value of this SKONObject, should it be an integer.
@@ -244,10 +218,8 @@ namespace SKON
                 {
                     return this.intValue;
                 }
-                else
-                {
-                    return null;
-                }
+
+                return null;
             }
         }
 
@@ -262,10 +234,8 @@ namespace SKON
                 {
                     return this.doubleValue;
                 }
-                else
-                {
-                    return null;
-                }
+
+                return null;
             }
         }
 
@@ -280,10 +250,8 @@ namespace SKON
                 {
                     return this.booleanValue;
                 }
-                else
-                {
-                    return null;
-                }
+
+                return null;
             }
         }
 
@@ -298,9 +266,21 @@ namespace SKON
                 {
                     return this.dateTimeValue;
                 }
-                else
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the values.
+        /// </summary>
+        public IEnumerable<SKONObject> Values
+        {
+            get
+            {
+                for (int i = 0; i < this.arrayValues?.Length; i++)
                 {
-                    return null;
+                    yield return this.arrayValues?[i];
                 }
             }
         }
@@ -308,13 +288,7 @@ namespace SKON
         /// <summary>
         /// Gets an empty SKONObject.
         /// </summary>
-        internal static SKONObject Empty
-        {
-            get
-            {
-                return new SKONObject();
-            }
-        }
+        internal static SKONObject Empty => new SKONObject();
 
         /// <summary>
         /// Gets the SKONObject value at the integer index i for a SKONObject Array.
@@ -329,10 +303,8 @@ namespace SKON
                 {
                     return this.arrayValues[i];
                 }
-                else
-                {
-                    return Empty;
-                }
+
+                return Empty;
             }
         }
 
@@ -349,32 +321,67 @@ namespace SKON
                 {
                     return this.mapValues[key];
                 }
-                else
-                {
-                    return Empty;
-                }
-            }
-        }
-        
-        public IEnumerable<SKONObject> Values
-        {
-            get
-            {
-                if (arrayValues != null)
-                {
-                    for (int i = 0; i < arrayValues.Length; i++)
-                    {
-                        yield return arrayValues[i];
-                    }
 
-                    yield break;
-                }
+                return Empty;
             }
         }
 
+        /// <summary>
+        /// Checks to see if this SKONObject contains the key.
+        /// </summary>
+        /// <param name="key">
+        /// The key.
+        /// </param>
+        /// <returns>
+        /// True, if it exists, false if not or not a map.
+        /// </returns>
         public bool ContainsKey(string key)
         {
             return this.mapValues?.ContainsKey(key) ?? false;
+        }
+
+        /// <summary>
+        /// Checks to see if this SKONObject contains all keys in the given array.
+        /// </summary>
+        /// <param name="keys">
+        /// The keys.
+        /// </param>
+        /// <returns>
+        /// True, if all exist, false if any are missing or not a map.
+        /// </returns>
+        public bool AllPresent(string[] keys)
+        {
+            for (int i = 0; i < keys.Length; i++)
+            {
+                if (!this.ContainsKey(keys[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks to see if this SKONObject contains all keys in the given List of strings.
+        /// </summary>
+        /// <param name="keys">
+        /// The keys.
+        /// </param>
+        /// <returns>
+        /// True, if all exist, false if any are missing or not a map.
+        /// </returns>
+        public bool AllPresent(List<string> keys)
+        {
+            for (int i = 0; i < keys.Count; i++)
+            {
+                if (!this.ContainsKey(keys[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -386,18 +393,20 @@ namespace SKON
         /// <returns>Either the proper value or the default value.</returns>
         public T Get<T>(string key, T defaultValue)
         {
-            if (this.mapValues?.ContainsKey(key) ?? false)
+            if (!(this.mapValues?.ContainsKey(key) ?? false))
             {
-                System.Type sourceType = typeof(T);
-                MethodInfo[] ops = sourceType.GetMethods();
+                return defaultValue;
+            }
+
+            Type sourceType = typeof(T);
+            MethodInfo[] ops = sourceType.GetMethods();
                 
-                for (int i = 0; i < ops.Length; i++)
+            for (int i = 0; i < ops.Length; i++)
+            {
+                MethodInfo op = ops[i];
+                if (op.ReturnType == typeof(T) && (op.Name == "op_Implicit" || op.Name == "op_Explicit"))
                 {
-                    MethodInfo op = ops[i];
-                    if (op.ReturnType == typeof(T) && (op.Name == "op_Implicit" || op.Name == "op_Explicit"))
-                    {
-                        return (T)op.Invoke(null, new[] { this.mapValues[key] });
-                    }
+                    return (T)op.Invoke(null, new[] { this.mapValues[key] });
                 }
             }
 
@@ -415,17 +424,19 @@ namespace SKON
         {
             if (this.mapValues?.ContainsKey(key) ?? false)
             {
-                System.Type sourceType = typeof(T);
+                Type sourceType = typeof(T);
                 MethodInfo[] ops = sourceType.GetMethods();
 
                 for (int i = 0; i < ops.Length; i++)
                 {
                     MethodInfo op = ops[i];
-                    if (op.ReturnType == typeof(T) && (op.Name == "op_Implicit" || op.Name == "op_Explicit"))
+                    if (op.ReturnType != typeof(T) || (op.Name != "op_Implicit" && op.Name != "op_Explicit"))
                     {
-                        result = (T)op.Invoke(null, new[] { this.mapValues[key] });
-                        return true;
+                        continue;
                     }
+
+                    result = (T)op.Invoke(null, new[] { this.mapValues[key] });
+                    return true;
                 }
             }
 
