@@ -203,7 +203,7 @@ public SKONObject data;
 		List<SKONObject> arrayElements; 
 		Expect(5);
 		open_array(out arrayElements);
-		array = new SKONObject(arrayElements.ToArray()); 
+		array = new SKONObject(arrayElements); 
 		Expect(6);
 	}
 
