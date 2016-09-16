@@ -96,13 +96,13 @@ namespace SKON
         /// <summary>
         /// Backing array of Array values.
         /// </summary>
-        private readonly SKONObject[] arrayValues;
+        private readonly List<SKONObject> arrayValues;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="SKONObject"/> class.
         /// Dummy SKONObject constructor, probably not done and at this time not even used.
         /// </summary>
-        internal SKONObject()
+        public SKONObject()
         {
             this.Type = ValueType.EMPTY;
         }
@@ -112,7 +112,7 @@ namespace SKON
         /// Constructs a SKONObject holding a string value.
         /// </summary>
         /// <param name="stringValue">The string value.</param>
-        internal SKONObject(string stringValue)
+        public SKONObject(string stringValue)
         {
             this.stringValue = stringValue;
             this.Type = ValueType.STRING;
@@ -123,7 +123,7 @@ namespace SKON
         /// Constructs a SKONObject holding an integer value.
         /// </summary>
         /// <param name="intValue">The integer value.</param>
-        internal SKONObject(int intValue)
+        public SKONObject(int intValue)
         {
             this.intValue = intValue;
             this.Type = ValueType.INTEGER;
@@ -134,7 +134,7 @@ namespace SKON
         /// Constructs a SKONObject holding a double value.
         /// </summary>
         /// <param name="doubleValue">The double value.</param>
-        internal SKONObject(double doubleValue)
+        public SKONObject(double doubleValue)
         {
             this.doubleValue = doubleValue;
             this.Type = ValueType.DOUBLE;
@@ -145,7 +145,7 @@ namespace SKON
         /// Constructs a SKONObject holding a boolean value.
         /// </summary>
         /// <param name="booleanValue">The boolean value.</param>
-        internal SKONObject(bool booleanValue)
+        public SKONObject(bool booleanValue)
         {
             this.booleanValue = booleanValue;
             this.Type = ValueType.BOOLEAN;
@@ -156,7 +156,7 @@ namespace SKON
         /// Constructs a SKONObject holding a DateTime value.
         /// </summary>
         /// <param name="dateTimeValue">The DateTime value.</param>
-        internal SKONObject(DateTime dateTimeValue)
+        public SKONObject(DateTime dateTimeValue)
         {
             this.dateTimeValue = dateTimeValue;
             this.Type = ValueType.DATETIME;
@@ -167,7 +167,7 @@ namespace SKON
         /// Constructs a SKONObject holding a Map.
         /// </summary>
         /// <param name="mapValues">The key-value pairs inside that Map.</param>
-        internal SKONObject(Dictionary<string, SKONObject> mapValues)
+        public SKONObject(Dictionary<string, SKONObject> mapValues)
         {
             this.mapValues = mapValues;
             this.Type = ValueType.MAP;
@@ -178,7 +178,7 @@ namespace SKON
         /// Constructs a SKONObject holding an Array.
         /// </summary>
         /// <param name="arrayValues">The SKONObject values making up that Array.</param>
-        internal SKONObject(SKONObject[] arrayValues)
+        public SKONObject(List<SKONObject> arrayValues)
         {
             this.arrayValues = arrayValues;
             this.Type = ValueType.ARRAY;
@@ -197,7 +197,7 @@ namespace SKON
         /// <summary>
         /// Gets the length of the array, should this SKONObject be one, or null, if it isn't.
         /// </summary>
-        public int Length => this.arrayValues?.Length ?? -1;
+        public int Length => this.arrayValues?.Count ?? -1;
 
         /// <summary>
         /// Gets the type of this SKONObject.
@@ -280,7 +280,7 @@ namespace SKON
         {
             get
             {
-                for (int i = 0; i < this.arrayValues?.Length; i++)
+                for (int i = 0; i < this.arrayValues?.Count; i++)
                 {
                     yield return this.arrayValues?[i];
                 }
@@ -301,7 +301,7 @@ namespace SKON
         {
             get
             {
-                if (i >= 0 && i < this.arrayValues?.Length)
+                if (i >= 0 && i < this.arrayValues?.Count)
                 {
                     return this.arrayValues[i];
                 }
@@ -311,7 +311,7 @@ namespace SKON
 
             set
             {
-                if (i < 0 || i >= this.arrayValues?.Length)
+                if (i < 0 || i >= this.arrayValues?.Count)
                 {
                     throw new ArgumentOutOfRangeException(nameof(i), i, "The given index was out of bounds.");
                 }
@@ -422,6 +422,32 @@ namespace SKON
             return true;
         }
 
+
+        public static implicit operator SKONObject(string str)
+        {
+            return new SKONObject(str);
+        }
+
+        public static implicit operator SKONObject(int i)
+        {
+            return new SKONObject(i);
+        }
+
+        public static implicit operator SKONObject(double d)
+        {
+            return new SKONObject(d);
+        }
+
+        public static implicit operator SKONObject(bool b)
+        {
+            return new SKONObject(b);
+        }
+        
+        public static implicit operator SKONObject(DateTime dt)
+        {
+            return new SKONObject(dt);
+        }
+        
         /// <summary>
         /// Gets the value of the SKONObject Map paired with the given key as the desired data type.
         /// </summary>

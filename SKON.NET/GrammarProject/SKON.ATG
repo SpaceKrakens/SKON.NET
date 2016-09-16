@@ -125,7 +125,7 @@ skon_map<out SKONObject map>									(. Dictionary<string, SKONObject> mapElemen
 /*-------------------------------------------------------------------------*/
 skon_array<out SKONObject array>								(. List<SKONObject> arrayElements; .)
 =	lbracket
-    open_array<out arrayElements>								(. array = new SKONObject(arrayElements.ToArray()); .)
+    open_array<out arrayElements>								(. array = new SKONObject(arrayElements); .)
     rbracket
     .
 
