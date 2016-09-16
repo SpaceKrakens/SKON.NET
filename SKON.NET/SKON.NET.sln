@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SKON.NET", "SKON.NET\SKON.N
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrammarProject", "GrammarProject\GrammarProject.csproj", "{DD272A74-DB7C-4CF5-934D-E0511646A31D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SKONTest", "SKONTest\SKONTest.csproj", "{A1347973-1FC7-4C52-9711-11FFEA0DF184}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{DD272A74-DB7C-4CF5-934D-E0511646A31D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD272A74-DB7C-4CF5-934D-E0511646A31D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD272A74-DB7C-4CF5-934D-E0511646A31D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1347973-1FC7-4C52-9711-11FFEA0DF184}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1347973-1FC7-4C52-9711-11FFEA0DF184}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1347973-1FC7-4C52-9711-11FFEA0DF184}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1347973-1FC7-4C52-9711-11FFEA0DF184}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
