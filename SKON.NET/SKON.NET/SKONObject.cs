@@ -100,7 +100,7 @@ namespace SKON
 
         /// <summary>
         /// Initialises a new instance of the <see cref="SKONObject"/> class.
-        /// Dummy SKONObject constructor, probably not done and at this time not even used.
+        /// Constructs an empty SKONObject.
         /// </summary>
         public SKONObject()
         {
@@ -178,9 +178,9 @@ namespace SKON
         /// Constructs a SKONObject holding an Array.
         /// </summary>
         /// <param name="arrayValues">The SKONObject values making up that Array.</param>
-        public SKONObject(List<SKONObject> arrayValues)
+        public SKONObject(IEnumerable<SKONObject> arrayValues)
         {
-            this.arrayValues = arrayValues;
+            this.arrayValues = new List<SKONObject>(arrayValues);
             this.Type = ValueType.ARRAY;
         }
 
@@ -274,7 +274,7 @@ namespace SKON
         }
 
         /// <summary>
-        /// Gets the values.
+        /// Gets the values of the SKONObject array.
         /// </summary>
         public IEnumerable<SKONObject> Values
         {
@@ -358,12 +358,13 @@ namespace SKON
         }
 
         /// <summary>
-        /// The op_ implicit.
+        /// Implicitly converts a string into a SKONObject.
         /// </summary>
         /// <param name="str">
         /// The string.
         /// </param>
         /// <returns>
+        /// The newly converted SKONObject.
         /// </returns>
         public static implicit operator SKONObject(string str)
         {
@@ -371,12 +372,13 @@ namespace SKON
         }
 
         /// <summary>
-        /// The op_ implicit.
+        /// Implicitly converts an integer into a SKONObject.
         /// </summary>
         /// <param name="i">
         /// The integer.
         /// </param>
         /// <returns>
+        /// The newly converted SKONObject.
         /// </returns>
         public static implicit operator SKONObject(int i)
         {
@@ -384,12 +386,13 @@ namespace SKON
         }
 
         /// <summary>
-        /// The op_ implicit.
+        /// Implicitly converts a double into a SKONObject.
         /// </summary>
         /// <param name="d">
         /// The double.
         /// </param>
         /// <returns>
+        /// The newly converted SKONObject.
         /// </returns>
         public static implicit operator SKONObject(double d)
         {
@@ -397,12 +400,13 @@ namespace SKON
         }
 
         /// <summary>
-        /// The op_ implicit.
+        /// Implicitly converts a boolean into a SKONObject.
         /// </summary>
         /// <param name="b">
         /// The boolean.
         /// </param>
         /// <returns>
+        /// The newly converted SKONObject.
         /// </returns>
         public static implicit operator SKONObject(bool b)
         {
@@ -410,12 +414,13 @@ namespace SKON
         }
 
         /// <summary>
-        /// The op_ implicit.
+        /// Implicitly converts a DateTime into a SKONObject.
         /// </summary>
         /// <param name="dt">
         /// The DateTime.
         /// </param>
         /// <returns>
+        /// The newly converted SKONObject.
         /// </returns>
         public static implicit operator SKONObject(DateTime dt)
         {
@@ -423,12 +428,13 @@ namespace SKON
         }
 
         /// <summary>
-        /// The op_ implicit.
+        /// Implicitly converts a string array into a SKONObject Array of strings.
         /// </summary>
         /// <param name="array">
         /// The array.
         /// </param>
         /// <returns>
+        /// The newly converted SKONObject.
         /// </returns>
         public static implicit operator SKONObject(string[] array)
         {
@@ -436,12 +442,13 @@ namespace SKON
         }
 
         /// <summary>
-        /// The op_ implicit.
+        /// Implicitly converts a string list into a SKONObject Array of strings.
         /// </summary>
         /// <param name="list">
         /// The list.
         /// </param>
         /// <returns>
+        /// The newly converted SKONObject.
         /// </returns>
         public static implicit operator SKONObject(List<string> list)
         {
@@ -449,12 +456,13 @@ namespace SKON
         }
 
         /// <summary>
-        /// The op_ implicit.
+        /// Implicitly converts an integer array into a SKONObject Array of integers.
         /// </summary>
         /// <param name="array">
         /// The array.
         /// </param>
         /// <returns>
+        /// The newly converted SKONObject.
         /// </returns>
         public static implicit operator SKONObject(int[] array)
         {
@@ -462,12 +470,13 @@ namespace SKON
         }
 
         /// <summary>
-        /// The op_ implicit.
+        /// Implicitly converts an integer list into a SKONObject Array of integers.
         /// </summary>
         /// <param name="list">
         /// The list.
         /// </param>
         /// <returns>
+        /// The newly converted SKONObject.
         /// </returns>
         public static implicit operator SKONObject(List<int> list)
         {
@@ -475,12 +484,13 @@ namespace SKON
         }
 
         /// <summary>
-        /// The op_ implicit.
+        /// Implicitly converts a double array into a SKONObject Array of doubles.
         /// </summary>
         /// <param name="array">
         /// The array.
         /// </param>
         /// <returns>
+        /// The newly converted SKONObject.
         /// </returns>
         public static implicit operator SKONObject(double[] array)
         {
@@ -488,12 +498,13 @@ namespace SKON
         }
 
         /// <summary>
-        /// The op_ implicit.
+        /// Implicitly converts a double list into a SKONObject Array of doubles.
         /// </summary>
         /// <param name="list">
         /// The list.
         /// </param>
         /// <returns>
+        /// The newly converted SKONObject.
         /// </returns>
         public static implicit operator SKONObject(List<double> list)
         {
@@ -501,12 +512,13 @@ namespace SKON
         }
 
         /// <summary>
-        /// The op_ implicit.
+        /// Implicitly converts a boolean array into a SKONObject Array of booleans.
         /// </summary>
         /// <param name="array">
         /// The array.
         /// </param>
         /// <returns>
+        /// The newly converted SKONObject.
         /// </returns>
         public static implicit operator SKONObject(bool[] array)
         {
@@ -514,12 +526,13 @@ namespace SKON
         }
 
         /// <summary>
-        /// The op_ implicit.
+        /// Implicitly converts a boolean list into a SKONObject Array of booleans.
         /// </summary>
         /// <param name="list">
         /// The list.
         /// </param>
         /// <returns>
+        /// The newly converted SKONObject.
         /// </returns>
         public static implicit operator SKONObject(List<bool> list)
         {
@@ -527,12 +540,13 @@ namespace SKON
         }
 
         /// <summary>
-        /// The op_ implicit.
+        /// Implicitly converts a DateTime array into a SKONObject Array of DateTimes.
         /// </summary>
         /// <param name="array">
         /// The array.
         /// </param>
         /// <returns>
+        /// The newly converted SKONObject.
         /// </returns>
         public static implicit operator SKONObject(DateTime[] array)
         {
@@ -540,12 +554,13 @@ namespace SKON
         }
 
         /// <summary>
-        /// The op_ implicit.
+        /// Implicitly converts a DateTime list into a SKONObject Array of DateTimes.
         /// </summary>
         /// <param name="list">
         /// The list.
         /// </param>
         /// <returns>
+        /// The newly converted SKONObject.
         /// </returns>
         public static implicit operator SKONObject(List<DateTime> list)
         {
