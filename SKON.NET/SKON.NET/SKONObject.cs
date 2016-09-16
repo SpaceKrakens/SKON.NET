@@ -313,16 +313,16 @@ namespace SKON
             {
                 if (i < 0 || i >= this.arrayValues?.Count)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(i), i, "The given index was out of bounds.");
+                    throw new ArgumentOutOfRangeException(nameof(i), i, "The given index was out of bounds!");
                 }
 
-                try
+                if (Type == ValueType.ARRAY)
                 {
                     this.arrayValues[i] = value;
                 }
-                catch (NullReferenceException nre)
+                else
                 {
-                    throw new NullReferenceException("This SKONObject is not an array, so setting a value at this index is impossible.", nre);
+                    throw new InvalidOperationException(string.Format("This SKONObject is not an array! Index {0} cannot be set to value {1}!", i, value));
                 }
             }
         }
@@ -346,20 +346,13 @@ namespace SKON
 
             set
             {
-                if (this.mapValues?.ContainsKey(key) ?? false)
+                if (Type == ValueType.MAP)
                 {
-                    this.mapValues.Add(key, value);
+                    this.mapValues[key] = value;
                 }
                 else
                 {
-                    try
-                    {
-                        this.mapValues[key] = value;
-                    }
-                    catch (NullReferenceException nre)
-                    {
-                        throw new NullReferenceException(string.Format("This SKONObject is not a map, so adding value {0} with key {1} is impossible.", value, key), nre);
-                    }
+                    throw new InvalidOperationException(string.Format("This SKONObject is not a map! Adding value {0} to key {1} isn't possible!", value, key));
                 }
             }
         }
@@ -452,7 +445,7 @@ namespace SKON
         /// <returns>
         /// True, if all exist, false if any are missing or not a map.
         /// </returns>
-        public bool AllPresent(string[] keys)
+        public bool AllPresent(params string[] keys)
         {
             for (int i = 0; i < keys.Length; i++)
             {
