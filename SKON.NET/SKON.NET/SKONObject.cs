@@ -429,16 +429,24 @@ namespace SKON
             return new SKONObject(dt);
         }
 
-        public void Add(SKONObject value)
+        /// <summary>
+        /// Adds a SKONObject to the Array.
+        /// </summary>
+        /// <param name="value">
+        /// The value to add.
+        /// </param>
+        /// <returns>
+        /// True if it succeeds, false if there is no array.
+        /// </returns>
+        public bool Add(SKONObject value)
         {
-            try
+            if (this.arrayValues == null)
             {
-                this.arrayValues.Add(value);
+                return false;
             }
-            catch (NullReferenceException nre)
-            {
-                throw new NullReferenceException(string.Format("This SKONObject is not an array, so adding value {0} to it is impossible.", value), nre);
-            }
+
+            this.arrayValues.Add(value);
+            return true;
         }
 
         /// <summary>
