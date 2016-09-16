@@ -423,6 +423,26 @@ namespace SKON
         }
 
         /// <summary>
+        /// Adds a SKONObject to the Array.
+        /// </summary>
+        /// <param name="value">
+        /// The value to add.
+        /// </param>
+        /// <returns>
+        /// True if it succeeds, false if there is no array.
+        /// </returns>
+        public bool Add(SKONObject value)
+        {
+            if (this.arrayValues == null)
+            {
+                return false;
+            }
+
+            this.arrayValues.Add(value);
+            return true;
+        }
+
+        /// <summary>
         /// Checks to see if this SKONObject contains the key.
         /// </summary>
         /// <param name="key">
