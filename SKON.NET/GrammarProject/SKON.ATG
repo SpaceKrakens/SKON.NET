@@ -78,7 +78,6 @@ TOKENS
   badString = '"' { stringch | '\\' escapech } (cr | lf).
   integer_  = ['-'] digit {digit}.
   double_   = ['-'] digit {digit} (((dot digit {digit}) [('E' | 'e') [('+' | '-')] digit {digit}]) | (('E' | 'e') [('+' | '-')] digit {digit})).
-  /* TODO!: Datetime */
   datetime_	= ('@' digit {digit}
 			| digit digit digit digit '-' digit digit '-' digit digit
 			| digit digit ':' digit digit ':' digit digit ('Z'|'z')
