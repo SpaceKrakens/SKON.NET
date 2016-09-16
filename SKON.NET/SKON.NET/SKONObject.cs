@@ -365,6 +365,71 @@ namespace SKON
         }
 
         /// <summary>
+        /// The op_ implicit.
+        /// </summary>
+        /// <param name="str">
+        /// The string.
+        /// </param>
+        /// <returns>
+        /// </returns>
+        public static implicit operator SKONObject(string str)
+        {
+            return new SKONObject(str);
+        }
+
+        /// <summary>
+        /// The op_ implicit.
+        /// </summary>
+        /// <param name="i">
+        /// The integer.
+        /// </param>
+        /// <returns>
+        /// </returns>
+        public static implicit operator SKONObject(int i)
+        {
+            return new SKONObject(i);
+        }
+
+        /// <summary>
+        /// The op_ implicit.
+        /// </summary>
+        /// <param name="d">
+        /// The double.
+        /// </param>
+        /// <returns>
+        /// </returns>
+        public static implicit operator SKONObject(double d)
+        {
+            return new SKONObject(d);
+        }
+
+        /// <summary>
+        /// The op_ implicit.
+        /// </summary>
+        /// <param name="b">
+        /// The boolean.
+        /// </param>
+        /// <returns>
+        /// </returns>
+        public static implicit operator SKONObject(bool b)
+        {
+            return new SKONObject(b);
+        }
+
+        /// <summary>
+        /// The op_ implicit.
+        /// </summary>
+        /// <param name="dt">
+        /// The DateTime.
+        /// </param>
+        /// <returns>
+        /// </returns>
+        public static implicit operator SKONObject(DateTime dt)
+        {
+            return new SKONObject(dt);
+        }
+
+        /// <summary>
         /// Checks to see if this SKONObject contains the key.
         /// </summary>
         /// <param name="key">
@@ -420,32 +485,6 @@ namespace SKON
             }
 
             return true;
-        }
-
-
-        public static implicit operator SKONObject(string str)
-        {
-            return new SKONObject(str);
-        }
-
-        public static implicit operator SKONObject(int i)
-        {
-            return new SKONObject(i);
-        }
-
-        public static implicit operator SKONObject(double d)
-        {
-            return new SKONObject(d);
-        }
-
-        public static implicit operator SKONObject(bool b)
-        {
-            return new SKONObject(b);
-        }
-        
-        public static implicit operator SKONObject(DateTime dt)
-        {
-            return new SKONObject(dt);
         }
         
         /// <summary>
