@@ -3,12 +3,12 @@ namespace SpeedComparison
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
-    using System.Text;
-    using SKON;
+
     using Newtonsoft.Json;
-    
+
+    using SKON;
+
     class Program
     {
         static void Main(string[] args)
@@ -38,37 +38,37 @@ namespace SpeedComparison
             Console.WriteLine("=== JSON Tests ====");
 
             var definition = new {
-                Version = "",
-                VersionName = "",
+                Version = string.Empty,
+                VersionName = string.Empty,
                 Author = new { },
-                ExampleString = "",
+                ExampleString = string.Empty,
                 ExampleInteger = 0,
                 ExampleDouble = 0.0,
                 ExampleBoolean = false,
-                ExampleDatetime = "",
+                ExampleDatetime = string.Empty,
                 ExampleArray = new string[] { },
                 ExampleMap = new {
-                    ThisIsAKey = "",
-                    ThisIsAnotherKey = 0,
+                    ThisIsAKey = string.Empty,
+                    ThisIsAnotherKey = 0
                 },
                 ArrayOfMaps = new dynamic[]{
-                    new { Key = "" },
-                    new { Key = "" },
-                    new { AnotherKey = "" },
+                    new { Key = string.Empty },
+                    new { Key = string.Empty },
+                    new { AnotherKey = string.Empty }
                 },
                 MapOfAllDataTypes = new {
-                    String = "",
+                    String = string.Empty,
                     Integer = 0,
                     Double = 0.0,
                     Boolean = false,
-                    DateTime = "",
+                    DateTime = string.Empty,
                     Array = new dynamic[] { },
-                    Map = new { },
+                    Map = new { }
                 },
-                ArrayOfArrayOfStrings = new string[][] {
-                    new string[] { "", "" },
-                    new string[] { "", "" },
-                    new string[] { "", "" },
+                ArrayOfArrayOfStrings = new[] {
+                    new[] { string.Empty, string.Empty },
+                    new[] { string.Empty, string.Empty },
+                    new[] { string.Empty, string.Empty }
                 }
             };
 
@@ -84,7 +84,11 @@ namespace SpeedComparison
 
             double ratio = (skonNMean > jsonNMean) ? skonNMean / jsonNMean : jsonNMean / skonNMean;
             
-            Console.WriteLine("Skon is " + (ratio.ToString("F3")) + "x " + ((skonNMean < jsonNMean) ? "faster" : (skonNMean == jsonNMean) ? "equal" : "slower") + " than json at this time!");
+            Console.WriteLine("Skon is " + ratio.ToString("F3") + "x " + ((skonNMean < jsonNMean) ? "faster" : (skonNMean == jsonNMean) ? "equal" : "slower") + " than json at this time!\n\n");
+
+            SKONObject skonObject = TestSKON.TestSKONObject;
+
+            Console.WriteLine(SKON.Write(skonObject));
             
             Console.ReadKey(true);
         }

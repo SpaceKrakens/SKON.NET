@@ -422,51 +422,131 @@ namespace SKON
             return new SKONObject(dt);
         }
 
+        /// <summary>
+        /// The op_ implicit.
+        /// </summary>
+        /// <param name="array">
+        /// The array.
+        /// </param>
+        /// <returns>
+        /// </returns>
         public static implicit operator SKONObject(string[] array)
         {
             return new SKONObject(new List<string>(array).ConvertAll((value) => (SKONObject)value));
         }
 
+        /// <summary>
+        /// The op_ implicit.
+        /// </summary>
+        /// <param name="list">
+        /// The list.
+        /// </param>
+        /// <returns>
+        /// </returns>
         public static implicit operator SKONObject(List<string> list)
         {
             return new SKONObject(list.ConvertAll(value => (SKONObject)value));
         }
 
+        /// <summary>
+        /// The op_ implicit.
+        /// </summary>
+        /// <param name="array">
+        /// The array.
+        /// </param>
+        /// <returns>
+        /// </returns>
         public static implicit operator SKONObject(int[] array)
         {
             return new SKONObject(new List<int>(array).ConvertAll((value) => (SKONObject)value));
         }
 
+        /// <summary>
+        /// The op_ implicit.
+        /// </summary>
+        /// <param name="list">
+        /// The list.
+        /// </param>
+        /// <returns>
+        /// </returns>
         public static implicit operator SKONObject(List<int> list)
         {
             return new SKONObject(list.ConvertAll(value => (SKONObject)value));
         }
 
+        /// <summary>
+        /// The op_ implicit.
+        /// </summary>
+        /// <param name="array">
+        /// The array.
+        /// </param>
+        /// <returns>
+        /// </returns>
         public static implicit operator SKONObject(double[] array)
         {
             return new SKONObject(new List<double>(array).ConvertAll((value) => (SKONObject)value));
         }
 
+        /// <summary>
+        /// The op_ implicit.
+        /// </summary>
+        /// <param name="list">
+        /// The list.
+        /// </param>
+        /// <returns>
+        /// </returns>
         public static implicit operator SKONObject(List<double> list)
         {
             return new SKONObject(list.ConvertAll(value => (SKONObject)value));
         }
 
+        /// <summary>
+        /// The op_ implicit.
+        /// </summary>
+        /// <param name="array">
+        /// The array.
+        /// </param>
+        /// <returns>
+        /// </returns>
         public static implicit operator SKONObject(bool[] array)
         {
             return new SKONObject(new List<bool>(array).ConvertAll((value) => (SKONObject)value));
         }
 
+        /// <summary>
+        /// The op_ implicit.
+        /// </summary>
+        /// <param name="list">
+        /// The list.
+        /// </param>
+        /// <returns>
+        /// </returns>
         public static implicit operator SKONObject(List<bool> list)
         {
-            return new SKONObject(list.ConvertAll(value => (SKONObject) value));
+            return new SKONObject(list.ConvertAll(value => (SKONObject)value));
         }
 
+        /// <summary>
+        /// The op_ implicit.
+        /// </summary>
+        /// <param name="array">
+        /// The array.
+        /// </param>
+        /// <returns>
+        /// </returns>
         public static implicit operator SKONObject(DateTime[] array)
         {
             return new SKONObject(new List<DateTime>(array).ConvertAll((value) => (SKONObject)value));
         }
 
+        /// <summary>
+        /// The op_ implicit.
+        /// </summary>
+        /// <param name="list">
+        /// The list.
+        /// </param>
+        /// <returns>
+        /// </returns>
         public static implicit operator SKONObject(List<DateTime> list)
         {
             return new SKONObject(list.ConvertAll(value => (SKONObject)value));
