@@ -13,6 +13,7 @@ namespace SKON
     using System.IO;
     using System.Text;
     using Internal;
+    using System;
 
     /// <summary>
     /// TODO: Add documentation.
@@ -104,7 +105,14 @@ namespace SKON
         /// </returns>
         public static string Write(SKONObject obj)
         {
-            return WriteObject(obj, 0);
+            StringBuilder sb = new StringBuilder();
+
+            foreach (string key in obj.Keys)
+            {
+                sb.Append(key + ": " + WriteObject(obj[key], 0) + ",\n");
+            }
+
+            return sb.ToString();
         }
 
         /// <summary>
@@ -137,14 +145,14 @@ namespace SKON
                 case ValueType.INTEGER:
                     return obj.Int.ToString();
                 case ValueType.DOUBLE:
-                    return obj.Double.ToString();
+                    return obj.Double.ToString().Replace(',', '.');
                 case ValueType.BOOLEAN:
                     return obj.Boolean.ToString();
                 case ValueType.DATETIME:
-                    return obj.DateTime.ToString();
+                    return (obj.DateTime ?? default(DateTime)).ToString("yyyy-MM-ddThh:mm:ss.fffzzz");
                 case ValueType.MAP:
                     StringBuilder mapsb = new StringBuilder();
-
+                    
                     mapsb.Append(indentString + "{\n");
 
                     foreach (string key in obj.Keys)
