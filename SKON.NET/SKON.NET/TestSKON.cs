@@ -60,10 +60,10 @@ namespace SKON
                     "ExampleBoolean", true
                 },
                 {
-                    "ExampleDateTime", new DateTime(296638320L * 10)
+                    "ExampleDateTime", Internal.Parser.UnixTimeStampToDateTime(296638320L)
                 },
                 {
-                    "ExampleArray", new SKONObject(new List<SKONObject>
+                    "ExampleArray", new[]
                     {
                         "This",
                         "is",
@@ -71,13 +71,13 @@ namespace SKON
                         "array",
                         "of",
                         "strings"
-                    })
+                    }
                 },
                 {
                     "ExampleMap", new SKONObject(new Dictionary<string, SKONObject>
                     {
                         {
-                            "ThisIsAkey", "To a string value"
+                            "ThisIsAKey", "To a string value"
                         },
                         {
                             "ThisIsAnotherKey", 1
@@ -136,21 +136,21 @@ namespace SKON
                 {
                     "ArrayOfArrayOfStrings", new SKONObject(new List<SKONObject>
                     {
-                        new SKONObject(new List<SKONObject>
+                        new[]
                         {
                             "Index: 0_0",
                             "Index: 0_1"
-                        }),
-                        new SKONObject(new List<SKONObject>
+                        },
+                        new[]
                         {
                             "Index: 1_0",
                             "Index: 1_1"
-                        }),
-                        new SKONObject(new List<SKONObject>
+                        },
+                        new[]
                         {
                             "Index: 2_0",
                             "Index: 2_1"
-                        })
+                        }
                     })
                 }
             });
