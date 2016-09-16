@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SKON.NET")]
+[assembly: AssemblyTitle("SKONTest")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("SpaceKrakens")]
-[assembly: AssemblyProduct("SKON.NET")]
+[assembly: AssemblyProduct("SKONTest")]
 [assembly: AssemblyCopyright("Copyright © SpaceKrakens 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("fcdcfe5b-fb69-46e9-b027-03df14f11b4c")]
+[assembly: Guid("a1347973-1fc7-4c52-9711-11ffea0df184")]
 
 // Version information for an assembly consists of the following four values:
 //
