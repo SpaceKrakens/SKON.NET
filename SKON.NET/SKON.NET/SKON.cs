@@ -10,10 +10,11 @@
 
 namespace SKON
 {
+    using System;
     using System.IO;
     using System.Text;
+
     using Internal;
-    using System;
 
     /// <summary>
     /// TODO: Add documentation.
