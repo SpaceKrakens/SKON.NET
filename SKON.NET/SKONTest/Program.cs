@@ -1,17 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using System.IO;
-using SKON;
+﻿#region LICENSE
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Program.cs" company="SpaceKrakens">
+//   MIT License
+//   Copyright (c) 2016 SpaceKrakens
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
 
 namespace SKONTest
 {
-    class Program
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using SKON;
+
+    /// <summary>
+    /// Test program for SKON
+    /// </summary>
+    public class Program
     {
-        static void Main(string[] args)
+        /// <summary>
+        /// The main method
+        /// </summary>
+        /// <param name="args">The program arguments</param>
+        public static void Main(string[] args)
         {
             string defaultPath = "./SKONTest.skon";
 
@@ -28,13 +44,13 @@ namespace SKONTest
 
             sw.Start();
 
-            SKONObject data = SKON.SKON.LoadFile(filePath);
+            SKONObject data = SKON.LoadFile(filePath);
 
             sw.Stop();
 
             Console.WriteLine("Successfully parsed file in {0}ms", sw.ElapsedMilliseconds);
 
-            Console.WriteLine(SKON.SKON.Write(data));
+            Console.WriteLine(SKON.Write(data));
 
             Console.ReadKey();
         }

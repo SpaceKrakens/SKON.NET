@@ -113,7 +113,7 @@ namespace SKON
 
                     foreach (string key in obj.Keys)
                     {
-                        mapsb.Append(indentString + $"{key}: {WriteObject(obj[key], indent)},\n");
+                        mapsb.Append(indentString + $"{key}: {WriteObject(obj[key], indent + 1)},\n");
                     }
 
                     mapsb.Append(indentString + "}");

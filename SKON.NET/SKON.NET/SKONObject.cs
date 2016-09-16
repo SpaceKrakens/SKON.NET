@@ -316,7 +316,7 @@ namespace SKON
                     throw new ArgumentOutOfRangeException(nameof(i), i, "The given index was out of bounds!");
                 }
 
-                if (Type == ValueType.ARRAY)
+                if (this.Type == ValueType.ARRAY)
                 {
                     this.arrayValues[i] = value;
                 }
@@ -346,7 +346,7 @@ namespace SKON
 
             set
             {
-                if (Type == ValueType.MAP)
+                if (this.Type == ValueType.MAP)
                 {
                     this.mapValues[key] = value;
                 }
