@@ -33,6 +33,8 @@ namespace SpeedComparison
 
             Console.WriteLine("Normalized mean: {0}ms", skonNMean);
 
+            Console.WriteLine();
+
             Console.WriteLine("=== JSON Tests ====");
 
             var definition = new {
@@ -73,10 +75,14 @@ namespace SpeedComparison
             double jsonNMean = Clock.BenchmarkCpu(() => { JsonConvert.DeserializeAnonymousType(json, definition); });
             
             Console.WriteLine("Normalized mean: {0}ms", jsonNMean);
+            
+            Console.WriteLine();
+            
+            Console.WriteLine("SKON: {0:F3}, JSON: {1:F3}", skonNMean, jsonNMean);
 
             Console.WriteLine();
 
-            double ratio = skonNMean / jsonNMean;
+            double ratio = (skonNMean > jsonNMean) ? skonNMean / jsonNMean : jsonNMean / skonNMean;
             
             Console.WriteLine("Skon is " + (ratio.ToString("F3")) + "x " + ((skonNMean < jsonNMean) ? "faster" : (skonNMean == jsonNMean) ? "equal" : "slower") + " than json at this time!");
             

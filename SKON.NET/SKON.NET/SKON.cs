@@ -33,11 +33,12 @@ namespace SKON
         /// Gets or sets a value indicating whether to use tabs.
         /// </summary>
         private static bool UseTabs { get; set; }
-        
+
         /// <summary>
         /// Loads a text file as a SKON Map.
         /// </summary>
         /// <param name="path">Full FilePath to the SKON text file.</param>
+        /// <param name="errorStream">The TextWriter to write error messages to.</param>
         /// <returns>The root map containing all SKONObjects.</returns>
         public static SKONObject LoadFile(string path, TextWriter errorStream = null)
         {
@@ -62,9 +63,10 @@ namespace SKON
         }
 
         /// <summary>
-        /// 
+        /// Parses a skon string to a SKONObject.
         /// </summary>
-        /// <param name="skon"></param>
+        /// <param name="skon">The skon data string.</param>
+        /// <param name="errorStream">The TextWriter to write error messages to.</param>
         /// <returns></returns>
         public static SKONObject Parse(string skon, TextWriter errorStream = null)
         {
