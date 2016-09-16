@@ -322,7 +322,7 @@ namespace SKON
                 }
                 catch (NullReferenceException nre)
                 {
-                    throw new NullReferenceException("This SKONObject is not an array, so setting a value at this index is impossible.", nre);
+                    throw new NullReferenceException(string.Format("This SKONObject is not an array, so setting value {0} at index {1} is impossible.", value, i), nre);
                 }
             }
         }
@@ -429,6 +429,18 @@ namespace SKON
             return new SKONObject(dt);
         }
 
+        public void Add(SKONObject value)
+        {
+            try
+            {
+                this.arrayValues.Add(value);
+            }
+            catch (NullReferenceException nre)
+            {
+                throw new NullReferenceException(string.Format("This SKONObject is not an array, so adding value {0} to it is impossible.", value), nre);
+            }
+        }
+
         /// <summary>
         /// Checks to see if this SKONObject contains the key.
         /// </summary>
@@ -439,7 +451,7 @@ namespace SKON
         /// True, if it exists, false if not or not a map.
         /// </returns>
         public bool ContainsKey(string key)
-        {
+        { 
             return this.mapValues?.ContainsKey(key) ?? false;
         }
 
