@@ -322,7 +322,7 @@ namespace SKON
                 }
                 catch (NullReferenceException nre)
                 {
-                    throw new NullReferenceException("This SKONObject is not an array, so setting a value at this index is impossible.", nre);
+                    throw new NullReferenceException(string.Format("This SKONObject is not an array, so setting value {0} at index {1} is impossible.", value, i), nre);
                 }
             }
         }
@@ -427,6 +427,26 @@ namespace SKON
         public static implicit operator SKONObject(DateTime dt)
         {
             return new SKONObject(dt);
+        }
+
+        /// <summary>
+        /// Adds a SKONObject to the Array.
+        /// </summary>
+        /// <param name="value">
+        /// The value to add.
+        /// </param>
+        /// <returns>
+        /// True if it succeeds, false if there is no array.
+        /// </returns>
+        public bool Add(SKONObject value)
+        {
+            if (this.arrayValues == null)
+            {
+                return false;
+            }
+
+            this.arrayValues.Add(value);
+            return true;
         }
 
         /// <summary>
