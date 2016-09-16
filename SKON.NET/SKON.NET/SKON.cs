@@ -63,11 +63,11 @@ namespace SKON
         }
 
         /// <summary>
-        /// Parses a skon string to a SKONObject.
+        /// Parses a SKON string to a SKONObject.
         /// </summary>
-        /// <param name="skon">The skon data string.</param>
+        /// <param name="skon">The SKON data string.</param>
         /// <param name="errorStream">The TextWriter to write error messages to.</param>
-        /// <returns></returns>
+        /// <returns>The newly created SKONObject.</returns>
         public static SKONObject Parse(string skon, TextWriter errorStream = null)
         {
             Scanner sc = new Scanner(GenerateStreamFromString(skon));
@@ -84,16 +84,6 @@ namespace SKON
         }
 
         /// <summary>
-        /// Generates a UTF8 stream from a string.
-        /// </summary>
-        /// <param name="value">The string to convert</param>
-        /// <returns>The UTF8 stream</returns>
-        private static MemoryStream GenerateStreamFromString(string value)
-        {
-            return new MemoryStream(Encoding.UTF8.GetBytes(value ?? ""));
-        }
-
-        /// <summary>
         /// Writes a SKONObject.
         /// </summary>
         /// <param name="obj">
@@ -105,6 +95,16 @@ namespace SKON
         public static string Write(SKONObject obj)
         {
             return WriteObject(obj, 0);
+        }
+
+        /// <summary>
+        /// Generates a UTF8 stream from a string.
+        /// </summary>
+        /// <param name="value">The string to convert</param>
+        /// <returns>The UTF8 stream</returns>
+        private static MemoryStream GenerateStreamFromString(string value)
+        {
+            return new MemoryStream(Encoding.UTF8.GetBytes(value ?? string.Empty));
         }
 
         /// <summary>
