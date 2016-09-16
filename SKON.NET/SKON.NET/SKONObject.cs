@@ -459,7 +459,7 @@ namespace SKON
         /// True, if it exists, false if not or not a map.
         /// </returns>
         public bool ContainsKey(string key)
-        { 
+        {
             return this.mapValues?.ContainsKey(key) ?? false;
         }
 
