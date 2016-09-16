@@ -12,7 +12,6 @@ namespace SKON
 {
     using System.IO;
     using System.Text;
-
     using Internal;
 
     /// <summary>
@@ -34,19 +33,24 @@ namespace SKON
         /// Gets or sets a value indicating whether to use tabs.
         /// </summary>
         private static bool UseTabs { get; set; }
-
+        
         /// <summary>
         /// Loads a text file as a SKON Map.
         /// </summary>
         /// <param name="path">Full FilePath to the SKON text file.</param>
         /// <returns>The root map containing all SKONObjects.</returns>
-        public static SKONObject LoadFile(string path)
+        public static SKONObject LoadFile(string path, TextWriter errorStream = null)
         {
             if (File.Exists(path))
             {
                 Scanner sc = new Scanner(path);
                 Parser parser = new Parser(sc);
 
+                if (errorStream != null)
+                {
+                    parser.errors.errorStream = errorStream;
+                }
+                
                 parser.Parse();
 
                 return parser.data;
@@ -55,6 +59,36 @@ namespace SKON
             {
                 throw new FileNotFoundException("File not found!", path);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="skon"></param>
+        /// <returns></returns>
+        public static SKONObject Parse(string skon, TextWriter errorStream = null)
+        {
+            Scanner sc = new Scanner(GenerateStreamFromString(skon));
+            Parser parser = new Parser(sc);
+
+            if (errorStream != null)
+            {
+                parser.errors.errorStream = errorStream;
+            }
+            
+            parser.Parse();
+
+            return parser.data;
+        }
+
+        /// <summary>
+        /// Generates a UTF8 stream from a string.
+        /// </summary>
+        /// <param name="value">The string to convert</param>
+        /// <returns>The UTF8 stream</returns>
+        private static MemoryStream GenerateStreamFromString(string value)
+        {
+            return new MemoryStream(Encoding.UTF8.GetBytes(value ?? ""));
         }
 
         /// <summary>

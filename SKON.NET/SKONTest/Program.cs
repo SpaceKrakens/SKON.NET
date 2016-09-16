@@ -44,11 +44,13 @@ namespace SKONTest
 
             sw.Start();
 
-            SKONObject data = SKON.LoadFile(filePath);
+            SKONObject data = SKON.LoadFile(filePath, Console.Out);
 
             sw.Stop();
 
-            Console.WriteLine("Successfully parsed file in {0}ms", sw.ElapsedMilliseconds);
+            Console.WriteLine("Successfully parsed file in {0}ms!", sw.ElapsedMilliseconds);
+
+            Console.WriteLine();
 
             Console.WriteLine(SKON.Write(data));
 

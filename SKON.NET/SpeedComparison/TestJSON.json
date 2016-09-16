@@ -1,0 +1,58 @@
+{
+    "Version": "0.0.1",
+
+    "VersionName": "Octopus",
+
+    "Author": {
+        "FirstName": "Julius",
+        "LastName": "Häger",
+        "Nickname": "Noggin_Bops",
+        "Email": "Julius_hager@hotmail.com"
+    },
+
+    "ExampleString": "This is a string",
+
+    "ExampleInteger": 10,
+
+    "ExampleDouble": 10.4,
+
+    "ExampleBoolean": true,
+
+    "ExampleDatetime": "@296638320",
+
+    "ExampleArray": [ "This", "is", "an", "array", "of", "strings" ],
+
+    "ExampleMap": {
+        "ThisIsAKey": "To a string value",
+
+        "ThisIsAnotherKey": 1
+    },
+
+    "ArrayOfMaps": [
+        {
+            "Key": "Value"
+        },
+        {
+            "Key": "AnotherValue"
+        },
+        {
+            "AnotherKey": "YetAnotherValue"
+        }
+    ],
+
+    "MapOfAllDataTypes": {
+        "String": "String type",
+        "Integer": 1,
+        "Double": 0.3,
+        "Boolean": true,
+        "Datetime": "2016-09-11",
+        "Array": [],
+        "Map": {}
+    },
+
+    "ArrayOfArrayOfStrings": [
+        [ "Index: 0_0", "Index: 0_1" ],
+        [ "Index: 1_0", "Index: 1_1" ],
+        [ "Index: 2_0", "Index: 2_1" ]
+    ]
+}
