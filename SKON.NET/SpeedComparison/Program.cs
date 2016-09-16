@@ -8,7 +8,6 @@ namespace SpeedComparison
     using Newtonsoft.Json;
 
     using SKON;
-    using SKON.NET;
 
     class Program
     {
