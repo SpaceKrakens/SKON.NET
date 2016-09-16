@@ -55,7 +55,7 @@ public SKONObject data;
     {
         if (value[0] == '@')
         {
-            return new DateTime(int.Parse(value.Substring(1)));
+            return UnixTimeStampToDateTime(long.Parse(value.Substring(1)));
         }else
         {
             DateTime dateTime;
@@ -70,6 +70,14 @@ public SKONObject data;
             }
         }
     }
+
+	public static DateTime UnixTimeStampToDateTime( double unixTimeStamp )
+	{
+		// Unix timestamp is seconds past epoch
+		System.DateTime dtDateTime = new DateTime(1970,1,1,0,0,0,0,System.DateTimeKind.Utc);
+		dtDateTime = dtDateTime.AddSeconds( unixTimeStamp ).ToLocalTime();
+		return dtDateTime;
+	}
 
 	// Return the n-th token after the current lookahead token
 	Token Peek (int n) {
