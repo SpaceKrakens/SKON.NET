@@ -37,6 +37,11 @@ namespace SKON
         private static bool UseTabs { get; set; }
 
         /// <summary>
+        /// The indent string.
+        /// </summary>
+        private static string IndentString => UseTabs ? IndentTab : IndentSpaces;
+
+        /// <summary>
         /// Loads a text file as a SKON Map.
         /// </summary>
         /// <param name="path">Full FilePath to the SKON text file.</param>
@@ -117,7 +122,7 @@ namespace SKON
         }
 
         /// <summary>
-        /// Writes a SKONObject with indentation.
+        /// Writes a SKONObject value.
         /// </summary>
         /// <param name="obj">
         /// The object to write.
@@ -134,7 +139,7 @@ namespace SKON
 
             for (int i = 0; i < indent; i++)
             {
-                indentString += UseTabs ? IndentTab : IndentSpaces;
+                indentString += IndentString;
             }
 
             switch (obj.Type)
@@ -154,11 +159,11 @@ namespace SKON
                 case ValueType.MAP:
                     StringBuilder mapsb = new StringBuilder();
                     
-                    mapsb.Append(indentString + "{\n");
+                    mapsb.Append('\n' + indentString + "{\n");
 
                     foreach (string key in obj.Keys)
                     {
-                        mapsb.Append(indentString + $"{key}: {WriteObject(obj[key], indent + 1)},\n");
+                        mapsb.Append(indentString + IndentString + $"{key}: {WriteObject(obj[key], indent + 1)},\n");
                     }
 
                     mapsb.Append(indentString + "}");
@@ -167,14 +172,14 @@ namespace SKON
                 case ValueType.ARRAY:
                     StringBuilder arraysb = new StringBuilder();
 
-                    arraysb.Append(indentString + "[\n");
+                    arraysb.Append('\n' + indentString + "[\n");
 
                     for (int i = 0; i < obj.Length; i++)
                     {
-                        arraysb.Append(indentString + $"{WriteObject(obj[i], indent + 1)},\n");
+                        arraysb.Append(indentString + IndentString + $"{WriteObject(obj[i], indent + 1)},\n");
                     }
 
-                    arraysb.Append(indentString + "]\n");
+                    arraysb.Append(indentString + "]");
 
                     return arraysb.ToString();
                 default:
