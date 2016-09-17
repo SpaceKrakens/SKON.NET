@@ -309,7 +309,7 @@ public class Scanner {
 		if (ch == '/') {
 			NextCh();
 			for(;;) {
-				if (ch == 13) {
+				if (ch == EOL) {
 					level--;
 					if (level == 0) { oldEols = line - line0; NextCh(); return true; }
 					NextCh();
