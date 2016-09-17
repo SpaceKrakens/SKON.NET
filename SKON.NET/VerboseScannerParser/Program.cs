@@ -43,6 +43,18 @@ namespace VerboseScannerParser
 
             Console.WriteLine("Found file {0}", path);
 
+            Console.WriteLine("============================================");
+
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+
+            Console.WriteLine(File.ReadAllText(path));
+
+            Console.ForegroundColor = ConsoleColor.Gray;
+
+            Console.WriteLine("============================================");
+
+            Console.WriteLine();
+
             Console.WriteLine("Creating scanner from file...");
             Scanner sc = new Scanner(path);
             
