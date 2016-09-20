@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="SKONObject.cs" company="SpaceKrakens">
 //     MIT Licence
 //     Copyright (C) 2016 SpaceKrakens
@@ -192,22 +192,10 @@ namespace SKON
         /// <summary>
         /// Gets the collection of string keys, if this SKONObject is a Map, or an empty ICollection, if it isn't.
         /// </summary>
-        public ICollection<string> Keys
-        {
-            get
-            {
-                if(this.mapValues != null)
-                {
-                    return this.mapValues.Keys;
-                }else
-                {
-                    return new List<string>();
-                }
-            }
-        }
+        public ICollection<string> Keys => (ICollection<string>)this.mapValues?.Keys ?? new List<string>();
 
         /// <summary>
-        /// Gets the length of the array, should this SKONObject be one, or null, if it isn't.
+        /// Gets the length of the array, should this SKONObject be one, or negative 1, if it isn't.
         /// </summary>
         public int Length => this.arrayValues?.Count ?? -1;
 
