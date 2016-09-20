@@ -158,7 +158,13 @@ namespace SKON
                     return (obj.DateTime ?? default(DateTime)).ToString("yyyy-MM-ddThh:mm:ss.fffzzz");
                 case ValueType.MAP:
                     StringBuilder mapsb = new StringBuilder();
-                    
+
+                    if (obj.Keys.Count <= 0)
+                    {
+                        mapsb.Append("{  }");
+                        return mapsb.ToString();
+                    }
+
                     mapsb.Append('\n' + indentString + "{\n");
 
                     foreach (string key in obj.Keys)
@@ -171,6 +177,12 @@ namespace SKON
                     return mapsb.ToString();
                 case ValueType.ARRAY:
                     StringBuilder arraysb = new StringBuilder();
+
+                    if (obj.Length <= 0)
+                    {
+                        arraysb.Append("[  ]");
+                        return arraysb.ToString();
+                    }
 
                     arraysb.Append('\n' + indentString + "[\n");
 
