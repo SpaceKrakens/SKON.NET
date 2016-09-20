@@ -190,9 +190,21 @@ namespace SKON
         public bool IsEmpty => this.Type == ValueType.EMPTY;
 
         /// <summary>
-        /// Gets the collection of string keys, if this SKONObject is a Map, or null, if it isn't.
+        /// Gets the collection of string keys, if this SKONObject is a Map, or an empty ICollection, if it isn't.
         /// </summary>
-        public ICollection<string> Keys => this.mapValues?.Keys;
+        public ICollection<string> Keys
+        {
+            get
+            {
+                if(this.mapValues != null)
+                {
+                    return this.mapValues.Keys;
+                }else
+                {
+                    return new List<string>();
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the length of the array, should this SKONObject be one, or null, if it isn't.
