@@ -54,6 +54,8 @@ namespace SKONTest
 
             Console.WriteLine(SKON.Write(data));
 
+            SKON.WriteToFile("./ResultSKON.skon", data);
+
             Console.ReadKey();
         }
     }
