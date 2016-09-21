@@ -1,4 +1,4 @@
-﻿#region LICENSE
+#region LICENSE
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="SKON.cs" company="SpaceKrakens">
@@ -17,9 +17,9 @@ namespace SKON
     using Internal;
 
     /// <summary>
-    /// TODO: Add documentation.
+    /// Central class for all SKON related functions.
     /// </summary> 
-    public class SKON
+    public static class SKON
     {
         /// <summary>
         /// The indent spaces.
@@ -91,11 +91,11 @@ namespace SKON
         }
 
         /// <summary>
-        /// 
+        /// Writes a SKONObject Map to a file.
         /// </summary>
-        /// <param name="filepath"></param>
-        /// <param name="obj"></param>
-        /// <param name="force"></param>
+        /// <param name="filepath">The path to the file to write to.</param>
+        /// <param name="obj">The SKONObject to turn into a string and write to a file.</param>
+        /// <param name="force">TODO: Doesn't do anything yet.</param>
         public static void WriteToFile(string filepath, SKONObject obj, bool force = false)
         {
             if (obj.Type != ValueType.MAP)
@@ -109,12 +109,8 @@ namespace SKON
         /// <summary>
         /// Writes a SKONObject.
         /// </summary>
-        /// <param name="obj">
-        /// The object to write.
-        /// </param>
-        /// <returns>
-        /// A string to write into a file.
-        /// </returns>
+        /// <param name="obj">The object to write.</param>
+        /// <returns>A string to write into a file.</returns>
         public static string Write(SKONObject obj)
         {
             StringBuilder sb = new StringBuilder();
@@ -140,15 +136,9 @@ namespace SKON
         /// <summary>
         /// Writes a SKONObject value.
         /// </summary>
-        /// <param name="obj">
-        /// The object to write.
-        /// </param>
-        /// <param name="indent">
-        /// The amount of indentation.
-        /// </param>
-        /// <returns>
-        /// A string to write into a file.
-        /// </returns>
+        /// <param name="obj">The object to write.</param>
+        /// <param name="indent">The amount of indentation.</param>
+        /// <returns>A string to write into a file.</returns>
         private static string WriteObject(SKONObject obj, int indent)
         {
             string indentString = string.Empty;
