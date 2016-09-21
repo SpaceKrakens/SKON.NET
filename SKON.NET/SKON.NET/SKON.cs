@@ -95,8 +95,7 @@ namespace SKON
         /// </summary>
         /// <param name="filepath">The path to the file to write to.</param>
         /// <param name="obj">The SKONObject to turn into a string and write to a file.</param>
-        /// <param name="force">TODO: Doesn't do anything yet.</param>
-        public static void WriteToFile(string filepath, SKONObject obj, bool force = false)
+        public static void WriteToFile(string filepath, SKONObject obj)
         {
             if (obj.Type != ValueType.MAP)
             {
