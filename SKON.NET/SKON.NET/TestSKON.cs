@@ -22,7 +22,7 @@ namespace SKON
         /// <summary>
         /// Gets the official test SKON object.
         /// </summary>
-        public static SKONObject TestSKONObject { get; } = new SKONObject(new Dictionary<string, SKONObject>
+        public static SKONObject TestSKONObject => new SKONObject(new Dictionary<string, SKONObject>
             {
                 {
                     "Version", "0.0.1"

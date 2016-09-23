@@ -91,7 +91,7 @@ namespace SKON
         }
 
         /// <summary>
-        /// Writes a SKONObject Map to a file.
+        /// Writes a SKONObject to a file. This will overwrite the current content of the file.
         /// </summary>
         /// <param name="filepath">The path to the file to write to.</param>
         /// <param name="obj">The SKONObject to turn into a string and write to a file.</param>

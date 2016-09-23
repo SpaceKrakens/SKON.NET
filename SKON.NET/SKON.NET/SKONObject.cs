@@ -9,7 +9,6 @@ namespace SKON
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Reflection;
 
     /// <summary>
