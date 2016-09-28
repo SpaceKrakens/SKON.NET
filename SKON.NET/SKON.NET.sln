@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeedComparison", "SpeedCom
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VerboseScannerParser", "VerboseScannerParser\VerboseScannerParser.csproj", "{28D93482-B1D0-4762-B10B-B99E357817A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{3DF8DBA5-BDE0-4580-9FA2-E4CFB901219E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{28D93482-B1D0-4762-B10B-B99E357817A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28D93482-B1D0-4762-B10B-B99E357817A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28D93482-B1D0-4762-B10B-B99E357817A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DF8DBA5-BDE0-4580-9FA2-E4CFB901219E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DF8DBA5-BDE0-4580-9FA2-E4CFB901219E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DF8DBA5-BDE0-4580-9FA2-E4CFB901219E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DF8DBA5-BDE0-4580-9FA2-E4CFB901219E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
