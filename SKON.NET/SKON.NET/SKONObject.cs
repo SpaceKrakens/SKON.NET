@@ -9,7 +9,6 @@ namespace SKON
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Reflection;
 
     /// <summary>
@@ -276,16 +275,7 @@ namespace SKON
         /// <summary>
         /// Gets the values of the SKONObject array.
         /// </summary>
-        public IEnumerable<SKONObject> Values
-        {
-            get
-            {
-                for (int i = 0; i < this.arrayValues?.Count; i++)
-                {
-                    yield return this.arrayValues?[i];
-                }
-            }
-        }
+        public ICollection<SKONObject> Values => this.arrayValues ?? new List<SKONObject>();
 
         /// <summary>
         /// Gets an empty SKONObject.

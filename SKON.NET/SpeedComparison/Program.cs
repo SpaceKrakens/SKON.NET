@@ -13,19 +13,13 @@ namespace SpeedComparison
     {
         static void Main(string[] args)
         {
-            string skonPath = "./TestSKON.skon";
+            string skonPath = "./SKONTest.skon";
 
             string jsonPath = "./TestJSON.json";
 
             string skon = File.ReadAllText(skonPath);
 
             string json = File.ReadAllText(jsonPath);
-
-            int tests = 100;
-
-            long[] skonTimes = new long[tests];
-
-            long[] jsonTimes = new long[tests];
             
             Console.WriteLine("=== SKON Tests ===");
 

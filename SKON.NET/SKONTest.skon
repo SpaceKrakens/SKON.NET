@@ -32,7 +32,7 @@ ExampleBoolean: true,
 
 ExampleDatetime: @296638320,
 
-ExampleArray: [ "This", "is", "an", "array", "of", "strings" ],
+ExampleArray: [ "This", "is", "an", "array", "of", "strings", ],
 
 ExampleMap: {
     ThisIsAKey: "To a string value",
@@ -45,13 +45,13 @@ ExampleMap: {
 //Here is an array of maps
 ArrayOfMaps: [
     {
-        Key: "Value"
+        Key: "Value",
     },
     {
-        Key: "AnotherValue"
+        Key: "AnotherValue",
     },
     {
-        AnotherKey: "YetAnotherValue"
+        AnotherKey: "YetAnotherValue",
     },
 ],
 
@@ -61,7 +61,7 @@ MapOfAllDataTypes: {
     Integer: 1,
     Float: 0.3,
     Boolean: true,
-    Datetime: 2016-09-11,
+    Datetime: @2016-09-11,
     Array: [], //This is an empty array, the datatype is not specified.
     Map: {}, //This is an empty map.
 },
@@ -70,8 +70,8 @@ MapOfAllDataTypes: {
 
 //This is an array of string arrays
 ArrayOfArrayOfStrings: [
-    [ "Index: 0_0", "Index: 0_1" ],
-    [ "Index: 1_0", "Index: 1_1" ],
-    [ "Index: 2_0", "Index: 2_1" ],
+    [ "Index: 0_0", "Index: 0_1", ],
+    [ "Index: 1_0", "Index: 1_1", ],
+    [ "Index: 2_0", "Index: 2_1", ],
 ],
 
