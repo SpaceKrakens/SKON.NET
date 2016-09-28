@@ -99,7 +99,7 @@ TOKENS
 
 
 COMMENTS FROM "/*" TO "*/" NESTED
-COMMENTS FROM "//" TO eol
+COMMENTS FROM "//" TO lf
 
 IGNORE ' ' + '\r' + '\t' + '\n'
 
