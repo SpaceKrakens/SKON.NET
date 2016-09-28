@@ -20,12 +20,6 @@ namespace SpeedComparison
             string skon = File.ReadAllText(skonPath);
 
             string json = File.ReadAllText(jsonPath);
-
-            int tests = 100;
-
-            long[] skonTimes = new long[tests];
-
-            long[] jsonTimes = new long[tests];
             
             Console.WriteLine("=== SKON Tests ===");
 
