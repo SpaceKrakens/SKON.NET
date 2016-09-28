@@ -11,19 +11,20 @@ namespace SKON.Internal {
 
 public class Parser {
 	public const int _EOF = 0;
-	public const int _colon = 1;
-	public const int _comma = 2;
-	public const int _lbrace = 3;
-	public const int _rbrace = 4;
-	public const int _lbracket = 5;
-	public const int _rbracket = 6;
-	public const int _ident = 7;
-	public const int _string_ = 8;
-	public const int _badString = 9;
-	public const int _integer_ = 10;
-	public const int _double_ = 11;
-	public const int _datetime_ = 12;
-	public const int maxT = 16;
+	public const int _tilda = 1;
+	public const int _colon = 2;
+	public const int _comma = 3;
+	public const int _lbrace = 4;
+	public const int _rbrace = 5;
+	public const int _lbracket = 6;
+	public const int _rbracket = 7;
+	public const int _ident = 8;
+	public const int _string_ = 9;
+	public const int _badString = 10;
+	public const int _integer_ = 11;
+	public const int _double_ = 12;
+	public const int _datetime_ = 13;
+	public const int maxT = 17;
 
 	const bool _T = true;
 	const bool _x = false;
@@ -36,7 +37,9 @@ public class Parser {
 	public Token la;   // lookahead token
 	int errDist = minErrDist;
 
-public SKONObject data;
+public SKONObject metadata;
+
+    public SKONObject data;
 
 	private string[] dateTimeFormats = {
         "yyyy-MM-dd",
@@ -52,21 +55,17 @@ public SKONObject data;
 
     private DateTime ParseDatetime(string value)
     {
-        if (value[0] == '@')
-        {
-            return UnixTimeStampToDateTime(long.Parse(value.Substring(1)));
-        }else
-        {
-            DateTime dateTime;
+		value = value.Substring(1);
 
-            if (DateTime.TryParseExact(value, dateTimeFormats, null, DateTimeStyles.None, out dateTime))
-            {
-                return dateTime;
-            }
-            else
-            {
-                throw new FormatException("Could not parse " + value + "as a datetime!");
-            }
+        DateTime dateTime;
+
+        if (DateTime.TryParseExact(value, dateTimeFormats, null, DateTimeStyles.None, out dateTime))
+        {
+            return dateTime;
+        }
+        else
+        {
+            return UnixTimeStampToDateTime(long.Parse(value));
         }
     }
 
@@ -154,138 +153,122 @@ public SKONObject data;
 
 	
 	void SKON() {
-		Dictionary<string, SKONObject> mapElements;
-		string key; SKONObject value;
-		mapElements = new Dictionary<string, SKONObject>();
-		
-		if (la.kind == 7) {
+		Dictionary<string, SKONObject> metadataElements = new Dictionary<string, SKONObject>();
+		Dictionary<string, SKONObject> mapElements = new Dictionary<string, SKONObject>();
+		string key; SKONObject value; 
+		while (la.kind == 1) {
+			meta_data(out key, out value);
+		}
+		this.metadata = new SKONObject(metadataElements); 
+		open_map(out mapElements);
+		this.data = new SKONObject(mapElements); 
+	}
+
+	void meta_data(out string key, out SKONObject obj) {
+		Expect(1);
+		map_element(out key, out obj);
+		Expect(1);
+	}
+
+	void open_map(out Dictionary<string, SKONObject> mapElements ) {
+		string key; SKONObject value; mapElements = new Dictionary<string, SKONObject>(); 
+		while (la.kind == 8) {
 			map_element(out key, out value);
 			mapElements[key] = value; 
-			while (NotFinalComma()) {
-				Expect(2);
-				map_element(out key, out value);
-				mapElements[key] = value; 
-			}
-			if (la.kind == 2) {
-				Get();
-			}
+			Expect(3);
 		}
-		this.data = new SKONObject(mapElements); 
 	}
 
 	void map_element(out string key, out SKONObject obj) {
 		string name; SKONObject skonObject; 
 		Ident(out name);
 		key = name; 
-		Expect(1);
+		Expect(2);
 		value(out skonObject);
 		obj = skonObject; 
 	}
 
 	void skon_map(out SKONObject map) {
 		Dictionary<string, SKONObject> mapElements; 
-		Expect(3);
+		Expect(4);
 		open_map(out mapElements);
 		map = new SKONObject(mapElements); 
-		Expect(4);
-	}
-
-	void open_map(out Dictionary<string, SKONObject> mapElements ) {
-		string key; SKONObject value; mapElements = new Dictionary<string, SKONObject>(); 
-		if (la.kind == 7) {
-			map_element(out key, out value);
-			mapElements[key] = value; 
-			while (NotFinalComma()) {
-				Expect(2);
-				map_element(out key, out value);
-				mapElements[key] = value; 
-			}
-			if (la.kind == 2) {
-				Get();
-			}
-		}
+		Expect(5);
 	}
 
 	void skon_array(out SKONObject array) {
 		List<SKONObject> arrayElements; 
-		Expect(5);
+		Expect(6);
 		open_array(out arrayElements);
 		array = new SKONObject(arrayElements); 
-		Expect(6);
+		Expect(7);
 	}
 
 	void open_array(out List<SKONObject> arrayElements ) {
 		SKONObject skonObject; arrayElements = new List<SKONObject>(); 
-		if (StartOf(1)) {
+		while (StartOf(1)) {
 			value(out skonObject);
 			arrayElements.Add(skonObject); 
-			while (NotFinalComma()) {
-				Expect(2);
-				value(out skonObject);
-				arrayElements.Add(skonObject); 
-			}
-			if (la.kind == 2) {
-				Get();
-			}
+			Expect(3);
 		}
 	}
 
 	void Ident(out string name) {
-		Expect(7);
+		Expect(8);
 		name = t.val; 
 	}
 
 	void value(out SKONObject skonObject) {
 		skonObject = null; 
 		switch (la.kind) {
-		case 8: {
+		case 9: {
 			Get();
 			skonObject = new SKONObject(t.val.Substring(1, t.val.Length - 2)); 
 			break;
 		}
-		case 10: {
+		case 11: {
 			Get();
 			skonObject = new SKONObject(int.Parse(t.val)); 
 			break;
 		}
-		case 11: {
+		case 12: {
 			Get();
 			skonObject = new SKONObject(double.Parse(t.val, CultureInfo.InvariantCulture)); 
 			break;
 		}
-		case 12: {
+		case 13: {
 			Get();
 			skonObject = new SKONObject(ParseDatetime(t.val)); 
 			break;
 		}
-		case 3: {
+		case 4: {
 			SKONObject map; 
 			skon_map(out map);
 			skonObject = map; 
 			break;
 		}
-		case 5: {
+		case 6: {
 			SKONObject array; 
 			skon_array(out array);
 			skonObject = array; 
 			break;
 		}
-		case 13: {
+		case 14: {
 			Get();
 			skonObject = new SKONObject(true); 
 			break;
 		}
-		case 14: {
+		case 15: {
 			Get();
 			skonObject = new SKONObject(false); 
 			break;
 		}
-		case 15: {
+		case 16: {
 			Get();
 			skonObject = new SKONObject(); 
 			break;
 		}
-		default: SynErr(17); break;
+		default: SynErr(18); break;
 		}
 	}
 
@@ -301,8 +284,8 @@ public SKONObject data;
 	}
 	
 	static readonly bool[,] set = {
-		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x},
-		{_x,_x,_x,_T, _x,_T,_x,_x, _T,_x,_T,_T, _T,_T,_T,_T, _x,_x}
+		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
+		{_x,_x,_x,_x, _T,_x,_T,_x, _x,_T,_x,_T, _T,_T,_T,_T, _T,_x,_x}
 
 	};
 } // end Parser
@@ -317,23 +300,24 @@ public class Errors {
 		string s;
 		switch (n) {
 			case 0: s = "EOF expected"; break;
-			case 1: s = "colon expected"; break;
-			case 2: s = "comma expected"; break;
-			case 3: s = "lbrace expected"; break;
-			case 4: s = "rbrace expected"; break;
-			case 5: s = "lbracket expected"; break;
-			case 6: s = "rbracket expected"; break;
-			case 7: s = "ident expected"; break;
-			case 8: s = "string_ expected"; break;
-			case 9: s = "badString expected"; break;
-			case 10: s = "integer_ expected"; break;
-			case 11: s = "double_ expected"; break;
-			case 12: s = "datetime_ expected"; break;
-			case 13: s = "\"true\" expected"; break;
-			case 14: s = "\"false\" expected"; break;
-			case 15: s = "\"null\" expected"; break;
-			case 16: s = "??? expected"; break;
-			case 17: s = "invalid value"; break;
+			case 1: s = "tilda expected"; break;
+			case 2: s = "colon expected"; break;
+			case 3: s = "comma expected"; break;
+			case 4: s = "lbrace expected"; break;
+			case 5: s = "rbrace expected"; break;
+			case 6: s = "lbracket expected"; break;
+			case 7: s = "rbracket expected"; break;
+			case 8: s = "ident expected"; break;
+			case 9: s = "string_ expected"; break;
+			case 10: s = "badString expected"; break;
+			case 11: s = "integer_ expected"; break;
+			case 12: s = "double_ expected"; break;
+			case 13: s = "datetime_ expected"; break;
+			case 14: s = "\"true\" expected"; break;
+			case 15: s = "\"false\" expected"; break;
+			case 16: s = "\"null\" expected"; break;
+			case 17: s = "??? expected"; break;
+			case 18: s = "invalid value"; break;
 
 			default: s = "error " + n; break;
 		}

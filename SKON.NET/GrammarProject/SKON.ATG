@@ -3,6 +3,8 @@ using System.Globalization;
 
 COMPILER SKON
 
+	public SKONObject metadata;
+
     public SKONObject data;
 
 	private string[] dateTimeFormats = {
@@ -19,21 +21,17 @@ COMPILER SKON
 
     private DateTime ParseDatetime(string value)
     {
-        if (value[0] == '@')
-        {
-            return UnixTimeStampToDateTime(long.Parse(value.Substring(1)));
-        }else
-        {
-            DateTime dateTime;
+		value = value.Substring(1);
 
-            if (DateTime.TryParseExact(value, dateTimeFormats, null, DateTimeStyles.None, out dateTime))
-            {
-                return dateTime;
-            }
-            else
-            {
-                throw new FormatException("Could not parse " + value + "as a datetime!");
-            }
+        DateTime dateTime;
+
+        if (DateTime.TryParseExact(value, dateTimeFormats, null, DateTimeStyles.None, out dateTime))
+        {
+            return dateTime;
+        }
+        else
+        {
+            return UnixTimeStampToDateTime(long.Parse(value));
         }
     }
 
@@ -75,6 +73,7 @@ CHARACTERS
   dot       = '.'.
 
 TOKENS
+  tilda     = '~'.
   colon     = ':'.
   comma     =  ','.
   lbrace    = '{'.
@@ -86,7 +85,7 @@ TOKENS
   badString = '"' { stringch | '\\' escapech } (cr | lf).
   integer_  = ['-'] digit {digit}.
   double_   = ['-'] digit {digit} (((dot digit {digit}) [('E' | 'e') [('+' | '-')] digit {digit}]) | (('E' | 'e') [('+' | '-')] digit {digit})).
-  datetime_	= ('@' digit {digit}
+  datetime_	= '@' (digit {digit}
 			| digit digit digit digit '-' digit digit '-' digit digit
 			| digit digit ':' digit digit ':' digit digit ('Z'|'z')
 			| digit digit ':' digit digit ':' digit digit '.' digit digit digit ('Z'|'z')
@@ -105,22 +104,18 @@ IGNORE ' ' + '\r' + '\t' + '\n'
 
 PRODUCTIONS
 /*-------------------------------------------------------------------------*/
-SKON															(. Dictionary<string, SKONObject> mapElements;
-																	string key; SKONObject value;
-																	mapElements = new Dictionary<string, SKONObject>();
-																.)
-=	[												
-        map_element<out key, out value>							(. mapElements[key] = value; .)
-		{ 
-			IF(NotFinalComma())
-            comma 
-            map_element <out key, out value>					(. mapElements[key] = value; .)
-        }
-		[
-			comma
-		]
-    ]															(. this.data = new SKONObject(mapElements); .)
+SKON															(. Dictionary<string, SKONObject> metadataElements = new Dictionary<string, SKONObject>();
+																   Dictionary<string, SKONObject> mapElements = new Dictionary<string, SKONObject>();
+																   string key; SKONObject value; .)
+=	{ meta_data<out key, out value> }							(. this.metadata = new SKONObject(metadataElements); .)
+	open_map<out mapElements>									(. this.data = new SKONObject(mapElements); .)
     .															
+
+/*-------------------------------------------------------------------------*/
+meta_data<out string key, out SKONObject obj>
+=	tilda
+	map_element<out key, out obj>
+	tilda.
 
 /*-------------------------------------------------------------------------*/
 skon_map<out SKONObject map>									(. Dictionary<string, SKONObject> mapElements; .)
@@ -138,17 +133,10 @@ skon_array<out SKONObject array>								(. List<SKONObject> arrayElements; .)
 
 /*-------------------------------------------------------------------------*/
 open_map<. out Dictionary<string, SKONObject> mapElements .>	(. string key; SKONObject value; mapElements = new Dictionary<string, SKONObject>(); .)
-=	[												
-        map_element<out key, out value>							(. mapElements[key] = value; .)
-		{ 
-			IF(NotFinalComma())
-            comma 
-            map_element <out key, out value>					(. mapElements[key] = value; .)
-        }
-        [
-            comma
-        ]
-    ]
+=	{
+        map_element <out key, out value>						(. mapElements[key] = value; .)
+		comma
+    }
     .
 
 /*-------------------------------------------------------------------------*/
@@ -164,17 +152,10 @@ Ident<out string name>
 
 /*-------------------------------------------------------------------------*/
 open_array<. out List<SKONObject> arrayElements .>				(. SKONObject skonObject; arrayElements = new List<SKONObject>(); .)
-=	[															
+=	{
         value<out skonObject>									(. arrayElements.Add(skonObject); .)
-		{ 
-			IF(NotFinalComma())
-            comma 
-            value<out skonObject>								(. arrayElements.Add(skonObject); .)
-        }
-        [
-            comma
-        ] 
-    ]
+		comma 
+    }
     .
 
 /*-------------------------------------------------------------------------*/

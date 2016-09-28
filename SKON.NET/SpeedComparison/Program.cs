@@ -13,7 +13,7 @@ namespace SpeedComparison
     {
         static void Main(string[] args)
         {
-            string skonPath = "./TestSKON.skon";
+            string skonPath = "./SKONTest.skon";
 
             string jsonPath = "./TestJSON.json";
 

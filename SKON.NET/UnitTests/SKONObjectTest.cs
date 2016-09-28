@@ -11,15 +11,15 @@ namespace UnitTests
     [TestFixture]
     class SKONObjectTest
     {
-        string TestString = "This is a test string!";
-        int TestInt = 1234;
-        double TestDouble = 1234.5678d;
-        bool TestBoolean = true;
-        DateTime TestDateTime = new DateTime(1970, 01, 01);
+        public static string TestString = "This is a test string!";
+        public static int TestInt = 1234;
+        public static double TestDouble = 1234.5678d;
+        public static bool TestBoolean = true;
+        public static DateTime TestDateTime = new DateTime(1970, 01, 01);
 
-        string TestKey = "TestKey";
+        public static string TestKey = "TestKey";
 
-        SKONObject TestMap => new SKONObject(new Dictionary<string, SKONObject>()
+        public static SKONObject TestMap => new SKONObject(new Dictionary<string, SKONObject>()
             {
                 { "Empty", new SKONObject() },
                 { "String", new SKONObject(TestString) },
@@ -29,9 +29,9 @@ namespace UnitTests
                 { "DateTime", new SKONObject(TestDateTime) }
             });
 
-        SKONObject TestStringList => new SKONObject(new SKONObject[] { new SKONObject(), new SKONObject(TestString), new SKONObject(TestInt), new SKONObject(TestDouble), new SKONObject(TestBoolean), new SKONObject(TestDateTime) });
+        public static SKONObject TestStringList => new SKONObject(new SKONObject[] { new SKONObject(), new SKONObject(TestString), new SKONObject(TestInt), new SKONObject(TestDouble), new SKONObject(TestBoolean), new SKONObject(TestDateTime) });
         
-        public void Test_NotComplexType(SKONObject obj)
+        public static void Test_NotComplexType(SKONObject obj)
         {
             Assert.AreNotEqual(SKON.ValueType.MAP, obj.Type);
             Assert.AreNotEqual(SKON.ValueType.ARRAY, obj.Type);
@@ -44,7 +44,7 @@ namespace UnitTests
             Assert.IsTrue(obj[0].IsEmpty);
         }
 
-        public void Test_NotSimpleType(SKONObject obj)
+        public static void Test_NotSimpleType(SKONObject obj)
         {
             Assert.AreNotEqual(SKON.ValueType.STRING, obj.Type);
             Assert.AreNotEqual(SKON.ValueType.INTEGER, obj.Type);
@@ -59,7 +59,7 @@ namespace UnitTests
             Assert.IsNull(obj.DateTime);
         }
 
-        public void Test_IsEmpty(SKONObject emptyObj)
+        public static void Test_IsEmpty(SKONObject emptyObj)
         {
             Assert.AreEqual(SKON.ValueType.EMPTY, emptyObj.Type, "Empty SKONObject.Type is not EMPTY!");
 
@@ -80,7 +80,7 @@ namespace UnitTests
             Assert.IsTrue(emptyObj[0].IsEmpty);
         }
 
-        public void Test_IsNotEmpty(SKONObject obj)
+        public static void Test_IsNotEmpty(SKONObject obj)
         {
             Assert.IsFalse(obj.IsEmpty);
             
@@ -98,6 +98,61 @@ namespace UnitTests
             Assert.IsTrue(hasValue, "SKONObject does not contain any value!");
         }
 
+        public static void TestObject(string expected, SKONObject actual)
+        {
+            Assert.AreEqual(SKON.ValueType.STRING, actual.Type);
+
+            Test_IsNotEmpty(actual);
+
+            Test_NotComplexType(actual);
+
+            Assert.AreEqual(expected, actual.String);
+        }
+
+        public static void TestObject(int expected, SKONObject actual)
+        {
+            Assert.AreEqual(SKON.ValueType.INTEGER, actual.Type);
+
+            Test_IsNotEmpty(actual);
+
+            Test_NotComplexType(actual);
+
+            Assert.AreEqual(expected, actual.Int);
+        }
+
+        public void TestObject(double expected, SKONObject actual)
+        {
+            Assert.AreEqual(SKON.ValueType.DOUBLE, actual.Type);
+
+            Test_IsNotEmpty(actual);
+
+            Test_NotComplexType(actual);
+
+            Assert.AreEqual(expected, actual.Double);
+        }
+
+        public void TestObject(bool expected, SKONObject actual)
+        {
+            Assert.AreEqual(SKON.ValueType.BOOLEAN, actual.Type);
+
+            Test_IsNotEmpty(actual);
+
+            Test_NotComplexType(actual);
+
+            Assert.AreEqual(expected, actual.Boolean);
+        }
+
+        public void TestObject(DateTime expected, SKONObject actual)
+        {
+            Assert.AreEqual(SKON.ValueType.DATETIME, actual.Type);
+
+            Test_IsNotEmpty(actual);
+
+            Test_NotComplexType(actual);
+            
+            Assert.AreEqual(expected, actual.DateTime);
+        }
+        
         [Test]
         public void Test_EmptyValue()
         {
