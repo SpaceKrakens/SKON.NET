@@ -1,2 +1,8 @@
 language: csharp
 solution: SKON.NET/SKON.NET.sln
+before_install:
+  - sudo apt-get install nunit-console
+before_script:
+  - nuget restore SKON.NET.sln
+after_script:
+  - nunit-console UnitTests\bin\Release\UnitTests.dll
