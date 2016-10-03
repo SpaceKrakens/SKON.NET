@@ -34,7 +34,7 @@ namespace SKON
         /// <summary>
         /// Gets or sets a value indicating whether to use tabs.
         /// </summary>
-        private static bool UseTabs { get; set; }
+        public static bool UseTabs { get; set; }
 
         /// <summary>
         /// The indent string.
@@ -52,16 +52,8 @@ namespace SKON
             if (File.Exists(path))
             {
                 Scanner sc = new Scanner(path);
-                Parser parser = new Parser(sc);
 
-                if (errorStream != null)
-                {
-                    parser.errors.errorStream = errorStream;
-                }
-                
-                parser.Parse();
-
-                return parser.data;
+                return Parse(sc, errorStream);
             }
             else
             {
@@ -78,14 +70,31 @@ namespace SKON
         public static SKONObject Parse(string skon, TextWriter errorStream = null)
         {
             Scanner sc = new Scanner(GenerateStreamFromString(skon));
+            
+            return Parse(sc, errorStream);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sc"></param>
+        /// <param name="errorStream"></param>
+        /// <returns></returns>
+        private static SKONObject Parse(Scanner sc, TextWriter errorStream)
+        {
             Parser parser = new Parser(sc);
 
             if (errorStream != null)
             {
                 parser.errors.errorStream = errorStream;
             }
-            
+
             parser.Parse();
+
+            if (parser.errors.count > 0)
+            {
+                throw new FormatException(string.Format("Could not parse file! Got {0} errors!"));
+            }
 
             return parser.data;
         }
@@ -140,6 +149,11 @@ namespace SKON
         /// <returns>A string to write into a file.</returns>
         private static string WriteObject(SKONObject obj, int indent)
         {
+            if (obj == null)
+            {
+                return string.Empty;
+            }
+
             string indentString = string.Empty;
 
             for (int i = 0; i < indent; i++)

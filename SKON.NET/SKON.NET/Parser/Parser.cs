@@ -37,9 +37,9 @@ public class Parser {
 	public Token la;   // lookahead token
 	int errDist = minErrDist;
 
-public SKONObject metadata;
+public SKONObject metadata = new SKONObject();
 
-    public SKONObject data;
+    public SKONObject data = new SKONObject();
 
 	private string[] dateTimeFormats = {
         "yyyy-MM-dd",
@@ -175,7 +175,7 @@ public SKONObject metadata;
 		while (la.kind == 8) {
 			map_element(out key, out value);
 			mapElements[key] = value; 
-			Expect(3);
+			ExpectWeak(3, 1);
 		}
 	}
 
@@ -206,10 +206,10 @@ public SKONObject metadata;
 
 	void open_array(out List<SKONObject> arrayElements ) {
 		SKONObject skonObject; arrayElements = new List<SKONObject>(); 
-		while (StartOf(1)) {
+		while (StartOf(2)) {
 			value(out skonObject);
 			arrayElements.Add(skonObject); 
-			Expect(3);
+			ExpectWeak(3, 3);
 		}
 	}
 
@@ -285,7 +285,9 @@ public SKONObject metadata;
 	
 	static readonly bool[,] set = {
 		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
-		{_x,_x,_x,_x, _T,_x,_T,_x, _x,_T,_x,_T, _T,_T,_T,_T, _T,_x,_x}
+		{_T,_x,_x,_x, _x,_T,_x,_x, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
+		{_x,_x,_x,_x, _T,_x,_T,_x, _x,_T,_x,_T, _T,_T,_T,_T, _T,_x,_x},
+		{_T,_x,_x,_x, _T,_x,_T,_T, _x,_T,_x,_T, _T,_T,_T,_T, _T,_x,_x}
 
 	};
 } // end Parser

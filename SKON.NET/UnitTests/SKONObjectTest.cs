@@ -91,10 +91,10 @@ namespace UnitTests
             hasValue |= obj.Double != null;
             hasValue |= obj.Boolean != null;
             hasValue |= obj.DateTime != null;
-
-            hasValue |= obj.Keys.Count > 0;
-            hasValue |= obj.Values.Count > 0;
-
+            /*
+            hasValue |= obj.Keys.Count >= 0;
+            hasValue |= obj.Values.Count >= 0;
+            */
             Assert.IsTrue(hasValue, "SKONObject does not contain any value!");
         }
 

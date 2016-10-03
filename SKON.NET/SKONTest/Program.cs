@@ -43,18 +43,31 @@ namespace SKONTest
             Stopwatch sw = new Stopwatch();
 
             sw.Start();
-
-            SKONObject data = SKON.LoadFile(filePath, Console.Out);
+            
+            SKONObject data = SKON.LoadFile(filePath);
 
             sw.Stop();
 
             Console.WriteLine("Successfully parsed file in {0}ms!", sw.ElapsedMilliseconds);
 
             Console.WriteLine();
+            
+            sw.Reset();
 
-            Console.WriteLine(SKON.Write(data));
-
+            sw.Start();
             SKON.WriteToFile("./ResultSKON.skon", data);
+            sw.Stop();
+
+            Console.WriteLine("Successfully wrote file in {0}ms!", sw.ElapsedMilliseconds);
+
+            Console.WriteLine();
+
+            string[] result = File.ReadAllLines("./ResultSKON.skon");
+
+            for (int i = 0; i < result.Length; i++)
+            {
+                Console.WriteLine(result[i]);
+            }
 
             Console.ReadKey();
         }

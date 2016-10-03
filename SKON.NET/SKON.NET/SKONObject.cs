@@ -301,13 +301,13 @@ namespace SKON
 
             set
             {
-                if (i < 0 || i >= this.arrayValues?.Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(i), i, "The given index was out of bounds!");
-                }
-
                 if (this.Type == ValueType.ARRAY)
                 {
+                    if (i < 0 || i >= this.arrayValues?.Count)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(i), i, "The given index was out of bounds!");
+                    }
+
                     this.arrayValues[i] = value;
                 }
                 else
