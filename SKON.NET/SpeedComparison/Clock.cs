@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Threading;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SpeedComparison
+﻿namespace SpeedComparison
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Text;
+    using System.Threading;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     public class Clock
     {
         interface IStopwatch
@@ -19,9 +19,7 @@ namespace SpeedComparison
             void Stop();
             void Reset();
         }
-
-
-
+        
         class TimeWatch : IStopwatch
         {
             Stopwatch stopwatch = new Stopwatch();
@@ -35,9 +33,7 @@ namespace SpeedComparison
             {
                 get { return stopwatch.IsRunning; }
             }
-
-
-
+            
             public TimeWatch()
             {
                 if (!Stopwatch.IsHighResolution)
@@ -55,9 +51,7 @@ namespace SpeedComparison
                 //prevent "Normal" Threads from interrupting this thread
                 Thread.CurrentThread.Priority = ThreadPriority.Highest;
             }
-
-
-
+            
             public void Start()
             {
                 stopwatch.Start();
@@ -73,17 +67,13 @@ namespace SpeedComparison
                 stopwatch.Reset();
             }
         }
-
-
-
+        
         class CpuWatch : IStopwatch
         {
             TimeSpan startTime;
             TimeSpan endTime;
             bool isRunning;
-
-
-
+            
             public TimeSpan Elapsed
             {
                 get
@@ -99,9 +89,7 @@ namespace SpeedComparison
             {
                 get { return isRunning; }
             }
-
-
-
+            
             public void Start()
             {
                 startTime = Process.GetCurrentProcess().TotalProcessorTime;
@@ -120,9 +108,7 @@ namespace SpeedComparison
                 endTime = TimeSpan.Zero;
             }
         }
-
-
-
+        
         public static double BenchmarkTime(Action action, int iterations = 10000)
         {
             return Benchmark<TimeWatch>(action, iterations);

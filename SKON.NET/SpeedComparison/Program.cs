@@ -1,4 +1,12 @@
-﻿
+﻿#region LICENSE
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="SKON.cs" company="SpaceKrakens">
+//   MIT License
+//   Copyright (c) 2016 SpaceKrakens
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
+
 namespace SpeedComparison
 {
     using System;

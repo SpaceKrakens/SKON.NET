@@ -1,14 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SKON;
-using SKON.Internal;
+﻿#region LICENSE
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="SKON.cs" company="SpaceKrakens">
+//   MIT License
+//   Copyright (c) 2016 SpaceKrakens
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
 
 namespace VerboseScannerParser
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using SKON;
+    using SKON.Internal;
+
     class Program
     {
         static void Main(string[] args)
@@ -28,7 +37,7 @@ namespace VerboseScannerParser
 
             Console.WriteLine();
 
-            Console.WriteLine(SKON.SKON.Write(obj));
+            Console.WriteLine(SKON.Write(obj));
 
             Console.ReadKey(true);
         }

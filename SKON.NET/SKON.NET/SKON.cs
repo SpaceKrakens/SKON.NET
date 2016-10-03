@@ -1,5 +1,4 @@
 #region LICENSE
-
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="SKON.cs" company="SpaceKrakens">
 //   MIT License
@@ -24,12 +23,12 @@ namespace SKON
         /// <summary>
         /// The indent spaces.
         /// </summary>
-        private const string IndentSpaces = "    "; // 4 spaces
+        private const string IndentSpaces = "    ";
 
         /// <summary>
         /// The indent tab.
         /// </summary>
-        private const string IndentTab = "\t"; // A tab
+        private const string IndentTab = "\t";
 
         /// <summary>
         /// Gets or sets a value indicating whether to use tabs.
