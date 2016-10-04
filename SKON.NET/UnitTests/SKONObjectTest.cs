@@ -413,5 +413,121 @@ namespace UnitTests
             IsNotComplexType(dateTimeObj);
             Assert.AreEqual(TestDateTime, dateTimeObj.DateTime);
         }
+
+        [Test]
+        public void ObjectEquality()
+        {
+            Assert.AreEqual(new SKONObject(TestString), new SKONObject(TestString));
+
+            Assert.AreEqual(new SKONObject(TestInt), new SKONObject(TestInt));
+
+            Assert.AreEqual(new SKONObject(TestDouble), new SKONObject(TestDouble));
+
+            Assert.AreEqual(new SKONObject(TestBoolean), new SKONObject(TestBoolean));
+
+            Assert.AreEqual(new SKONObject(TestDateTime), new SKONObject(TestDateTime));
+        }
+        
+        [Test]
+        public void HashEquality()
+        {
+            Assert.AreEqual(new SKONObject(TestString).GetHashCode(), new SKONObject(TestString).GetHashCode());
+
+            Assert.AreEqual(new SKONObject(TestInt).GetHashCode(), new SKONObject(TestInt).GetHashCode());
+
+            Assert.AreEqual(new SKONObject(TestDouble).GetHashCode(), new SKONObject(TestDouble).GetHashCode());
+
+            Assert.AreEqual(new SKONObject(TestBoolean).GetHashCode(), new SKONObject(TestBoolean).GetHashCode());
+
+            Assert.AreEqual(new SKONObject(TestDateTime).GetHashCode(), new SKONObject(TestDateTime).GetHashCode());
+        }
+
+        [Test]
+        public void ObjectInequality()
+        {
+            Assert.AreNotEqual(new SKONObject(), new SKONObject(TestString));
+
+            Assert.AreNotEqual(new SKONObject(), new SKONObject(TestInt));
+
+            Assert.AreNotEqual(new SKONObject(), new SKONObject(TestDouble));
+
+            Assert.AreNotEqual(new SKONObject(), new SKONObject(TestBoolean));
+
+            Assert.AreNotEqual(new SKONObject(), new SKONObject(TestDateTime));
+
+            
+            Assert.AreNotEqual(new SKONObject(TestString), new SKONObject(TestInt));
+
+            Assert.AreNotEqual(new SKONObject(TestString), new SKONObject(TestDouble));
+
+            Assert.AreNotEqual(new SKONObject(TestString), new SKONObject(TestBoolean));
+
+            Assert.AreNotEqual(new SKONObject(TestString), new SKONObject(TestDateTime));
+
+            
+            Assert.AreNotEqual(new SKONObject(TestInt), new SKONObject(TestDouble));
+
+            Assert.AreNotEqual(new SKONObject(TestInt), new SKONObject(TestBoolean));
+
+            Assert.AreNotEqual(new SKONObject(TestInt), new SKONObject(TestDateTime));
+
+            
+            Assert.AreNotEqual(new SKONObject(TestDouble), new SKONObject(TestBoolean));
+
+            Assert.AreNotEqual(new SKONObject(TestDouble), new SKONObject(TestDateTime));
+            
+
+            Assert.AreNotEqual(new SKONObject(TestBoolean), new SKONObject(TestDateTime));
+        }
+
+        [Test]
+        public void ObjectEqualityOperator()
+        {
+            SKONObject obj1 = new SKONObject(TestString);
+            SKONObject obj2 = new SKONObject(TestString);
+
+            Assert.IsTrue(obj1 == obj2);
+
+            Assert.IsTrue(obj1 == TestString);
+            Assert.IsTrue(obj2 == TestString);
+
+            Assert.IsTrue(obj1.String == TestString);
+            Assert.IsTrue(obj2.String == TestString);
+
+            float f = 0.4f;
+
+            Assert.IsFalse(obj1 == f);
+            Assert.IsFalse(obj2 == f);
+        }
+
+        [Test]
+        public void ConstructorEquality()
+        {
+            SKONObject obj1 = new SKONObject(TestString);
+            SKONObject obj2 = TestString;
+
+            Assert.AreEqual(obj1, obj2);
+
+            obj1 = new SKONObject(TestInt);
+            obj2 = TestInt;
+
+            Assert.AreEqual(obj1, obj2);
+
+            obj1 = new SKONObject(TestDouble);
+            obj2 = TestDouble;
+
+            Assert.AreEqual(obj1, obj2);
+
+            obj1 = new SKONObject(TestBoolean);
+            obj2 = TestBoolean;
+
+            Assert.AreEqual(obj1, obj2);
+
+            obj1 = new SKONObject(TestDateTime);
+            obj2 = TestDateTime;
+
+            Assert.AreEqual(obj1, obj2);
+
+        }
     }
 }

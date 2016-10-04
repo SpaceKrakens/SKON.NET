@@ -60,7 +60,7 @@ namespace SKON
     /// <summary>
     /// A SKONObject. Every value in a SKON file is handled internally as a SKONObject.
     /// </summary>
-    public class SKONObject
+    public class SKONObject : IEquatable<SKONObject>
     {
         /// <summary>
         /// Backing string value.
@@ -211,66 +211,22 @@ namespace SKON
         /// <summary>
         /// Gets the integer value of this SKONObject, should it be an integer.
         /// </summary>
-        public int? Int
-        {
-            get
-            {
-                if (this.Type == ValueType.INTEGER)
-                {
-                    return this.intValue;
-                }
-
-                return null;
-            }
-        }
+        public int? Int => this.Type == ValueType.INTEGER ? this.intValue : (int?) null;
 
         /// <summary>
         /// Gets the double value of this SKONObject, should it be a double.
         /// </summary>
-        public double? Double
-        {
-            get
-            {
-                if (this.Type == ValueType.DOUBLE)
-                {
-                    return this.doubleValue;
-                }
-
-                return null;
-            }
-        }
+        public double? Double => this.Type == ValueType.DOUBLE ? this.doubleValue : (double?) null;
 
         /// <summary>
         /// Gets the boolean value of this SKONObject, should it be a boolean.
         /// </summary>
-        public bool? Boolean
-        {
-            get
-            {
-                if (this.Type == ValueType.BOOLEAN)
-                {
-                    return this.booleanValue;
-                }
-
-                return null;
-            }
-        }
+        public bool? Boolean => this.Type == ValueType.BOOLEAN ? this.booleanValue : (bool?) null;
 
         /// <summary>
         /// Gets the DateTime value of this SKONObject, should it be a DateTime.
         /// </summary>
-        public DateTime? DateTime
-        {
-            get
-            {
-                if (this.Type == ValueType.DATETIME)
-                {
-                    return this.dateTimeValue;
-                }
-
-                return null;
-            }
-        }
+        public DateTime? DateTime => this.Type == ValueType.DATETIME ? this.dateTimeValue : (DateTime?) null;
 
         /// <summary>
         /// Gets the values of the SKONObject array.
@@ -346,6 +302,16 @@ namespace SKON
                 }
             }
         }
+        
+        public static bool operator ==(SKONObject left, SKONObject right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(SKONObject left, SKONObject right)
+        {
+            return !left.Equals(right);
+        }
 
         /// <summary>
         /// Implicitly converts a string into a SKONObject.
@@ -356,10 +322,9 @@ namespace SKON
         /// <returns>
         /// The newly converted SKONObject.
         /// </returns>
-        public static implicit operator SKONObject(string str)
-        {
-            return new SKONObject(str);
-        }
+        public static implicit operator SKONObject(string str) => new SKONObject(str);
+
+        public static implicit operator string(SKONObject skon) => skon.String;
 
         /// <summary>
         /// Implicitly converts an integer into a SKONObject.
@@ -370,10 +335,9 @@ namespace SKON
         /// <returns>
         /// The newly converted SKONObject.
         /// </returns>
-        public static implicit operator SKONObject(int i)
-        {
-            return new SKONObject(i);
-        }
+        public static implicit operator SKONObject(int i) => new SKONObject(i);
+
+        public static implicit operator int?(SKONObject skon) => skon.Int;
 
         /// <summary>
         /// Implicitly converts a double into a SKONObject.
@@ -384,10 +348,9 @@ namespace SKON
         /// <returns>
         /// The newly converted SKONObject.
         /// </returns>
-        public static implicit operator SKONObject(double d)
-        {
-            return new SKONObject(d);
-        }
+        public static implicit operator SKONObject(double d) => new SKONObject(d);
+
+        public static implicit operator double?(SKONObject skon) => skon.Double;
 
         /// <summary>
         /// Implicitly converts a boolean into a SKONObject.
@@ -398,10 +361,9 @@ namespace SKON
         /// <returns>
         /// The newly converted SKONObject.
         /// </returns>
-        public static implicit operator SKONObject(bool b)
-        {
-            return new SKONObject(b);
-        }
+        public static implicit operator SKONObject(bool b) => new SKONObject(b);
+
+        public static implicit operator bool?(SKONObject skon) => skon.Boolean;
 
         /// <summary>
         /// Implicitly converts a DateTime into a SKONObject.
@@ -412,10 +374,9 @@ namespace SKON
         /// <returns>
         /// The newly converted SKONObject.
         /// </returns>
-        public static implicit operator SKONObject(DateTime dt)
-        {
-            return new SKONObject(dt);
-        }
+        public static implicit operator SKONObject(DateTime dt) => new SKONObject(dt);
+
+        public static implicit operator DateTime?(SKONObject skon) => skon.DateTime;
 
         /// <summary>
         /// Implicitly converts a string array into a SKONObject Array of strings.
@@ -555,6 +516,15 @@ namespace SKON
         public static implicit operator SKONObject(List<DateTime> list)
         {
             return new SKONObject(list.ConvertAll(value => (SKONObject)value));
+        }
+
+        /// <summary>
+        /// Implicitly converts a Dictionary into a SKONObject Map.
+        /// </summary>
+        /// <param name="map"></param>
+        public static implicit operator SKONObject(Dictionary<string, SKONObject> map)
+        {
+            return new SKONObject(map);
         }
 
         /// <summary>
@@ -721,6 +691,107 @@ namespace SKON
                     return this.arrayValues.ToString();
                 default:
                     return "Invalid type!";
+            }
+        }
+
+        /// <summary>
+        /// Determines if a SKONObject is equal to another SKONObject.
+        /// </summary>
+        /// <param name="other">The other SKONObject.</param>
+        /// <returns>Wether or not the objects are equal.</returns>
+        public bool Equals(SKONObject other)
+        {
+            if (this.Type != other.Type)
+            {
+                return false;
+            }
+            
+            bool isEqual = true;
+
+            switch (this.Type)
+            {
+                case ValueType.EMPTY:
+                    return other.IsEmpty;
+                case ValueType.STRING:
+                    return this.String == other.String;
+                case ValueType.INTEGER:
+                    return this.Int == other.Int;
+                case ValueType.DOUBLE:
+                    return this.Double == other.Double;
+                case ValueType.BOOLEAN:
+                    return this.Boolean == other.Boolean;
+                case ValueType.DATETIME:
+                    return this.DateTime == other.DateTime;
+                case ValueType.MAP:
+                    if (this.Keys.Count != other.Keys.Count)
+                    {
+                        return false;
+                    }
+
+                    foreach (string key in this.Keys)
+                    {
+                        isEqual &= (this[key] == other[key]);
+                    }
+
+                    return isEqual;
+                case ValueType.ARRAY:
+
+                    if (this.Length != other.Length)
+                    {
+                        return false;
+                    }
+
+                    for (int i = 0; i < this.Length; i++)
+                    {
+                        isEqual &= (this[i] == other[i]);
+                    }
+
+                    return isEqual;
+                default:
+                    return false;
+            }
+        }
+        
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            if (obj is SKONObject)
+            {
+                return this.Equals((SKONObject) obj);
+            }
+
+            return false;
+        }
+        
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                switch (this.Type)
+                {
+                    case ValueType.EMPTY:
+                        return this.Type.GetHashCode();
+                    case ValueType.STRING:
+                        return this.Type.GetHashCode() * 17 + stringValue.GetHashCode();
+                    case ValueType.INTEGER:
+                        return this.Type.GetHashCode() * 17 + intValue.GetHashCode();
+                case ValueType.DOUBLE:
+                        return this.Type.GetHashCode() * 17 + doubleValue.GetHashCode();
+                    case ValueType.BOOLEAN:
+                        return this.Type.GetHashCode() * 17 + booleanValue.GetHashCode();
+                    case ValueType.DATETIME:
+                        return this.Type.GetHashCode() * 17 + dateTimeValue.GetHashCode();
+                    case ValueType.MAP:
+                        return this.Type.GetHashCode() * 17 + mapValues.GetHashCode();
+                    case ValueType.ARRAY:
+                        return this.Type.GetHashCode() * 17 + arrayValues.GetHashCode();
+                    default:
+                        return base.GetHashCode();
+                }
             }
         }
     }
