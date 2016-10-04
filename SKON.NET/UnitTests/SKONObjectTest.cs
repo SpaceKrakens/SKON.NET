@@ -529,5 +529,31 @@ namespace UnitTests
             Assert.AreEqual(obj1, obj2);
 
         }
+
+        [Test]
+        public void MapGet()
+        {
+            SKONObject map = TestMap;
+            
+            string s = map.Get("String", "Wrong");
+
+            Assert.AreEqual(TestString, s);
+
+            int i = map.Get("Int", int.MinValue);
+
+            Assert.AreEqual(TestInt, i);
+
+            double d = map.Get("Double", double.MinValue);
+
+            Assert.AreEqual(TestDouble, d);
+            
+            bool b = map.Get("Bool", !TestBoolean);
+
+            Assert.AreEqual(TestBoolean, b);
+
+            DateTime dt = map.Get("DateTime", DateTime.MinValue);
+
+            Assert.AreEqual(TestDateTime, dt);
+        }
     }
 }

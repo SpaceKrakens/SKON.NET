@@ -191,7 +191,7 @@ namespace SKON
         /// <summary>
         /// Gets the collection of string keys, if this SKONObject is a Map, or an empty ICollection, if it isn't.
         /// </summary>
-        public ICollection<string> Keys => (ICollection<string>)this.mapValues?.Keys ?? new List<string>();
+        public List<string> Keys => this.Type == ValueType.MAP ? new List<string>(mapValues.Keys) : new List<string>();
 
         /// <summary>
         /// Gets the length of the array, should this SKONObject be one, or negative 1, if it isn't.
@@ -231,7 +231,7 @@ namespace SKON
         /// <summary>
         /// Gets the values of the SKONObject array.
         /// </summary>
-        public ICollection<SKONObject> Values => this.arrayValues ?? new List<SKONObject>();
+        public List<SKONObject> Values => this.arrayValues ?? new List<SKONObject>();
 
         /// <summary>
         /// Gets an empty SKONObject.
@@ -305,12 +305,12 @@ namespace SKON
         
         public static bool operator ==(SKONObject left, SKONObject right)
         {
-            return left.Equals(right);
+            return (object)left != null ? left.Equals(right) : false;
         }
 
         public static bool operator !=(SKONObject left, SKONObject right)
         {
-            return !left.Equals(right);
+            return (object)left == null ? !left.Equals(right) : true;
         }
 
         /// <summary>
@@ -324,7 +324,7 @@ namespace SKON
         /// </returns>
         public static implicit operator SKONObject(string str) => new SKONObject(str);
 
-        public static implicit operator string(SKONObject skon) => skon.String;
+        public static explicit operator string(SKONObject skon) => skon.String;
 
         /// <summary>
         /// Implicitly converts an integer into a SKONObject.
@@ -337,7 +337,7 @@ namespace SKON
         /// </returns>
         public static implicit operator SKONObject(int i) => new SKONObject(i);
 
-        public static implicit operator int?(SKONObject skon) => skon.Int;
+        public static explicit operator int?(SKONObject skon) => skon.Int;
 
         /// <summary>
         /// Implicitly converts a double into a SKONObject.
@@ -350,7 +350,7 @@ namespace SKON
         /// </returns>
         public static implicit operator SKONObject(double d) => new SKONObject(d);
 
-        public static implicit operator double?(SKONObject skon) => skon.Double;
+        public static explicit operator double?(SKONObject skon) => skon.Double;
 
         /// <summary>
         /// Implicitly converts a boolean into a SKONObject.
@@ -363,7 +363,7 @@ namespace SKON
         /// </returns>
         public static implicit operator SKONObject(bool b) => new SKONObject(b);
 
-        public static implicit operator bool?(SKONObject skon) => skon.Boolean;
+        public static explicit operator bool?(SKONObject skon) => skon.Boolean;
 
         /// <summary>
         /// Implicitly converts a DateTime into a SKONObject.
@@ -376,7 +376,7 @@ namespace SKON
         /// </returns>
         public static implicit operator SKONObject(DateTime dt) => new SKONObject(dt);
 
-        public static implicit operator DateTime?(SKONObject skon) => skon.DateTime;
+        public static explicit operator DateTime?(SKONObject skon) => skon.DateTime;
 
         /// <summary>
         /// Implicitly converts a string array into a SKONObject Array of strings.
@@ -527,6 +527,16 @@ namespace SKON
             return new SKONObject(map);
         }
 
+        public void Add(string key, SKONObject value)
+        {
+            if (this.Type != ValueType.MAP)
+            {
+                throw new InvalidOperationException("This method only works on MAP type SKONObjects!");
+            }
+            
+            mapValues[key] = value;
+        }
+
         /// <summary>
         /// Adds a SKONObject to the Array.
         /// </summary>
@@ -538,7 +548,7 @@ namespace SKON
         /// </returns>
         public bool Add(SKONObject value)
         {
-            if (this.arrayValues == null)
+            if (this.Type == ValueType.ARRAY)
             {
                 return false;
             }
@@ -605,66 +615,135 @@ namespace SKON
             return true;
         }
         
-        /// <summary>
-        /// Gets the value of the SKONObject Map paired with the given key as the desired data type.
-        /// </summary>
-        /// <typeparam name="T">The expected data type for the desired value.</typeparam>
-        /// <param name="key">The key to search the respective value for.</param>
-        /// <param name="defaultValue">A default value, should the key not exist or the SKONObject value not be able to be converted into the proper type.</param>
-        /// <returns>Either the proper value or the default value.</returns>
-        public T Get<T>(string key, T defaultValue)
+        public string Get(string key, string defaultValue)
         {
-            if (!(this.mapValues?.ContainsKey(key) ?? false))
+            if (this.Type != ValueType.MAP)
             {
-                return defaultValue;
+                throw new InvalidOperationException("This method only works on MAP type SKONObjects!");
             }
-
-            Type sourceType = typeof(T);
-            MethodInfo[] ops = sourceType.GetMethods();
-                
-            for (int i = 0; i < ops.Length; i++)
-            {
-                MethodInfo op = ops[i];
-                if (op.ReturnType == typeof(T) && (op.Name == "op_Implicit" || op.Name == "op_Explicit"))
-                {
-                    return (T)op.Invoke(null, new[] { this.mapValues[key] });
-                }
-            }
-
-            return defaultValue;
+            
+            return mapValues[key].String ?? defaultValue;
         }
 
-        /// <summary>
-        /// Tries to convert the value paired with the given key into the desired data type.
-        /// </summary>
-        /// <typeparam name="T">The expected data type for the desired value.</typeparam>
-        /// <param name="key">The key to search the respective value for.</param>
-        /// <param name="result">The variable to set to the proper value. Gets set to the default value, should the operation fail.</param>
-        /// <returns>True if it succeeds, otherwise false.</returns>        
-        public bool TryGet<T>(string key, out T result)
+        public int Get(string key, int defaultValue)
         {
-            if (this.mapValues?.ContainsKey(key) ?? false)
+            if (this.Type != ValueType.MAP)
             {
-                Type sourceType = typeof(T);
-                MethodInfo[] ops = sourceType.GetMethods();
+                throw new InvalidOperationException("This method only works on MAP type SKONObjects!");
+            }
 
-                for (int i = 0; i < ops.Length; i++)
+            return mapValues[key].Int ?? defaultValue;
+        }
+
+        public double Get(string key, double defaultValue)
+        {
+            if (this.Type != ValueType.MAP)
+            {
+                throw new InvalidOperationException("This method only works on MAP type SKONObjects!");
+            }
+
+            return mapValues[key].Double ?? defaultValue;
+        }
+
+        public bool Get(string key, bool defaultValue)
+        {
+            if (this.Type != ValueType.MAP)
+            {
+                throw new InvalidOperationException("This method only works on MAP type SKONObjects!");
+            }
+
+            return mapValues[key].Boolean ?? defaultValue;
+        }
+
+        public DateTime Get(string key, DateTime defaultValue)
+        {
+            if (this.Type != ValueType.MAP)
+            {
+                throw new InvalidOperationException("This method only works on MAP type SKONObjects!");
+            }
+
+            return mapValues[key].DateTime ?? defaultValue;
+        }
+        
+        public bool TryGet(string key, out string result)
+        {
+            if (this.Type == ValueType.MAP && mapValues.ContainsKey(key))
+            {
+                if (mapValues[key].Type == ValueType.STRING)
                 {
-                    MethodInfo op = ops[i];
-                    if (op.ReturnType != typeof(T) || (op.Name != "op_Implicit" && op.Name != "op_Explicit"))
-                    {
-                        continue;
-                    }
+                    result = mapValues[key].String;
+                    return true;
+                }
+            }
+            
+            result = default(string);
+            return false;
+        }
 
-                    result = (T)op.Invoke(null, new[] { this.mapValues[key] });
+        public bool TryGet(string key, out int result)
+        {
+            if (this.Type == ValueType.MAP && mapValues.ContainsKey(key))
+            {
+                if (mapValues[key].Type == ValueType.INTEGER)
+                {
+                    // We acccess the value directly because we know it has a value
+                    result = mapValues[key].intValue;
                     return true;
                 }
             }
 
-            result = default(T);
+            result = default(int);
             return false;
         }
 
+        public bool TryGet(string key, out double result)
+        {
+            if (this.Type == ValueType.MAP && mapValues.ContainsKey(key))
+            {
+                if (mapValues[key].Type == ValueType.DOUBLE)
+                {
+                    // We acccess the value directly because we know it has a value
+                    result = mapValues[key].doubleValue;
+                    return true;
+                }
+            }
+
+            result = default(double);
+            return false;
+        }
+
+        public bool TryGet(string key, out bool result)
+        {
+            if (this.Type == ValueType.MAP && mapValues.ContainsKey(key))
+            {
+                if (mapValues[key].Type == ValueType.BOOLEAN)
+                {
+                    // We acccess the value directly because we know it has a value
+                    result = mapValues[key].booleanValue;
+                    return true;
+                }
+            }
+
+            result = default(bool);
+            return false;
+        }
+
+        public bool TryGet(string key, out DateTime result)
+        {
+            if (this.Type == ValueType.MAP && mapValues.ContainsKey(key))
+            {
+                if (mapValues[key].Type == ValueType.DATETIME)
+                {
+                    // We acccess the value directly because we know it has a value
+                    result = mapValues[key].dateTimeValue;
+                    return true;
+                }
+            }
+
+            result = default(DateTime);
+            return false;
+        }
+        
         /// <summary>
         /// Returns the value of this SKONObject as a string.
         /// </summary>
@@ -701,6 +780,11 @@ namespace SKON
         /// <returns>Wether or not the objects are equal.</returns>
         public bool Equals(SKONObject other)
         {
+            if ((object)other == null)
+            {
+                return false;
+            }
+
             if (this.Type != other.Type)
             {
                 return false;
