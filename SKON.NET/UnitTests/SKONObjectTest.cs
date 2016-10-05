@@ -555,5 +555,47 @@ namespace UnitTests
 
             Assert.AreEqual(TestDateTime, dt);
         }
+
+        [Test]
+        public void MapTryGet()
+        {
+            SKONObject map = TestMap;
+
+            string s;
+
+            Assert.IsFalse(map.TryGet(TestString, out s));
+
+            Assert.AreEqual(default(string), s);
+
+            Assert.IsTrue(map.TryGet("String", out s));
+
+            Assert.AreEqual(TestString, s);
+
+            int i;
+
+            Assert.IsTrue(map.TryGet("Int", out i));
+
+            Assert.AreEqual(TestInt, i);
+
+            double d;
+
+            Assert.IsTrue(map.TryGet("Double", out d));
+
+            Assert.AreEqual(TestDouble, d);
+
+            bool b;
+
+            Assert.IsTrue(map.TryGet("Bool", out b));
+
+            Assert.AreEqual(TestBoolean, b);
+
+            DateTime dt;
+
+            Assert.IsTrue(map.TryGet("DateTime", out dt));
+
+            Assert.AreEqual(TestDateTime, dt);
+        }
+
+
     }
 }
