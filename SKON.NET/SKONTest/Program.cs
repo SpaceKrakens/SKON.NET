@@ -69,7 +69,7 @@ namespace SKONTest
                 Console.WriteLine(result[i]);
             }
 
-            Console.ReadKey();
+            Console.ReadKey(true);
         }
     }
 }

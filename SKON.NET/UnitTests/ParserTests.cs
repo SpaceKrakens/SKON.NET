@@ -16,6 +16,7 @@ namespace UnitTests
     using System.Threading.Tasks;
     using NUnit.Framework;
     using SKON;
+    using ValueType = SKON.ValueType;
 
     using static UnitTests.SKONObjectTest;
 
@@ -50,7 +51,7 @@ namespace UnitTests
         }
 
         [Test]
-        public void ValueLessKeys()
+        public void ValuelessKeys()
         {
             string valueLessSKON = "FirstKey: ,";
 
@@ -62,7 +63,7 @@ namespace UnitTests
         }
 
         [Test]
-        public void KeyLessValues()
+        public void KeylessValues()
         {
             string keyLessValuesSKON = "\"Value\",";
 
@@ -169,6 +170,76 @@ namespace UnitTests
             SKONObject dateTimeObj = dateTimeMap["DateTimeKey"];
 
             HasValue(new DateTime(1970, 01, 01), dateTimeObj);
+        }
+
+        [Test]
+        public void MissingEndBrace()
+        {
+            string missingBraceSKON = "MissingBraceMap: {";
+
+            Assert.Throws<FormatException>(() => SKON.Parse(missingBraceSKON));
+
+            missingBraceSKON = "MissingBraceMap: { AValue: \"Value\", ";
+
+            Assert.Throws<FormatException>(() => SKON.Parse(missingBraceSKON));
+        }
+
+        [Test]
+        public void MissingEndBracket()
+        {
+            string missingBracketSKON = "MissingBracketArray: [";
+
+            Assert.Throws<FormatException>(() => SKON.Parse(missingBracketSKON));
+
+            missingBracketSKON = "MissingBracketArray: [ \"Test\", \"Array\",";
+
+            Assert.Throws<FormatException>(() => SKON.Parse(missingBracketSKON));
+        }
+        
+        [Test]
+        public void MissingEndDoubleQuote()
+        {
+            string missingQuote = "StringKey: \"MissingADoubleQuote,";
+
+            Assert.Throws<FormatException>(() => SKON.Parse(missingQuote));
+
+            missingQuote = "StringKey: \"MisingQuote\\\",";
+
+            Assert.Throws<FormatException>(() => SKON.Parse(missingQuote));
+        }
+
+        [Test]
+        public void NoSpaces()
+        {
+            string noSpacesSKON = "TestString:\"StringValue\",TestInt:1,TestDouble:1.2,TestBool:true,TestDateTime:@2016-10-09,";
+
+            SKONObject noSpacesMap = SKON.Parse(noSpacesSKON);
+
+            Assert.AreEqual(ValueType.MAP, noSpacesMap.Type);
+
+            IsNotEmpty(noSpacesMap);
+            IsComplexType(noSpacesMap);
+            IsNotSimpleType(noSpacesMap);
+
+            SKONObject stringVal = noSpacesMap["TestString"];
+
+            HasValue("StringValue", stringVal);
+
+            SKONObject intVal = noSpacesMap["TestInt"];
+
+            HasValue(1, intVal);
+
+            SKONObject doubleVal = noSpacesMap["TestDouble"];
+
+            HasValue(1.2, doubleVal);
+
+            SKONObject boolVal = noSpacesMap["TestBool"];
+
+            HasValue(true, boolVal);
+
+            SKONObject dateTimeVal = noSpacesMap["TestDateTime"];
+
+            HasValue(new DateTime(2016, 10, 09), dateTimeVal);
         }
     }
 }

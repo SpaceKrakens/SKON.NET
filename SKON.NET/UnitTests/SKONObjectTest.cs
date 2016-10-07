@@ -138,6 +138,8 @@ namespace UnitTests
             hasValue |= obj.Boolean != null;
             hasValue |= obj.DateTime != null;
             
+            hasValue |= obj.Length >= 0;
+            // These have no meaning
             hasValue |= obj.Keys.Count >= 0;
             hasValue |= obj.Values.Count >= 0;
             
@@ -555,7 +557,7 @@ namespace UnitTests
 
             Assert.AreEqual(TestDateTime, dt);
         }
-
+        
         [Test]
         public void MapTryGet()
         {
@@ -595,7 +597,5 @@ namespace UnitTests
 
             Assert.AreEqual(TestDateTime, dt);
         }
-
-
     }
 }

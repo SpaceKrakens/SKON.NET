@@ -68,8 +68,24 @@ namespace SKON
         /// <returns>The newly created SKONObject.</returns>
         public static SKONObject Parse(string skon, TextWriter errorStream = null)
         {
-            Scanner sc = new Scanner(GenerateStreamFromString(skon));
-            
+            using (MemoryStream stream = GenerateStreamFromString(skon))
+            {
+                Scanner sc = new Scanner(stream);
+                
+                return Parse(sc, errorStream);
+            }
+        }
+
+        /// <summary>
+        /// Parses a SKON stream to a SKONObject.
+        /// </summary>
+        /// <param name="stream">The SKON data stream.</param>
+        /// <param name="errorStream">The TextWriter to write error messages to.</param>
+        /// <returns></returns>
+        public static SKONObject Parse(Stream stream, TextWriter errorStream = null)
+        {
+            Scanner sc = new Scanner(stream);
+
             return Parse(sc, errorStream);
         }
 
@@ -97,7 +113,7 @@ namespace SKON
 
             return parser.data;
         }
-
+        
         /// <summary>
         /// Writes a SKONObject to a file. This will overwrite the current content of the file.
         /// </summary>

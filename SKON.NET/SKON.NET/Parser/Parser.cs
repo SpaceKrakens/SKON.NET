@@ -69,6 +69,17 @@ public SKONObject metadata = new SKONObject();
         }
     }
 
+	private string EscapeString(string val)
+	{
+		return val.Replace("\\b", "\b")
+					.Replace("\\f", "\f")
+					.Replace("\\n", "\n")
+					.Replace("\\r", "\r")
+					.Replace("\\t", "\t")
+					.Replace("\\\"", "\"")
+					.Replace("\\\\", "\\");
+	}
+
 	public static DateTime UnixTimeStampToDateTime( double unixTimeStamp )
 	{
 		// Unix timestamp is seconds past epoch
@@ -223,7 +234,7 @@ public SKONObject metadata = new SKONObject();
 		switch (la.kind) {
 		case 9: {
 			Get();
-			skonObject = new SKONObject(t.val.Substring(1, t.val.Length - 2)); 
+			skonObject = new SKONObject(EscapeString(t.val.Substring(1, t.val.Length - 2))); 
 			break;
 		}
 		case 11: {
