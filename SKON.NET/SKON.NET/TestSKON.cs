@@ -60,7 +60,7 @@ namespace SKON
                     "ExampleBoolean", true
                 },
                 {
-                    "ExampleDateTime", Internal.Parser.UnixTimeStampToDateTime(296638320L)
+                    "ExampleDateTime", Internal.Utils.ParserUtils.UnixTimeStampToDateTime(296638320L)
                 },
                 {
                     "ExampleArray", new[]
