@@ -19,7 +19,7 @@ namespace UnitTests
     using ValueType = SKON.ValueType;
 
     [TestFixture]
-    class SKONObjectTest
+    class SKONObjectTests
     {
         public static string TestString = "This is a test string!";
         public static int TestInt = 1234;

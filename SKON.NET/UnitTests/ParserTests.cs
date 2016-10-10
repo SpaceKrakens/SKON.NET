@@ -18,7 +18,7 @@ namespace UnitTests
     using SKON;
     using ValueType = SKON.ValueType;
 
-    using static UnitTests.SKONObjectTest;
+    using static UnitTests.SKONObjectTests;
 
     class ParserTests
     {

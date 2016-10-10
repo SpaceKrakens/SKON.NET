@@ -6,6 +6,8 @@ namespace SKON.Internal.Utils
 {
     public static class ParserUtils
     {
+        private static UnicodeEncoding encoding = new UnicodeEncoding(true, false);
+
         public static string ConvertToUnicode(string input)
         {
             int length = input.Length;
@@ -15,21 +17,23 @@ namespace SKON.Internal.Utils
             {
                 bytes[i / 2] = Convert.ToByte(input.Substring(i, 2), 16);
             }
-
-            return new string(Encoding.UTF8.GetChars(bytes));
+            
+            return encoding.GetString(bytes);
         }
         
         public static string EscapeString(string txt)
         {
             if (string.IsNullOrEmpty(txt)) { return txt; }
             StringBuilder retval = new StringBuilder(txt.Length);
-            for (int ix = 0; ix < txt.Length;)
+            for (int ix = 0; ix <= txt.Length;)
             {
+
+
                 int jx = txt.IndexOf('\\', ix);
-                if (jx < 0 || jx == txt.Length - 1) jx = txt.Length;
+                if (jx < 0 || jx >= txt.Length - 1) jx = txt.Length;
                 retval.Append(txt, ix, jx - ix);
                 if (jx >= txt.Length) break;
-                switch (txt[jx + 1])
+                switch (txt[++jx])
                 {
                     case 'b': retval.Append('\b'); break;
                     case 'n': retval.Append('\n'); break;
@@ -38,11 +42,16 @@ namespace SKON.Internal.Utils
                     case 't': retval.Append('\t'); break;
                     case '"': retval.Append('"'); break;
                     case '\\': retval.Append('\\'); break;
-                    case 'u': retval.Append(ConvertToUnicode(txt.Substring(jx, 4))); jx += 4; break;
+                    case 'u':
+                        if (jx + 4 >= txt.Length) goto default;
+                        //throw new Exception("jx: " + jx + ", Length: " + txt.Length + ",  " + txt.Substring(jx + 1, 4));
+                        retval.Append(ConvertToUnicode(txt.Substring(jx + 1, 4)));
+                        jx += 4;
+                        break;
                     default:
                         throw new FormatException("Invalid character escape!");
                 }
-                ix = jx + 2;
+                ix = jx + 1;
             }
             return retval.ToString();
         }
