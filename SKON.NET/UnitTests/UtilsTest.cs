@@ -41,6 +41,7 @@ namespace UnitTests
             Assert.AreEqual(string.Empty, result);
         }
 
+        [Test]
         public void ConvertToInvalidUnicode()
         {
             string invalidUnicodeHex = "asdf";
@@ -50,12 +51,10 @@ namespace UnitTests
             invalidUnicodeHex = "as";
 
             Assert.Throws<FormatException>(() => ParserUtils.ConvertToUnicode(invalidUnicodeHex));
-
-            invalidUnicodeHex = "";
         }
 
         [Test]
-        public void EscapeUnicode()
+        public void EscapeValidUnicode()
         {
             string validUnicodeString = "\\u00D6";
 
@@ -97,5 +96,18 @@ namespace UnitTests
             
             Assert.AreEqual("\b\n\f\r\t\"\\", result);
         }
+
+        [Test]
+        public void EscapeInvalidString()
+        {
+            string invalidEscapeString = "\\a\\c\\e\t\\\\r'";
+
+            Assert.Throws<FormatException>(() => ParserUtils.EscapeString(invalidEscapeString));
+
+            invalidEscapeString = "\\asdf";
+
+            Assert.Throws<FormatException>(() => ParserUtils.EscapeString(invalidEscapeString));
+        }
+        
     }
 }

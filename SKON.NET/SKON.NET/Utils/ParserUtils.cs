@@ -23,17 +23,24 @@ namespace SKON.Internal.Utils
         
         public static string EscapeString(string txt)
         {
-            if (string.IsNullOrEmpty(txt)) { return txt; }
-            StringBuilder retval = new StringBuilder(txt.Length);
-            for (int ix = 0; ix <= txt.Length;)
+            if (string.IsNullOrEmpty(txt))
             {
+                return txt;
+            }
+            StringBuilder retval = new StringBuilder(txt.Length);
+            for (int anchor = 0; anchor <= txt.Length;)
+            {
+                int escapeIndex = txt.IndexOf('\\', anchor);
 
+                if (escapeIndex < 0 || escapeIndex >= txt.Length - 1)
+                    escapeIndex = txt.Length;
 
-                int jx = txt.IndexOf('\\', ix);
-                if (jx < 0 || jx >= txt.Length - 1) jx = txt.Length;
-                retval.Append(txt, ix, jx - ix);
-                if (jx >= txt.Length) break;
-                switch (txt[++jx])
+                retval.Append(txt, anchor, escapeIndex - anchor);
+
+                if (escapeIndex >= txt.Length)
+                    break;
+
+                switch (txt[++escapeIndex])
                 {
                     case 'b': retval.Append('\b'); break;
                     case 'n': retval.Append('\n'); break;
@@ -43,15 +50,16 @@ namespace SKON.Internal.Utils
                     case '"': retval.Append('"'); break;
                     case '\\': retval.Append('\\'); break;
                     case 'u':
-                        if (jx + 4 >= txt.Length) goto default;
-                        //throw new Exception("jx: " + jx + ", Length: " + txt.Length + ",  " + txt.Substring(jx + 1, 4));
-                        retval.Append(ConvertToUnicode(txt.Substring(jx + 1, 4)));
-                        jx += 4;
+                        if (escapeIndex + 4 >= txt.Length)
+                            goto default;
+
+                        retval.Append(ConvertToUnicode(txt.Substring(escapeIndex + 1, 4)));
+                        escapeIndex += 4;
                         break;
                     default:
                         throw new FormatException("Invalid character escape!");
                 }
-                ix = jx + 1;
+                anchor = escapeIndex + 1;
             }
             return retval.ToString();
         }
@@ -59,7 +67,7 @@ namespace SKON.Internal.Utils
         public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
         {
             // Unix timestamp is seconds past epoch
-            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
             return dtDateTime;
         }
