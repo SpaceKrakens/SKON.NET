@@ -14,7 +14,7 @@
 
     "ExampleInteger": 10,
 
-    "ExampleDouble": 10.4,
+    "ExampleDecimal": 10.4,
 
     "ExampleBoolean": true,
 

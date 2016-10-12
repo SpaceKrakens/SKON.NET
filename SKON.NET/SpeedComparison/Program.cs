@@ -1,6 +1,6 @@
 ﻿#region LICENSE
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="SKON.cs" company="SpaceKrakens">
+// <copyright file="Program.cs" company="SpaceKrakens">
 //   MIT License
 //   Copyright (c) 2016 SpaceKrakens
 // </copyright>
@@ -45,7 +45,7 @@ namespace SpeedComparison
                 Author = new { },
                 ExampleString = string.Empty,
                 ExampleInteger = 0,
-                ExampleDouble = 0.0,
+                ExampleDecimal = 0.0,
                 ExampleBoolean = false,
                 ExampleDatetime = string.Empty,
                 ExampleArray = new string[] { },

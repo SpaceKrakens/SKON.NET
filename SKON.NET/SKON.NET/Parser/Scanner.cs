@@ -1,4 +1,13 @@
 
+#region LICENSE
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Scanner.cs" company="SpaceKrakens">
+//   MIT License
+//   Copyright (c) 2016 SpaceKrakens
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
+
 using System;
 using System.IO;
 using System.Collections;

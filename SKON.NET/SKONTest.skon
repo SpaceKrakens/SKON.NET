@@ -26,7 +26,7 @@ ExampleString: "This is a string",
 
 ExampleInteger: 10,
 
-ExampleFloat: 10.4,
+ExampleDecimal: 10.4,
 
 ExampleBoolean: true,
 

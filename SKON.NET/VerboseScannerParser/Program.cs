@@ -1,6 +1,6 @@
 ﻿#region LICENSE
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="SKON.cs" company="SpaceKrakens">
+// <copyright file="Program.cs" company="SpaceKrakens">
 //   MIT License
 //   Copyright (c) 2016 SpaceKrakens
 // </copyright>

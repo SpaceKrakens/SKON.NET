@@ -4,6 +4,15 @@ using SKON.Internal.Utils;
 
 
 
+#region LICENSE
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Parser.cs" company="SpaceKrakens">
+//   MIT License
+//   Copyright (c) 2016 SpaceKrakens
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
+
 using System;
 
 namespace SKON.Internal {

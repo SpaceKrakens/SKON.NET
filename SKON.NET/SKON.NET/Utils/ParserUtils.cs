@@ -1,9 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region LICENSE
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ParserUtils.cs" company="SpaceKrakens">
+//   MIT License
+//   Copyright (c) 2016 SpaceKrakens
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
 
 namespace SKON.Internal.Utils
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+
     public static class ParserUtils
     {
         private static UnicodeEncoding encoding = new UnicodeEncoding(true, false);

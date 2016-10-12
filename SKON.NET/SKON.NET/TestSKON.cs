@@ -1,19 +1,20 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+﻿#region LICENSE
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="TestSKON.cs" company="SpaceKrakens">
-//     MIT Licence
-//     Copyright (C) 2016 SpaceKrakens
+//   MIT License
+//   Copyright (c) 2016 SpaceKrakens
 // </copyright>
 // <summary>
 //   Defines the TestSKON type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
-using System;
-using System.Collections.Generic;
-using System.Text;
+#endregion
 
 namespace SKON
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
     /// <summary>
     /// The test SKON.
     /// </summary>
@@ -54,7 +55,7 @@ namespace SKON
                     "ExampleInteger", 10
                 },
                 {
-                    "ExampleDouble", 0.4
+                    "ExampleDecimal", 0.4
                 },
                 {
                     "ExampleBoolean", true

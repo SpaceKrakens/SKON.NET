@@ -1,4 +1,11 @@
-﻿
+﻿#region LICENSE
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="UtilsTests.cs" company="SpaceKrakens">
+//   MIT License
+//   Copyright (c) 2016 SpaceKrakens
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
 
 namespace UnitTests
 {
@@ -11,7 +18,7 @@ namespace UnitTests
     using SKON.Internal.Utils;
 
     [TestFixture]
-    class UtilsTest
+    class UtilsTests
     {
         [Test]
         public void ConvertToValidUnicode()
@@ -109,5 +116,30 @@ namespace UnitTests
             Assert.Throws<FormatException>(() => ParserUtils.EscapeString(invalidEscapeString));
         }
         
+        [Test]
+        public void EscapeLongString()
+        {
+            string longString = new string('A', 1000000);
+
+            string result = ParserUtils.EscapeString(longString);
+
+            Assert.AreEqual(longString, result);
+
+            int escapeInserts = 500000;
+
+            StringBuilder longStringBuilder = new StringBuilder(escapeInserts * 2);
+
+            for (int i = 0; i < escapeInserts; i++)
+            {
+                longStringBuilder.Append("\t");
+            }
+
+            longString = longStringBuilder.ToString();
+
+            result = ParserUtils.EscapeString(longString);
+
+            Assert.AreEqual(longString, result);
+        }
+
     }
 }
