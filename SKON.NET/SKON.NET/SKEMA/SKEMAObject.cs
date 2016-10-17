@@ -15,28 +15,42 @@ namespace SKON.SKEMA
     
     class SKEMAObject
     {
+        private ValueType type;
         
-    }
-    
-    internal abstract class SKEMASpecifier
-    {
-        internal class EmptySpecifier : SKEMASpecifier
+        private Dictionary<string, SKEMAObject> complexValue;
+
+        private SKEMAObject arraySKEMA;
+
+        public bool Validate(SKONObject obj)
         {
-            public override string GetSKEMAString()
+            if (this.type != obj.Type)
             {
-                return string.Empty;
+                return false;
             }
 
-            public override bool Match(SKONObject obj)
+            switch (this.type)
             {
-                return true;
+                case ValueType.EMPTY:
+                case ValueType.STRING:
+                case ValueType.INTEGER:
+                case ValueType.DOUBLE:
+                case ValueType.BOOLEAN:
+                case ValueType.DATETIME:
+                    return true;
+                case ValueType.MAP:
+                    return false;
+                case ValueType.ARRAY:
+                    foreach (SKONObject value in obj.Values)
+                    {
+                        if (arraySKEMA.Validate(value) == false)
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                default:
+                    return false;
             }
         }
-
-        public static SKEMASpecifier Empty => new EmptySpecifier();
-
-        public abstract bool Match(SKONObject obj);
-
-        public abstract string GetSKEMAString();
     }
 }
