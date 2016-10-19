@@ -193,7 +193,7 @@ namespace SKON
         /// <summary>
         /// Gets the collection of string keys, if this SKONObject is a Map, or an empty ICollection, if it isn't.
         /// </summary>
-        public List<string> Keys => this.Type == ValueType.MAP ? new List<string>(mapValues.Keys) : new List<string>();
+        public ICollection<string> Keys => this.Type == ValueType.MAP ? new List<string>(mapValues.Keys) : new List<string>();
 
         /// <summary>
         /// Gets the length of the array, should this SKONObject be one, or negative 1, if it isn't.
@@ -233,7 +233,7 @@ namespace SKON
         /// <summary>
         /// Gets the values of the SKONObject array.
         /// </summary>
-        public List<SKONObject> Values => this.arrayValues ?? new List<SKONObject>();
+        public ICollection<SKONObject> Values => this.arrayValues ?? new List<SKONObject>();
 
         /// <summary>
         /// Gets an empty SKONObject.
@@ -263,14 +263,14 @@ namespace SKON
                 {
                     if (i < 0 || i >= this.arrayValues?.Count)
                     {
-                        throw new ArgumentOutOfRangeException(nameof(i), i, "The given index was out of bounds!");
+                        throw new IndexOutOfRangeException($"The index {i} is out of bounds!");
                     }
 
                     this.arrayValues[i] = value;
                 }
                 else
                 {
-                    throw new InvalidOperationException(string.Format("This SKONObject is not an array! Index {0} cannot be set to value {1}!", i, value));
+                    throw new InvalidOperationException($"This SKONObject is not an array! Index {i} cannot be set to value {value}!");
                 }
             }
         }
@@ -294,14 +294,7 @@ namespace SKON
 
             set
             {
-                if (this.Type == ValueType.MAP)
-                {
-                    this.mapValues[key] = value;
-                }
-                else
-                {
-                    throw new InvalidOperationException(string.Format("This SKONObject is not a map! Adding value {0} to key {1} isn't possible!", value, key));
-                }
+                Add(key, value);
             }
         }
         
@@ -529,18 +522,23 @@ namespace SKON
             return new SKONObject(map);
         }
 
+        /// <summary>
+        /// Adds a key-value pair to a Map.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
         public void Add(string key, SKONObject value)
         {
             if (this.Type != ValueType.MAP)
             {
-                throw new InvalidOperationException("This method only works on MAP type SKONObjects!");
+                throw new InvalidOperationException(string.Format("This SKONObject is not a MAP! Adding value {0} to key {1} isn't possible!", value, key));
             }
-            
-            mapValues[key] = value;
+
+            this.mapValues[key] = value;
         }
 
         /// <summary>
-        /// Adds a SKONObject to the Array.
+        /// Adds a SKONObject to an Array.
         /// </summary>
         /// <param name="value">
         /// The value to add.
@@ -550,7 +548,7 @@ namespace SKON
         /// </returns>
         public bool Add(SKONObject value)
         {
-            if (this.Type == ValueType.ARRAY)
+            if (this.Type != ValueType.ARRAY)
             {
                 return false;
             }
@@ -559,6 +557,45 @@ namespace SKON
             return true;
         }
 
+        public bool Remove(string key)
+        {
+            if (this.Type != ValueType.MAP)
+            {
+                return false;
+            }
+
+            return mapValues.Remove(key);
+        }
+
+        public bool RemoveAt(int i)
+        {
+            if (this.Type != ValueType.ARRAY)
+            {
+                return false;
+            }
+
+            try
+            {
+                arrayValues.RemoveAt(i);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool Remove(SKONObject value)
+        {
+            if (this.Type != ValueType.ARRAY)
+            {
+                return false;
+            }
+
+            return arrayValues.Remove(value);
+        }
+        
         /// <summary>
         /// Checks to see if this SKONObject contains the key.
         /// </summary>
@@ -584,9 +621,37 @@ namespace SKON
         /// </returns>
         public bool AllPresent(params string[] keys)
         {
+            if (this.Type != ValueType.MAP)
+            {
+                return false;
+            }
+
             for (int i = 0; i < keys.Length; i++)
             {
-                if (!this.ContainsKey(keys[i]))
+                if (this.ContainsKey(keys[i]) == false)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks to see if this SKONObject contains all keys in the given IEnumerable.
+        /// </summary>
+        /// <param name="keys">The keys.</param>
+        /// <returns>True, if all exist, false if any are missing or not a map.</returns>
+        public bool AllPresent(IEnumerable<string> keys)
+        {
+            if (this.Type != ValueType.MAP)
+            {
+                return false;
+            }
+            
+            foreach (string key in keys)
+            {
+                if (mapValues.ContainsKey(key) == false)
                 {
                     return false;
                 }
@@ -865,7 +930,7 @@ namespace SKON
                         return this.Type.GetHashCode() * 17 + stringValue.GetHashCode();
                     case ValueType.INTEGER:
                         return this.Type.GetHashCode() * 17 + intValue.GetHashCode();
-                case ValueType.DOUBLE:
+                    case ValueType.DOUBLE:
                         return this.Type.GetHashCode() * 17 + doubleValue.GetHashCode();
                     case ValueType.BOOLEAN:
                         return this.Type.GetHashCode() * 17 + booleanValue.GetHashCode();

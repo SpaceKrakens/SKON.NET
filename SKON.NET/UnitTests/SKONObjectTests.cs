@@ -597,5 +597,38 @@ namespace UnitTests
 
             Assert.AreEqual(TestDateTime, dt);
         }
+
+        [Test]
+        public void ArrayModification()
+        {
+            SKONObject arrayObj = new string[] { "This", "is", "an", "array" };
+
+            IsNotEmpty(arrayObj);
+            IsComplexType(arrayObj);
+
+            Assert.AreEqual(ValueType.ARRAY, arrayObj.Type);
+
+            Assert.IsTrue(arrayObj.Add("of"));
+            Assert.IsTrue(arrayObj.Add("strings"));
+
+            Assert.AreEqual("This", arrayObj[0].String);
+            Assert.AreEqual("is", arrayObj[1].String);
+            Assert.AreEqual("an", arrayObj[2].String);
+            Assert.AreEqual("array", arrayObj[3].String);
+            Assert.AreEqual("of", arrayObj[4].String);
+            Assert.AreEqual("strings", arrayObj[5].String);
+
+            Assert.Throws<IndexOutOfRangeException>(() => { arrayObj[6] = "!"; });
+
+            ICollection<SKONObject> values = arrayObj.Values;
+
+            values.Add("!");
+
+            Assert.AreEqual("!", arrayObj[6].String);
+            
+            arrayObj.Remove((SKONObject)"!");
+
+            Assert.Throws<IndexOutOfRangeException>(() => { arrayObj[6] = "!"; });
+        }
     }
 }
