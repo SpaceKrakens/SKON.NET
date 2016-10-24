@@ -69,6 +69,11 @@ namespace SKON.SKEMA
             this.arraySKEMA = arraySKEMA;
         }
 
+        public SKEMAObject(string reference)
+        {
+            // TODO
+        }
+
         public SKEMAType Type => type;
         
         public bool Valid(SKONObject obj)

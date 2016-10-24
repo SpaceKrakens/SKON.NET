@@ -229,15 +229,11 @@ public SKONObject metadata = new SKONObject();
 			break;
 		}
 		case 4: {
-			SKONObject map; 
-			skon_map(out map);
-			skonObject = map; 
+			skon_map(out skonObject);
 			break;
 		}
 		case 6: {
-			SKONObject array; 
-			skon_array(out array);
-			skonObject = array; 
+			skon_array(out skonObject);
 			break;
 		}
 		case 14: {

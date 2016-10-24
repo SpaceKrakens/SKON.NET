@@ -142,10 +142,8 @@ value<out SKONObject skonObject>								(. skonObject = null; .)
     | integer_													(. skonObject = new SKONObject(int.Parse(t.val)); .)
     | double_													(. skonObject = new SKONObject(double.Parse(t.val, CultureInfo.InvariantCulture)); .)
     | datetime_													(. skonObject = new SKONObject(ParseDatetime(t.val)); .)
-	|															(. SKONObject map; .)
-		skon_map<out map>										(. skonObject = map; .)
-    |															(. SKONObject array; .)
-		skon_array<out array>									(. skonObject = array; .)
+	| skon_map<out skonObject>									
+    | skon_array<out skonObject>										
     | "true"													(. skonObject = new SKONObject(true); .)
     | "false"													(. skonObject = new SKONObject(false); .)
     | "null"													(. skonObject = new SKONObject(); .)

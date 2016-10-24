@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using SKON.Internal.Utils;
 
-COMPILER SKON
+COMPILER SKEMA
 
 	public SKONObject metadata = new SKONObject();
 
-    public SKONObject data = new SKONObject();
+    public SKEMAObject data = new SKEMAObject(SKEMAValue.ANY);
 
 	private string[] dateTimeFormats = {
         "yyyy-MM-dd",
@@ -73,7 +73,16 @@ TOKENS
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('Z'|'z')
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit ('+'|'-') digit digit ':' digit digit
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('+'|'-') digit digit ':' digit digit).
+  any_type = 'Any'.
+  string_type = 'String'.
+  integer_type = 'Integer'.
+  float_type = 'Float'.
+  boolean_type = 'Boolean'.
+  datetime_type = 'DateTime';
 
+  ref = '#'.
+  def = 'define'.
+  optional = 'optional'.
 
 COMMENTS FROM "/*" TO "*/" NESTED
 COMMENTS FROM "//" TO lf
@@ -82,11 +91,11 @@ IGNORE ' ' + '\r' + '\t' + '\n'
 
 PRODUCTIONS
 /*-------------------------------------------------------------------------*/
-SKON															(. Dictionary<string, SKONObject> metadataElements = new Dictionary<string, SKONObject>();
-																   Dictionary<string, SKONObject> mapElements = new Dictionary<string, SKONObject>();
-																   string key; SKONObject value; .)
-=	{ meta_data<out key, out value> }							(. this.metadata = new SKONObject(metadataElements); .)
-	open_map<out mapElements>									(. this.data = new SKONObject(mapElements); .)
+SKEMA																(. Dictionary<string, SKObject> metadataElements = new Dictionary<string, SKONObject>();
+																		Dictionary<string, SKEMAObject> mapElements = new Dictionary<string, SKEMAObject>();
+																		string key; SKEMaObject value; .)
+=	{ meta_data<out key, out value> }								(. this.metadata = new SKONObject(metadataElements); .)
+	open_skema_map<out mapElements>									(. this.data = new SKEMAObject(mapElements); .)
     .															
 
 /*-------------------------------------------------------------------------*/
@@ -96,59 +105,103 @@ meta_data<out string key, out SKONObject obj>
 	tilda.
 
 /*-------------------------------------------------------------------------*/
-skon_map<out SKONObject map>									(. Dictionary<string, SKONObject> mapElements; .)
+skema_map<out SKEMAObject map>
 =	lbrace
-    open_map<out mapElements>									(. map = new SKONObject(mapElements); .)
+	open_skema_map<out mapElements>
+	rbrace
+	.
+
+/*-------------------------------------------------------------------------*/
+skon_map<out SKONObject map>										(. Dictionary<string, SKONObject> mapElements; .)
+=	lbrace
+    open_skon_map<out mapElements>									(. map = new SKONObject(mapElements); .)
     rbrace
     .
 
 /*-------------------------------------------------------------------------*/
-skon_array<out SKONObject array>								(. List<SKONObject> arrayElements; .)
+skema_array<out SKEMAObject array>									(. SKEMAObject skemaObj; .)
 =	lbracket
-    open_array<out arrayElements>								(. array = new SKONObject(arrayElements); .)
+	(skema_value<out skemaObj>										(. array = new SKEMAObject(skemaObj); .)
+	| ref)															(. array = new SKEMAObejct(t.val.Substring(1)); .)
+	rbracket
+
+/*-------------------------------------------------------------------------*/
+skon_array<out SKONObject array>									(. List<SKONObject> arrayElements; .)
+=	lbracket
+    open_skon_array<out arrayElements>								(. array = new SKONObject(arrayElements); .)
     rbracket
     .
 
 /*-------------------------------------------------------------------------*/
-open_map<. out Dictionary<string, SKONObject> mapElements .>	(. string key; SKONObject value; mapElements = new Dictionary<string, SKONObject>(); .)
+open_skema_pam<. out Dictionary<string, SKONObject> mapElements .>	(. string key; SKEMAObject value; mapElements = new Dictionary<string, SKEMAObject>(); .)
 =	{
-        map_element <out key, out value>						(. mapElements[key] = value; .)
+		skema_map_element<out key, out value>						(. mapElements[key] = value; .)
+		WEAK comma
+	}
+	.
+/*-------------------------------------------------------------------------*/
+open_skon_map<. out Dictionary<string, SKONObject> mapElements .>	(. string key; SKONObject value; mapElements = new Dictionary<string, SKONObject>(); .)
+=	{
+        skon_map_element <out key, out value>						(. mapElements[key] = value; .)
 		WEAK comma
     }
     .
+/*-------------------------------------------------------------------------*/
+skema_map_element<out string key, out SKONObject obj>				(. string name; SKONObject skonObject; .)
+=	Ident<out name>													(. key = name; .)
+    colon 
+    skon_value<out skonObject>										(. obj = skonObject; .)
+    .
 
 /*-------------------------------------------------------------------------*/
-map_element<out string key, out SKONObject obj>					(. string name; SKONObject skonObject; .)
-=	Ident<out name>												(. key = name; .)
+skon_map_element<out string key, out SKONObject obj>				(. string name; SKONObject skonObject; .)
+=	Ident<out name>													(. key = name; .)
     colon 
-    value<out skonObject>										(. obj = skonObject; .)
+    skon_value<out skonObject>										(. obj = skonObject; .)
     .
 
 /*------------------------------------------------------------------------*/
 Ident<out string name>
-= ident															(. name = t.val; .).
+= ident																(. name = t.val; .).
 
 /*-------------------------------------------------------------------------*/
-open_array<. out List<SKONObject> arrayElements .>				(. SKONObject skonObject; arrayElements = new List<SKONObject>(); .)
+open_skon_array<. out List<SKONObject> arrayElements .>				(. SKONObject skonObject; arrayElements = new List<SKONObject>(); .)
 =	{
-        value<out skonObject>									(. arrayElements.Add(skonObject); .)
+        skon_value<out skonObject>									(. arrayElements.Add(skonObject); .)
 		WEAK comma 
     }
     .
 
 /*-------------------------------------------------------------------------*/
-value<out SKONObject skonObject>								(. skonObject = null; .)
-=	string_														(. skonObject = new SKONObject(ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2))); .)
-    | integer_													(. skonObject = new SKONObject(int.Parse(t.val)); .)
-    | double_													(. skonObject = new SKONObject(double.Parse(t.val, CultureInfo.InvariantCulture)); .)
-    | datetime_													(. skonObject = new SKONObject(ParseDatetime(t.val)); .)
-	|															(. SKONObject map; .)
-		skon_map<out map>										(. skonObject = map; .)
-    |															(. SKONObject array; .)
-		skon_array<out array>									(. skonObject = array; .)
-    | "true"													(. skonObject = new SKONObject(true); .)
-    | "false"													(. skonObject = new SKONObject(false); .)
-    | "null"													(. skonObject = new SKONObject(); .)
-    .												
-               
+skon_value<out SKONObject skonObject>								(. skonObject = null; .)
+=	string_															(. skonObject = new SKONObject(ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2))); .)
+    | integer_														(. skonObject = new SKONObject(int.Parse(t.val)); .)
+    | double_														(. skonObject = new SKONObject(double.Parse(t.val, CultureInfo.InvariantCulture)); .)
+    | datetime_														(. skonObject = new SKONObject(ParseDatetime(t.val)); .)
+	| skon_map<out skonObject>									
+    | skon_array<out skonObject>								
+    | "true"														(. skonObject = new SKONObject(true); .)
+    | "false"														(. skonObject = new SKONObject(false); .)
+    | "null"														(. skonObject = new SKONObject(); .)
+    .	
+												
+/*-------------------------------------------------------------------------*/
+type<out SKEMAObject skemaObj>										(. skemaObj = null; .)
+=	any_type														(. skemaObj = new SKEMAObject(SKEMAType.ANY) .)
+	| string_type													(. skemaObj = new SKEMAObject(SKEMAType.STRING); .)
+	| integer_type													(. skemaObj = new SKEMAObject(SKEMAType.INTEGER); .)
+	| float_type													(. skemaObj = new SKEMAObject(SKEMAType.FLOAT); .)
+	| boolean_type													(. skemaObj = new SKEMAObject(SKEMAType.BOOLEAN); .)
+	| datetime_type													(. skemaObj = new SKEMAObject(SKEMAType.DATETIME); .)
+	| skema_map<out skemaObj>										
+	| skema_array<out skemaObj>
+	.
+
+/*-------------------------------------------------------------------------*/
+skema_value<out SKEMAObject skemaObj>
+=	type<out skemaObj>
+	| skema_map<out skemaObj>
+	| skema_array<out skemaObj>
+	.
+
 END SKON.
