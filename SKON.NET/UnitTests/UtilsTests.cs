@@ -119,13 +119,13 @@ namespace UnitTests
         [Test]
         public void EscapeLongString()
         {
-            string longString = new string('A', 1000000);
+            string longString = new string('A', 10000000);
 
             string result = ParserUtils.EscapeString(longString);
 
             Assert.AreEqual(longString, result);
 
-            int escapeInserts = 500000;
+            int escapeInserts = 5000000;
 
             StringBuilder longStringBuilder = new StringBuilder(escapeInserts * 2);
 

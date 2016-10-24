@@ -187,12 +187,12 @@ skon_value<out SKONObject skonObject>								(. skonObject = null; .)
 												
 /*-------------------------------------------------------------------------*/
 type<out SKEMAObject skemaObj>										(. skemaObj = null; .)
-=	any_type														(. skemaObj = new SKEMAObject(SKEMAType.ANY) .)
-	| string_type													(. skemaObj = new SKEMAObject(SKEMAType.STRING); .)
-	| integer_type													(. skemaObj = new SKEMAObject(SKEMAType.INTEGER); .)
-	| float_type													(. skemaObj = new SKEMAObject(SKEMAType.FLOAT); .)
-	| boolean_type													(. skemaObj = new SKEMAObject(SKEMAType.BOOLEAN); .)
-	| datetime_type													(. skemaObj = new SKEMAObject(SKEMAType.DATETIME); .)
+=	any_type														(. skemaObj = SKEMAObject.Any; .)
+	| string_type													(. skemaObj = SKEMAObject.String; .)
+	| integer_type													(. skemaObj = SKEMAObject.Integer; .)
+	| float_type													(. skemaObj = SKEMAObject.Float; .)
+	| boolean_type													(. skemaObj = SKEMAObject.Boolean; .)
+	| datetime_type													(. skemaObj = SKEMAObject.DateTime; .)
 	| skema_map<out skemaObj>										
 	| skema_array<out skemaObj>
 	.

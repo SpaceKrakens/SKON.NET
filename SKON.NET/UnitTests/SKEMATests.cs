@@ -16,6 +16,7 @@ namespace UnitTests
     using System.Threading.Tasks;
     using NUnit.Framework;
     using SKON.SKEMA;
+    using SKON;
 
     [TestFixture]
     class SKEMATests
@@ -23,43 +24,97 @@ namespace UnitTests
         [Test]
         public void AnySKEMA()
         {
-            Assert.IsTrue(new SKEMAObject(SKEMAType.ANY).Valid(SKONObjectTests.TestMap));
+            Assert.IsTrue(SKEMAObject.Any.Valid(SKONObjectTests.TestMap));
         }
 
         [Test]
         public void WrongTypeSKEMA()
         {
-            Assert.IsFalse(new SKEMAObject(SKEMAType.STRING).Valid(SKONObjectTests.TestInt));
+            Assert.IsFalse(SKEMAObject.String.Valid(SKONObjectTests.TestInt));
         }
 
         [Test]
         public void StringSKEMA()
         {
-            Assert.IsTrue(new SKEMAObject(SKEMAType.STRING).Valid(SKONObjectTests.TestString));
+            Assert.IsTrue(SKEMAObject.String.Valid(SKONObjectTests.TestString));
         }
 
         [Test]
         public void IntegerSKEMA()
         {
-            Assert.IsTrue(new SKEMAObject(SKEMAType.INTEGER).Valid(SKONObjectTests.TestInt));
+            Assert.IsTrue(SKEMAObject.Integer.Valid(SKONObjectTests.TestInt));
         }
 
         [Test]
         public void DoubleSKEMA()
         {
-            Assert.IsTrue(new SKEMAObject(SKEMAType.DOUBLE).Valid(SKONObjectTests.TestDouble));
+            Assert.IsTrue(SKEMAObject.Float.Valid(SKONObjectTests.TestDouble));
         }
 
         [Test]
         public void BooleanSKEMA()
         {
-            Assert.IsTrue(new SKEMAObject(SKEMAType.BOOLEAN).Valid(SKONObjectTests.TestBoolean));
+            Assert.IsTrue(SKEMAObject.Boolean.Valid(SKONObjectTests.TestBoolean));
         }
 
         [Test]
         public void DateTimeSKEMA()
         {
-            Assert.IsTrue(new SKEMAObject(SKEMAType.DATETIME).Valid(SKONObjectTests.TestDateTime));
+            Assert.IsTrue(SKEMAObject.DateTime.Valid(SKONObjectTests.TestDateTime));
+        }
+
+        [Test]
+        public void ArraySKEMA()
+        {
+            SKEMAObject obj = new SKEMAObject(SKEMAObject.Float);
+
+            Assert.IsFalse(obj.Valid(new int[] { 1, 2, 3 }));
+
+            Assert.IsTrue(obj.Valid(new double[] { 1, 2, 3 }));
+
+            obj = new SKEMAObject(SKEMAObject.Any);
+
+            Assert.IsTrue(obj.Valid(new int[] { 1, 2, 3 }));
+
+            Assert.IsTrue(obj.Valid(new double[] { 1, 2, 3 }));
+        }
+        
+        [Test]
+        public void MapSKEMA()
+        {
+            SKEMAObject map = new SKEMAObject(new Dictionary<string, SKEMAObject>() { { "StringKey", SKEMAObject.String }, { "Any", SKEMAObject.Any } });
+
+            SKONObject data = new Dictionary<string, SKONObject>() { { "StringKey", "Value" }, { "Any", 1.3d } };
+
+            Assert.IsTrue(map.Valid(data));
+
+            data["Any"] = new DateTime(1990, 06, 02);
+
+            Assert.IsTrue(map.Valid(data));
+
+            data = new Dictionary<string, SKONObject>() { { "StringKey", 123 }, { "Any", "AnyValue" } };
+
+            Assert.IsFalse(map.Valid(data));
+
+            data["StringKey"] = "asdf";
+
+            Assert.IsTrue(map.Valid(data));
+        }
+
+        [Test]
+        public void CyclicReferenceTest()
+        {
+            SKEMAObject one = new SKEMAObject("Two");
+            SKEMAObject two = new SKEMAObject("One");
+
+            Dictionary<string, SKEMAObject> definitions = new Dictionary<string, SKEMAObject>();
+
+            definitions["One"] = one;
+            definitions["Two"] = two;
+
+            SKEMAObject skema = new SKEMAObject(new SKEMAObject("One"));
+
+            Assert.IsFalse(skema.ResolveReferences(definitions));
         }
     }
 }

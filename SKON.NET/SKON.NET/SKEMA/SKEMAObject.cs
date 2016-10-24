@@ -17,10 +17,11 @@ namespace SKON.SKEMA
     
     public enum SKEMAType
     {
+        REFERENCE = -1,
         ANY,
         STRING,
         INTEGER,
-        DOUBLE,
+        FLOAT,
         BOOLEAN,
         DATETIME,
         MAP,
@@ -31,6 +32,18 @@ namespace SKON.SKEMA
     {
         //TODO: Add modification methods like Add, Remove and Getters for values
 
+        public static SKEMAObject Any => new SKEMAObject(SKEMAType.ANY);
+
+        public static SKEMAObject String => new SKEMAObject(SKEMAType.STRING);
+
+        public static SKEMAObject Integer => new SKEMAObject(SKEMAType.INTEGER);
+
+        public static SKEMAObject Float => new SKEMAObject(SKEMAType.FLOAT);
+
+        public static SKEMAObject Boolean => new SKEMAObject(SKEMAType.BOOLEAN);
+
+        public static SKEMAObject DateTime => new SKEMAObject(SKEMAType.DATETIME);
+
         private SKEMAType type;
         
         private Dictionary<string, SKEMAObject> mapSKEMA;
@@ -39,7 +52,9 @@ namespace SKON.SKEMA
         
         private SKEMAObject arraySKEMA;
 
-        public SKEMAObject(SKEMAType type)
+        private string reference;
+        
+        private SKEMAObject(SKEMAType type)
         {
             this.type = type;
 
@@ -71,11 +86,28 @@ namespace SKON.SKEMA
 
         public SKEMAObject(string reference)
         {
-            // TODO
+            this.type = SKEMAType.REFERENCE;
+            this.reference = reference;
         }
 
         public SKEMAType Type => type;
         
+        public bool ResolveReferences(Dictionary<string, SKEMAObject> definitions)
+        {
+            if ((this.Type == SKEMAType.MAP || this.Type == SKEMAType.ARRAY) == false)
+            {
+                throw new InvalidOperationException("Can only resolve references for SKEMAObejcts of type MAP and ARRAY!");
+            }
+
+            // TODO: Find all strongly connected components.
+
+            // TODO: substiture all references with their definition.
+
+            throw new NotImplementedException();
+
+            return false;
+        }
+
         public bool Valid(SKONObject obj)
         {
             if (this.type != SKEMAType.ANY && (int)this.type != (int)obj.Type)
@@ -88,7 +120,7 @@ namespace SKON.SKEMA
                 case SKEMAType.ANY:
                 case SKEMAType.STRING:
                 case SKEMAType.INTEGER:
-                case SKEMAType.DOUBLE:
+                case SKEMAType.FLOAT:
                 case SKEMAType.BOOLEAN:
                 case SKEMAType.DATETIME:
                     return true;
