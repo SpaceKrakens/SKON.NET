@@ -16,7 +16,7 @@ namespace UnitTests
     using System.Threading.Tasks;
     using NUnit.Framework;
     using SKON;
-    using ValueType = SKON.ValueType;
+    using SKONValueType = SKON.SKONValueType;
 
     [TestFixture]
     class SKONObjectTests
@@ -43,9 +43,9 @@ namespace UnitTests
 
         public static void IsComplexType(SKONObject obj)
         {
-            Assert.IsTrue(ValueType.MAP == obj.Type || ValueType.ARRAY == obj.Type);
+            Assert.IsTrue(SKONValueType.MAP == obj.Type || SKONValueType.ARRAY == obj.Type);
 
-            if (obj.Type == ValueType.ARRAY)
+            if (obj.Type == SKONValueType.ARRAY)
             {
                 Assert.GreaterOrEqual(obj.Length, 0);
                 Assert.AreEqual(obj.Values.Count, obj.Length);
@@ -56,8 +56,8 @@ namespace UnitTests
 
         public static void IsNotComplexType(SKONObject obj)
         {
-            Assert.AreNotEqual(ValueType.MAP, obj.Type);
-            Assert.AreNotEqual(ValueType.ARRAY, obj.Type);
+            Assert.AreNotEqual(SKONValueType.MAP, obj.Type);
+            Assert.AreNotEqual(SKONValueType.ARRAY, obj.Type);
 
             Assert.AreEqual(-1, obj.Length);
             Assert.AreEqual(0, obj.Values.Count);
@@ -71,11 +71,11 @@ namespace UnitTests
         {
             bool simpleType = false;
 
-            simpleType |= obj.Type == ValueType.STRING;
-            simpleType |= obj.Type == ValueType.INTEGER;
-            simpleType |= obj.Type == ValueType.DOUBLE;
-            simpleType |= obj.Type == ValueType.BOOLEAN;
-            simpleType |= obj.Type == ValueType.DATETIME;
+            simpleType |= obj.Type == SKONValueType.STRING;
+            simpleType |= obj.Type == SKONValueType.INTEGER;
+            simpleType |= obj.Type == SKONValueType.FLOAT;
+            simpleType |= obj.Type == SKONValueType.BOOLEAN;
+            simpleType |= obj.Type == SKONValueType.DATETIME;
 
             Assert.IsTrue(simpleType);
 
@@ -92,11 +92,11 @@ namespace UnitTests
 
         public static void IsNotSimpleType(SKONObject obj)
         {
-            Assert.AreNotEqual(ValueType.STRING, obj.Type);
-            Assert.AreNotEqual(ValueType.INTEGER, obj.Type);
-            Assert.AreNotEqual(ValueType.DOUBLE, obj.Type);
-            Assert.AreNotEqual(ValueType.BOOLEAN, obj.Type);
-            Assert.AreNotEqual(ValueType.DATETIME, obj.Type);
+            Assert.AreNotEqual(SKONValueType.STRING, obj.Type);
+            Assert.AreNotEqual(SKONValueType.INTEGER, obj.Type);
+            Assert.AreNotEqual(SKONValueType.FLOAT, obj.Type);
+            Assert.AreNotEqual(SKONValueType.BOOLEAN, obj.Type);
+            Assert.AreNotEqual(SKONValueType.DATETIME, obj.Type);
             
             Assert.IsNull(obj.String);
             Assert.IsNull(obj.Int);
@@ -107,7 +107,7 @@ namespace UnitTests
 
         public static void IsEmpty(SKONObject emptyObj)
         {
-            Assert.AreEqual(ValueType.EMPTY, emptyObj.Type, "Empty SKONObject.Type is not EMPTY!");
+            Assert.AreEqual(SKONValueType.EMPTY, emptyObj.Type, "Empty SKONObject.Type is not EMPTY!");
 
             Assert.IsTrue(emptyObj.IsEmpty, "Empty SKONObject.IsEmpty returned false!");
 
@@ -148,7 +148,7 @@ namespace UnitTests
 
         public static void HasValue(string expected, SKONObject actual)
         {
-            Assert.AreEqual(ValueType.STRING, actual.Type);
+            Assert.AreEqual(SKONValueType.STRING, actual.Type);
 
             IsNotEmpty(actual);
 
@@ -161,7 +161,7 @@ namespace UnitTests
 
         public static void HasValue(int expected, SKONObject actual)
         {
-            Assert.AreEqual(ValueType.INTEGER, actual.Type);
+            Assert.AreEqual(SKONValueType.INTEGER, actual.Type);
 
             IsNotEmpty(actual);
 
@@ -174,7 +174,7 @@ namespace UnitTests
 
         public static void HasValue(double expected, SKONObject actual)
         {
-            Assert.AreEqual(ValueType.DOUBLE, actual.Type);
+            Assert.AreEqual(SKONValueType.FLOAT, actual.Type);
 
             IsNotEmpty(actual);
 
@@ -187,7 +187,7 @@ namespace UnitTests
 
         public static void HasValue(bool expected, SKONObject actual)
         {
-            Assert.AreEqual(ValueType.BOOLEAN, actual.Type);
+            Assert.AreEqual(SKONValueType.BOOLEAN, actual.Type);
 
             IsNotEmpty(actual);
 
@@ -200,7 +200,7 @@ namespace UnitTests
 
         public static void HasValue(DateTime expected, SKONObject actual)
         {
-            Assert.AreEqual(ValueType.DATETIME, actual.Type);
+            Assert.AreEqual(SKONValueType.DATETIME, actual.Type);
 
             IsNotEmpty(actual);
 
@@ -222,7 +222,7 @@ namespace UnitTests
         {
             SKONObject stringObj = new SKONObject(TestString);
 
-            Assert.AreEqual(ValueType.STRING, stringObj.Type);
+            Assert.AreEqual(SKONValueType.STRING, stringObj.Type);
 
             IsNotEmpty(stringObj);
 
@@ -243,7 +243,7 @@ namespace UnitTests
         {
             SKONObject intObj = new SKONObject(TestInt);
 
-            Assert.AreEqual(ValueType.INTEGER, intObj.Type);
+            Assert.AreEqual(SKONValueType.INTEGER, intObj.Type);
 
             IsNotEmpty(intObj);
 
@@ -264,7 +264,7 @@ namespace UnitTests
         {
             SKONObject doubleObj = new SKONObject(TestDouble);
 
-            Assert.AreEqual(ValueType.DOUBLE, doubleObj.Type);
+            Assert.AreEqual(SKONValueType.FLOAT, doubleObj.Type);
 
             IsNotEmpty(doubleObj);
 
@@ -285,7 +285,7 @@ namespace UnitTests
         {
             SKONObject booleanObj = new SKONObject(TestBoolean);
 
-            Assert.AreEqual(ValueType.BOOLEAN, booleanObj.Type);
+            Assert.AreEqual(SKONValueType.BOOLEAN, booleanObj.Type);
 
             IsNotEmpty(booleanObj);
 
@@ -306,7 +306,7 @@ namespace UnitTests
         {
             SKONObject dateTimeObj = new SKONObject(TestDateTime);
 
-            Assert.AreEqual(ValueType.DATETIME, dateTimeObj.Type);
+            Assert.AreEqual(SKONValueType.DATETIME, dateTimeObj.Type);
 
             IsNotEmpty(dateTimeObj);
 
@@ -327,7 +327,7 @@ namespace UnitTests
         {
             SKONObject mapObj = TestMap;
 
-            Assert.AreEqual(ValueType.MAP, mapObj.Type);
+            Assert.AreEqual(SKONValueType.MAP, mapObj.Type);
 
             IsNotEmpty(mapObj);
 
@@ -339,8 +339,8 @@ namespace UnitTests
             
             Assert.AreEqual(6, mapObj.Keys.Count);
             
-            Assert.IsTrue(mapObj.AllPresent("Empty", "String", "Int", "Double", "Bool", "DateTime"));
-            Assert.IsFalse(mapObj.AllPresent(TestKey));
+            Assert.IsTrue(mapObj.ContainsAllKeys("Empty", "String", "Int", "Double", "Bool", "DateTime"));
+            Assert.IsFalse(mapObj.ContainsAllKeys(TestKey));
             
             SKONObject emptyObj = mapObj["Empty"];
             IsEmpty(emptyObj);
@@ -371,7 +371,7 @@ namespace UnitTests
         {
             SKONObject listObj = TestStringList;
 
-            Assert.AreEqual(ValueType.ARRAY, listObj.Type);
+            Assert.AreEqual(SKONValueType.ARRAY, listObj.Type);
             
             IsNotEmpty(listObj);
 
@@ -606,7 +606,7 @@ namespace UnitTests
             IsNotEmpty(arrayObj);
             IsComplexType(arrayObj);
 
-            Assert.AreEqual(ValueType.ARRAY, arrayObj.Type);
+            Assert.AreEqual(SKONValueType.ARRAY, arrayObj.Type);
 
             Assert.IsTrue(arrayObj.Add("of"));
             Assert.IsTrue(arrayObj.Add("strings"));

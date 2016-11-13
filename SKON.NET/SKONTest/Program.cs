@@ -17,6 +17,7 @@ namespace SKONTest
     using System.Text;
     using System.Threading.Tasks;
     using SKON;
+    using SKON.SKEMA;
 
     /// <summary>
     /// Test program for SKON

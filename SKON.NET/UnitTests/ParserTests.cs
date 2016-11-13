@@ -16,7 +16,7 @@ namespace UnitTests
     using System.Threading.Tasks;
     using NUnit.Framework;
     using SKON;
-    using ValueType = SKON.ValueType;
+    using SKONValueType = SKON.SKONValueType;
 
     using static UnitTests.SKONObjectTests;
 
@@ -215,7 +215,7 @@ namespace UnitTests
 
             SKONObject noSpacesMap = SKON.Parse(noSpacesSKON);
 
-            Assert.AreEqual(ValueType.MAP, noSpacesMap.Type);
+            Assert.AreEqual(SKONValueType.MAP, noSpacesMap.Type);
 
             IsNotEmpty(noSpacesMap);
             IsComplexType(noSpacesMap);

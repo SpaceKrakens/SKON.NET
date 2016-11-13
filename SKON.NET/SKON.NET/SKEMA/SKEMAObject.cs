@@ -13,7 +13,7 @@ namespace SKON.SKEMA
     using System.Collections.Generic;
     using System.Text;
     using System.Text.RegularExpressions;
-    using ValueType = ValueType;
+    using ValueType = SKONValueType;
     
     public enum SKEMAType
     {
@@ -30,7 +30,7 @@ namespace SKON.SKEMA
 
     public class SKEMAObject
     {
-        //TODO: Add modification methods like Add, Remove and Getters for values
+        // TODO: Add modification methods like Add, Remove and Getters for values
 
         public static SKEMAObject Any => new SKEMAObject(SKEMAType.ANY);
 
@@ -44,11 +44,31 @@ namespace SKON.SKEMA
 
         public static SKEMAObject DateTime => new SKEMAObject(SKEMAType.DATETIME);
 
+        public static SKEMAObject ArrayOf(SKEMAObject obj) => new SKEMAObject(obj);
+
         private SKEMAType type;
         
         private Dictionary<string, SKEMAObject> mapSKEMA;
 
         private bool loose;
+        public bool Loose {
+            get
+            {
+                if (Type != SKEMAType.MAP)
+                {
+                    throw new InvalidOperationException("Only SKEMAObjects of type MAP can be loose!");
+                }
+                return loose;
+            }
+            set
+            { 
+                if (Type != SKEMAType.MAP)
+                {
+                    throw new InvalidOperationException("Only SKEMAObjects of type MAP can be loose!");
+                }
+                loose = value;
+            }
+        }
         
         private SKEMAObject arraySKEMA;
 
@@ -77,13 +97,13 @@ namespace SKON.SKEMA
             this.loose = loose;
         }
 
-        public SKEMAObject(SKEMAObject arraySKEMA)
+        private SKEMAObject(SKEMAObject arraySKEMA)
         {
             type = SKEMAType.ARRAY;
 
             this.arraySKEMA = arraySKEMA;
         }
-
+        
         public SKEMAObject(string reference)
         {
             this.type = SKEMAType.REFERENCE;
@@ -91,6 +111,12 @@ namespace SKON.SKEMA
         }
 
         public SKEMAType Type => type;
+        
+        public static implicit operator SKEMAObject(SKEMAType type) => new SKEMAObject(type);
+
+        public static implicit operator SKEMAObject(Dictionary<string, SKEMAObject> mapSKEMA) => new SKEMAObject(mapSKEMA);
+        
+        public bool Optional { get; set; }
         
         public bool ResolveReferences(Dictionary<string, SKEMAObject> definitions)
         {
@@ -104,8 +130,6 @@ namespace SKON.SKEMA
             // TODO: substiture all references with their definition.
 
             throw new NotImplementedException();
-
-            return false;
         }
 
         public bool Valid(SKONObject obj)
@@ -130,7 +154,7 @@ namespace SKON.SKEMA
                         return false;
                     }
                     
-                    if (obj.AllPresent(mapSKEMA.Keys) == false)
+                    if (obj.ContainsAllKeys(mapSKEMA.Keys) == false)
                     {
                         return false;
                     }

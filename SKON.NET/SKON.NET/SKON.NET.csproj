@@ -48,6 +48,7 @@
     <Compile Include="Parser\Scanner.cs" />
     <Compile Include="SKEMA\SKEMA.cs" />
     <Compile Include="SKEMA\SKEMAObject.cs" />
+    <Compile Include="SKEMA\TestSKEMA.cs" />
     <Compile Include="SKON.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SKONObject.cs" />

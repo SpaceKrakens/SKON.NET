@@ -121,7 +121,7 @@ namespace SKON
         /// <param name="obj">The SKONObject to turn into a string and write to a file.</param>
         public static void WriteToFile(string filepath, SKONObject obj)
         {
-            if (obj.Type != ValueType.MAP)
+            if (obj.Type != SKONValueType.MAP)
             {
                 throw new ArgumentException("SKONObject to write must be of type map!");
             }
@@ -178,19 +178,19 @@ namespace SKON
 
             switch (obj.Type)
             {
-                case ValueType.EMPTY:
+                case SKONValueType.EMPTY:
                     return "null";
-                case ValueType.STRING:
+                case SKONValueType.STRING:
                     return "\"" + obj.String + "\"";
-                case ValueType.INTEGER:
+                case SKONValueType.INTEGER:
                     return obj.Int.ToString();
-                case ValueType.DOUBLE:
+                case SKONValueType.FLOAT:
                     return obj.Double.ToString().Replace(',', '.');
-                case ValueType.BOOLEAN:
+                case SKONValueType.BOOLEAN:
                     return obj.Boolean.ToString().ToLower();
-                case ValueType.DATETIME:
+                case SKONValueType.DATETIME:
                     return (obj.DateTime ?? default(DateTime)).ToString("yyyy-MM-ddThh:mm:ss.fffzzz");
-                case ValueType.MAP:
+                case SKONValueType.MAP:
                     StringBuilder mapsb = new StringBuilder();
 
                     if (obj.Keys.Count <= 0)
@@ -209,7 +209,7 @@ namespace SKON
                     mapsb.Append(indentString + "}");
 
                     return mapsb.ToString();
-                case ValueType.ARRAY:
+                case SKONValueType.ARRAY:
                     StringBuilder arraysb = new StringBuilder();
 
                     if (obj.Length <= 0)

@@ -16,7 +16,7 @@ namespace SKON
     /// <summary>
     /// All value types a SKONObject could be, including complex values.
     /// </summary>
-    public enum ValueType
+    public enum SKONValueType
     {
         /// <summary>
         /// An empty value.
@@ -36,7 +36,7 @@ namespace SKON
         /// <summary>
         /// A double value.
         /// </summary>
-        DOUBLE,
+        FLOAT,
 
         /// <summary>
         /// A boolean value.
@@ -105,7 +105,7 @@ namespace SKON
         /// </summary>
         public SKONObject()
         {
-            this.Type = ValueType.EMPTY;
+            this.Type = SKONValueType.EMPTY;
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace SKON
         public SKONObject(string stringValue)
         {
             this.stringValue = stringValue;
-            this.Type = ValueType.STRING;
+            this.Type = SKONValueType.STRING;
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace SKON
         public SKONObject(int intValue)
         {
             this.intValue = intValue;
-            this.Type = ValueType.INTEGER;
+            this.Type = SKONValueType.INTEGER;
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace SKON
         public SKONObject(double doubleValue)
         {
             this.doubleValue = doubleValue;
-            this.Type = ValueType.DOUBLE;
+            this.Type = SKONValueType.FLOAT;
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace SKON
         public SKONObject(bool booleanValue)
         {
             this.booleanValue = booleanValue;
-            this.Type = ValueType.BOOLEAN;
+            this.Type = SKONValueType.BOOLEAN;
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace SKON
         public SKONObject(DateTime dateTimeValue)
         {
             this.dateTimeValue = dateTimeValue;
-            this.Type = ValueType.DATETIME;
+            this.Type = SKONValueType.DATETIME;
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace SKON
         public SKONObject(Dictionary<string, SKONObject> mapValues)
         {
             this.mapValues = mapValues;
-            this.Type = ValueType.MAP;
+            this.Type = SKONValueType.MAP;
         }
 
         /// <summary>
@@ -182,18 +182,18 @@ namespace SKON
         public SKONObject(IEnumerable<SKONObject> arrayValues)
         {
             this.arrayValues = new List<SKONObject>(arrayValues);
-            this.Type = ValueType.ARRAY;
+            this.Type = SKONValueType.ARRAY;
         }
 
         /// <summary>
         /// Gets a value indicating whether this SKONObject is empty or not.
         /// </summary>
-        public bool IsEmpty => this.Type == ValueType.EMPTY;
+        public bool IsEmpty => this.Type == SKONValueType.EMPTY;
 
         /// <summary>
         /// Gets the collection of string keys, if this SKONObject is a Map, or an empty ICollection, if it isn't.
         /// </summary>
-        public ICollection<string> Keys => this.Type == ValueType.MAP ? new List<string>(mapValues.Keys) : new List<string>();
+        public ICollection<string> Keys => this.Type == SKONValueType.MAP ? new List<string>(mapValues.Keys) : new List<string>();
 
         /// <summary>
         /// Gets the length of the array, should this SKONObject be one, or negative 1, if it isn't.
@@ -203,32 +203,32 @@ namespace SKON
         /// <summary>
         /// Gets the type of this SKONObject.
         /// </summary>
-        public ValueType Type { get; internal set; }
+        public SKONValueType Type { get; internal set; }
 
         /// <summary>
         /// Gets the string value of this SKONObject, should it be a string.
         /// </summary>
-        public string String => this.Type == ValueType.STRING ? this.stringValue : null;
+        public string String => this.Type == SKONValueType.STRING ? this.stringValue : null;
 
         /// <summary>
         /// Gets the integer value of this SKONObject, should it be an integer.
         /// </summary>
-        public int? Int => this.Type == ValueType.INTEGER ? this.intValue : (int?) null;
+        public int? Int => this.Type == SKONValueType.INTEGER ? this.intValue : (int?) null;
 
         /// <summary>
         /// Gets the double value of this SKONObject, should it be a double.
         /// </summary>
-        public double? Double => this.Type == ValueType.DOUBLE ? this.doubleValue : (double?) null;
+        public double? Double => this.Type == SKONValueType.FLOAT ? this.doubleValue : (double?) null;
 
         /// <summary>
         /// Gets the boolean value of this SKONObject, should it be a boolean.
         /// </summary>
-        public bool? Boolean => this.Type == ValueType.BOOLEAN ? this.booleanValue : (bool?) null;
+        public bool? Boolean => this.Type == SKONValueType.BOOLEAN ? this.booleanValue : (bool?) null;
 
         /// <summary>
         /// Gets the DateTime value of this SKONObject, should it be a DateTime.
         /// </summary>
-        public DateTime? DateTime => this.Type == ValueType.DATETIME ? this.dateTimeValue : (DateTime?) null;
+        public DateTime? DateTime => this.Type == SKONValueType.DATETIME ? this.dateTimeValue : (DateTime?) null;
 
         /// <summary>
         /// Gets the values of the SKONObject array.
@@ -259,7 +259,7 @@ namespace SKON
 
             set
             {
-                if (this.Type == ValueType.ARRAY)
+                if (this.Type == SKONValueType.ARRAY)
                 {
                     if (i < 0 || i >= this.arrayValues?.Count)
                     {
@@ -374,7 +374,7 @@ namespace SKON
         public static explicit operator DateTime?(SKONObject skon) => skon.DateTime;
 
         /// <summary>
-        /// Implicitly converts a string array into a SKONObject Array of strings.
+        /// Implicitly converts a string array into a SKONObject Array.
         /// </summary>
         /// <param name="array">
         /// The array.
@@ -388,7 +388,7 @@ namespace SKON
         }
 
         /// <summary>
-        /// Implicitly converts a string list into a SKONObject Array of strings.
+        /// Implicitly converts a string list into a SKONObject Array.
         /// </summary>
         /// <param name="list">
         /// The list.
@@ -402,7 +402,7 @@ namespace SKON
         }
 
         /// <summary>
-        /// Implicitly converts an integer array into a SKONObject Array of integers.
+        /// Implicitly converts an integer array into a SKONObject Array.
         /// </summary>
         /// <param name="array">
         /// The array.
@@ -416,7 +416,7 @@ namespace SKON
         }
 
         /// <summary>
-        /// Implicitly converts an integer list into a SKONObject Array of integers.
+        /// Implicitly converts an integer list into a SKONObject Array.
         /// </summary>
         /// <param name="list">
         /// The list.
@@ -430,7 +430,7 @@ namespace SKON
         }
 
         /// <summary>
-        /// Implicitly converts a double array into a SKONObject Array of doubles.
+        /// Implicitly converts a double array into a SKONObject Array.
         /// </summary>
         /// <param name="array">
         /// The array.
@@ -444,7 +444,7 @@ namespace SKON
         }
 
         /// <summary>
-        /// Implicitly converts a double list into a SKONObject Array of doubles.
+        /// Implicitly converts a double list into a SKONObject Array.
         /// </summary>
         /// <param name="list">
         /// The list.
@@ -458,7 +458,7 @@ namespace SKON
         }
 
         /// <summary>
-        /// Implicitly converts a boolean array into a SKONObject Array of booleans.
+        /// Implicitly converts a boolean array into a SKONObject Array.
         /// </summary>
         /// <param name="array">
         /// The array.
@@ -472,7 +472,7 @@ namespace SKON
         }
 
         /// <summary>
-        /// Implicitly converts a boolean list into a SKONObject Array of booleans.
+        /// Implicitly converts a boolean list into a SKONObject Array.
         /// </summary>
         /// <param name="list">
         /// The list.
@@ -486,7 +486,7 @@ namespace SKON
         }
 
         /// <summary>
-        /// Implicitly converts a DateTime array into a SKONObject Array of DateTimes.
+        /// Implicitly converts a DateTime array into a SKONObject Array.
         /// </summary>
         /// <param name="array">
         /// The array.
@@ -500,7 +500,7 @@ namespace SKON
         }
 
         /// <summary>
-        /// Implicitly converts a DateTime list into a SKONObject Array of DateTimes.
+        /// Implicitly converts a DateTime list into a SKONObject Array.
         /// </summary>
         /// <param name="list">
         /// The list.
@@ -514,6 +514,24 @@ namespace SKON
         }
 
         /// <summary>
+        /// Implicitly converts an array of SKONObjects into a SKONObject Array.
+        /// </summary>
+        /// <param name="array"></param>
+        public static implicit operator SKONObject(SKONObject[] array)
+        {
+            return new SKONObject(array);
+        }
+
+        /// <summary>
+        /// Implicitly converts a list of SKONObjects into a SKONObject Array.
+        /// </summary>
+        /// <param name="list"></param>
+        public static implicit operator SKONObject(List<SKONObject> list)
+        {
+            return new SKONObject(list);
+        }
+
+        /// <summary>
         /// Implicitly converts a Dictionary into a SKONObject Map.
         /// </summary>
         /// <param name="map"></param>
@@ -521,7 +539,7 @@ namespace SKON
         {
             return new SKONObject(map);
         }
-
+        
         /// <summary>
         /// Adds a key-value pair to a Map.
         /// </summary>
@@ -529,7 +547,7 @@ namespace SKON
         /// <param name="value">The value.</param>
         public void Add(string key, SKONObject value)
         {
-            if (this.Type != ValueType.MAP)
+            if (this.Type != SKONValueType.MAP)
             {
                 throw new InvalidOperationException(string.Format("This SKONObject is not a MAP! Adding value {0} to key {1} isn't possible!", value, key));
             }
@@ -548,7 +566,7 @@ namespace SKON
         /// </returns>
         public bool Add(SKONObject value)
         {
-            if (this.Type != ValueType.ARRAY)
+            if (this.Type != SKONValueType.ARRAY)
             {
                 return false;
             }
@@ -559,7 +577,7 @@ namespace SKON
 
         public bool Remove(string key)
         {
-            if (this.Type != ValueType.MAP)
+            if (this.Type != SKONValueType.MAP)
             {
                 return false;
             }
@@ -569,7 +587,7 @@ namespace SKON
 
         public bool RemoveAt(int i)
         {
-            if (this.Type != ValueType.ARRAY)
+            if (this.Type != SKONValueType.ARRAY)
             {
                 return false;
             }
@@ -588,7 +606,7 @@ namespace SKON
 
         public bool Remove(SKONObject value)
         {
-            if (this.Type != ValueType.ARRAY)
+            if (this.Type != SKONValueType.ARRAY)
             {
                 return false;
             }
@@ -619,9 +637,9 @@ namespace SKON
         /// <returns>
         /// True, if all exist, false if any are missing or not a map.
         /// </returns>
-        public bool AllPresent(params string[] keys)
+        public bool ContainsAllKeys(params string[] keys)
         {
-            if (this.Type != ValueType.MAP)
+            if (this.Type != SKONValueType.MAP)
             {
                 return false;
             }
@@ -642,9 +660,9 @@ namespace SKON
         /// </summary>
         /// <param name="keys">The keys.</param>
         /// <returns>True, if all exist, false if any are missing or not a map.</returns>
-        public bool AllPresent(IEnumerable<string> keys)
+        public bool ContainsAllKeys(IEnumerable<string> keys)
         {
-            if (this.Type != ValueType.MAP)
+            if (this.Type != SKONValueType.MAP)
             {
                 return false;
             }
@@ -669,7 +687,7 @@ namespace SKON
         /// <returns>
         /// True, if all exist, false if any are missing or not a map.
         /// </returns>
-        public bool AllPresent(List<string> keys)
+        public bool ContainsAllKeys(List<string> keys)
         {
             for (int i = 0; i < keys.Count; i++)
             {
@@ -684,7 +702,7 @@ namespace SKON
         
         public string Get(string key, string defaultValue)
         {
-            if (this.Type != ValueType.MAP)
+            if (this.Type != SKONValueType.MAP)
             {
                 throw new InvalidOperationException("This method only works on MAP type SKONObjects!");
             }
@@ -694,7 +712,7 @@ namespace SKON
 
         public int Get(string key, int defaultValue)
         {
-            if (this.Type != ValueType.MAP)
+            if (this.Type != SKONValueType.MAP)
             {
                 throw new InvalidOperationException("This method only works on MAP type SKONObjects!");
             }
@@ -704,7 +722,7 @@ namespace SKON
 
         public double Get(string key, double defaultValue)
         {
-            if (this.Type != ValueType.MAP)
+            if (this.Type != SKONValueType.MAP)
             {
                 throw new InvalidOperationException("This method only works on MAP type SKONObjects!");
             }
@@ -714,7 +732,7 @@ namespace SKON
 
         public bool Get(string key, bool defaultValue)
         {
-            if (this.Type != ValueType.MAP)
+            if (this.Type != SKONValueType.MAP)
             {
                 throw new InvalidOperationException("This method only works on MAP type SKONObjects!");
             }
@@ -724,7 +742,7 @@ namespace SKON
 
         public DateTime Get(string key, DateTime defaultValue)
         {
-            if (this.Type != ValueType.MAP)
+            if (this.Type != SKONValueType.MAP)
             {
                 throw new InvalidOperationException("This method only works on MAP type SKONObjects!");
             }
@@ -734,9 +752,9 @@ namespace SKON
         
         public bool TryGet(string key, out string result)
         {
-            if (this.Type == ValueType.MAP && mapValues.ContainsKey(key))
+            if (this.Type == SKONValueType.MAP && mapValues.ContainsKey(key))
             {
-                if (mapValues[key].Type == ValueType.STRING)
+                if (mapValues[key].Type == SKONValueType.STRING)
                 {
                     result = mapValues[key].String;
                     return true;
@@ -749,9 +767,9 @@ namespace SKON
 
         public bool TryGet(string key, out int result)
         {
-            if (this.Type == ValueType.MAP && mapValues.ContainsKey(key))
+            if (this.Type == SKONValueType.MAP && mapValues.ContainsKey(key))
             {
-                if (mapValues[key].Type == ValueType.INTEGER)
+                if (mapValues[key].Type == SKONValueType.INTEGER)
                 {
                     // We acccess the value directly because we know it has a value
                     result = mapValues[key].intValue;
@@ -765,9 +783,9 @@ namespace SKON
 
         public bool TryGet(string key, out double result)
         {
-            if (this.Type == ValueType.MAP && mapValues.ContainsKey(key))
+            if (this.Type == SKONValueType.MAP && mapValues.ContainsKey(key))
             {
-                if (mapValues[key].Type == ValueType.DOUBLE)
+                if (mapValues[key].Type == SKONValueType.FLOAT)
                 {
                     // We acccess the value directly because we know it has a value
                     result = mapValues[key].doubleValue;
@@ -781,9 +799,9 @@ namespace SKON
 
         public bool TryGet(string key, out bool result)
         {
-            if (this.Type == ValueType.MAP && mapValues.ContainsKey(key))
+            if (this.Type == SKONValueType.MAP && mapValues.ContainsKey(key))
             {
-                if (mapValues[key].Type == ValueType.BOOLEAN)
+                if (mapValues[key].Type == SKONValueType.BOOLEAN)
                 {
                     // We acccess the value directly because we know it has a value
                     result = mapValues[key].booleanValue;
@@ -797,9 +815,9 @@ namespace SKON
 
         public bool TryGet(string key, out DateTime result)
         {
-            if (this.Type == ValueType.MAP && mapValues.ContainsKey(key))
+            if (this.Type == SKONValueType.MAP && mapValues.ContainsKey(key))
             {
-                if (mapValues[key].Type == ValueType.DATETIME)
+                if (mapValues[key].Type == SKONValueType.DATETIME)
                 {
                     // We acccess the value directly because we know it has a value
                     result = mapValues[key].dateTimeValue;
@@ -819,21 +837,21 @@ namespace SKON
         {
             switch (this.Type)
             {
-                case ValueType.EMPTY:
+                case SKONValueType.EMPTY:
                     return "Empty";
-                case ValueType.STRING:
+                case SKONValueType.STRING:
                     return this.stringValue;
-                case ValueType.INTEGER:
+                case SKONValueType.INTEGER:
                     return this.intValue.ToString();
-                case ValueType.DOUBLE:
+                case SKONValueType.FLOAT:
                     return this.doubleValue.ToString();
-                case ValueType.BOOLEAN:
+                case SKONValueType.BOOLEAN:
                     return this.booleanValue.ToString();
-                case ValueType.DATETIME:
+                case SKONValueType.DATETIME:
                     return this.dateTimeValue.ToString();
-                case ValueType.MAP:
+                case SKONValueType.MAP:
                     return this.mapValues.ToString();
-                case ValueType.ARRAY:
+                case SKONValueType.ARRAY:
                     return this.arrayValues.ToString();
                 default:
                     return "Invalid type!";
@@ -861,19 +879,19 @@ namespace SKON
 
             switch (this.Type)
             {
-                case ValueType.EMPTY:
+                case SKONValueType.EMPTY:
                     return other.IsEmpty;
-                case ValueType.STRING:
+                case SKONValueType.STRING:
                     return this.String == other.String;
-                case ValueType.INTEGER:
+                case SKONValueType.INTEGER:
                     return this.Int == other.Int;
-                case ValueType.DOUBLE:
+                case SKONValueType.FLOAT:
                     return this.Double == other.Double;
-                case ValueType.BOOLEAN:
+                case SKONValueType.BOOLEAN:
                     return this.Boolean == other.Boolean;
-                case ValueType.DATETIME:
+                case SKONValueType.DATETIME:
                     return this.DateTime == other.DateTime;
-                case ValueType.MAP:
+                case SKONValueType.MAP:
                     if (this.Keys.Count != other.Keys.Count)
                     {
                         return false;
@@ -885,7 +903,7 @@ namespace SKON
                     }
 
                     return isEqual;
-                case ValueType.ARRAY:
+                case SKONValueType.ARRAY:
 
                     if (this.Length != other.Length)
                     {
@@ -924,21 +942,21 @@ namespace SKON
             {
                 switch (this.Type)
                 {
-                    case ValueType.EMPTY:
+                    case SKONValueType.EMPTY:
                         return this.Type.GetHashCode();
-                    case ValueType.STRING:
+                    case SKONValueType.STRING:
                         return this.Type.GetHashCode() * 17 + stringValue.GetHashCode();
-                    case ValueType.INTEGER:
+                    case SKONValueType.INTEGER:
                         return this.Type.GetHashCode() * 17 + intValue.GetHashCode();
-                    case ValueType.DOUBLE:
+                    case SKONValueType.FLOAT:
                         return this.Type.GetHashCode() * 17 + doubleValue.GetHashCode();
-                    case ValueType.BOOLEAN:
+                    case SKONValueType.BOOLEAN:
                         return this.Type.GetHashCode() * 17 + booleanValue.GetHashCode();
-                    case ValueType.DATETIME:
+                    case SKONValueType.DATETIME:
                         return this.Type.GetHashCode() * 17 + dateTimeValue.GetHashCode();
-                    case ValueType.MAP:
+                    case SKONValueType.MAP:
                         return this.Type.GetHashCode() * 17 + mapValues.GetHashCode();
-                    case ValueType.ARRAY:
+                    case SKONValueType.ARRAY:
                         return this.Type.GetHashCode() * 17 + arrayValues.GetHashCode();
                     default:
                         return base.GetHashCode();

@@ -19,7 +19,7 @@ namespace UnitTests
     using SKON;
 
     [TestFixture]
-    class SKEMATests
+    class SKEMAObjectTests
     {
         [Test]
         public void AnySKEMA()
@@ -66,13 +66,13 @@ namespace UnitTests
         [Test]
         public void ArraySKEMA()
         {
-            SKEMAObject obj = new SKEMAObject(SKEMAObject.Float);
+            SKEMAObject obj = SKEMAObject.ArrayOf(SKEMAObject.Float);
 
             Assert.IsFalse(obj.Valid(new int[] { 1, 2, 3 }));
 
             Assert.IsTrue(obj.Valid(new double[] { 1, 2, 3 }));
 
-            obj = new SKEMAObject(SKEMAObject.Any);
+            obj = SKEMAObject.ArrayOf(SKEMAObject.Any);
 
             Assert.IsTrue(obj.Valid(new int[] { 1, 2, 3 }));
 
@@ -112,7 +112,7 @@ namespace UnitTests
             definitions["One"] = one;
             definitions["Two"] = two;
 
-            SKEMAObject skema = new SKEMAObject(new SKEMAObject("One"));
+            SKEMAObject skema = SKEMAObject.ArrayOf(new SKEMAObject("One"));
 
             Assert.IsFalse(skema.ResolveReferences(definitions));
         }
