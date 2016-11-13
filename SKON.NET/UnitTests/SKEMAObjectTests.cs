@@ -17,7 +17,7 @@ namespace UnitTests
     using NUnit.Framework;
     using SKON.SKEMA;
     using SKON;
-
+    
     [TestFixture]
     class SKEMAObjectTests
     {
@@ -115,6 +115,16 @@ namespace UnitTests
             SKEMAObject skema = SKEMAObject.ArrayOf(new SKEMAObject("One"));
 
             Assert.IsFalse(skema.ResolveReferences(definitions));
+        }
+
+        [Test]
+        public void TestSKEMATest()
+        {
+            SKEMAObject testSKEMA = TestSKEMA.TestSKEMAObject;
+
+            SKONObject testData = TestSKON.TestSKONObject;
+
+            Assert.IsTrue(testSKEMA.Valid(testData));
         }
     }
 }

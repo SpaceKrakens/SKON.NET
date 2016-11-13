@@ -16,7 +16,7 @@ namespace SKON.SKEMA
     using System.Collections.Generic;
     using System.Text;
 
-    class TestSKEMA
+    public static class TestSKEMA
     {
         public static SKEMAObject TestSKEMAObject => new Dictionary<string, SKEMAObject>
         {
@@ -24,7 +24,7 @@ namespace SKON.SKEMA
             { "VersionName", SKEMAObject.String },
             { "Author", new Dictionary<string, SKEMAObject>
                 {
-                    { "FistName", SKEMAObject.String },
+                    { "FirstName", SKEMAObject.String },
                     { "LastName", SKEMAObject.String },
                     { "Nickname", SKEMAObject.String },
                     { "Email", SKEMAObject.String }
