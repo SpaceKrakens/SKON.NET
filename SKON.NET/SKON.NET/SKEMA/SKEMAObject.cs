@@ -235,13 +235,13 @@ namespace SKON.SKEMA
                 throw new InvalidOperationException("Can only resolve references for SKEMAObejcts of type MAP and ARRAY!");
             }
 
-            // TODO: Find all strongly connected components.
+            // TODO: Find all strongly connected components in definitions.
 
             // TODO: substiture all references with their definition.
 
             throw new NotImplementedException();
         }
-
+        
         public bool Valid(SKONObject obj)
         {
             if (this.type != SKEMAType.ANY && (int)this.type != (int)obj.Type)

@@ -11,11 +11,12 @@ namespace SKON.Internal.Utils
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Text;
 
     public static class ParserUtils
     {
-        private static UnicodeEncoding encoding = new UnicodeEncoding(true, false);
+        private static readonly UnicodeEncoding encoding = new UnicodeEncoding(true, false);
 
         public static string ConvertToUnicode(string input)
         {
@@ -79,6 +80,16 @@ namespace SKON.Internal.Utils
             DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
             return dtDateTime;
+        }
+
+        /// <summary>
+        /// Generates a UTF8 stream from a string.
+        /// </summary>
+        /// <param name="value">The string to convert</param>
+        /// <returns>The UTF8 stream</returns>
+        public static MemoryStream GenerateStreamFromString(string value)
+        {
+            return new MemoryStream(Encoding.UTF8.GetBytes(value ?? string.Empty));
         }
     }
 }

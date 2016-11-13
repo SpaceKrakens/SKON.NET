@@ -14,6 +14,7 @@ namespace SKON
     using System.Text;
 
     using Internal;
+    using Internal.Utils;
 
     /// <summary>
     /// Central class for all SKON related functions.
@@ -68,7 +69,7 @@ namespace SKON
         /// <returns>The newly created SKONObject.</returns>
         public static SKONObject Parse(string skon, TextWriter errorStream = null)
         {
-            using (MemoryStream stream = GenerateStreamFromString(skon))
+            using (MemoryStream stream = ParserUtils.GenerateStreamFromString(skon))
             {
                 Scanner sc = new Scanner(stream);
                 
@@ -145,17 +146,7 @@ namespace SKON
 
             return sb.ToString();
         }
-
-        /// <summary>
-        /// Generates a UTF8 stream from a string.
-        /// </summary>
-        /// <param name="value">The string to convert</param>
-        /// <returns>The UTF8 stream</returns>
-        private static MemoryStream GenerateStreamFromString(string value)
-        {
-            return new MemoryStream(Encoding.UTF8.GetBytes(value ?? string.Empty));
-        }
-
+        
         /// <summary>
         /// Writes a SKONObject value.
         /// </summary>
