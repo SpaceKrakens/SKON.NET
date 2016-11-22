@@ -66,7 +66,7 @@ namespace SKON.SKEMA
                 throw new FormatException(string.Format("Could not parse file! Got {0} errors!"));
             }
 
-            new ReferenceSolver().ResolveReferences(parser.definitions);
+            new ReferenceSolver(parser.definitions).ResolveReferences();
             
             return parser.data;
         }
@@ -86,7 +86,7 @@ namespace SKON.SKEMA
                 this.definitions = definitions;
             }
 
-            internal bool ResolveReferences(Dictionary<string, SKEMAObject> definitions)
+            internal bool ResolveReferences()
             {
                 // TODO: Find all strongly connected components in definitions.
                 foreach (var v in definitions.Values)
