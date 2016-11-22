@@ -66,9 +66,88 @@ namespace SKON.SKEMA
                 throw new FormatException(string.Format("Could not parse file! Got {0} errors!"));
             }
 
-            parser.data.ResolveReferences(parser.definitions);
-
+            new ReferenceSolver().ResolveReferences(parser.definitions);
+            
             return parser.data;
         }
-    }
+
+        internal class ReferenceSolver
+        {
+            int index = 0;
+            Stack<SKEMAObject> S = new Stack<SKEMAObject>();
+
+            Dictionary<SKEMAObject, int> indexMap = new Dictionary<SKEMAObject, int>();
+            Dictionary<SKEMAObject, int> lowlinkMap = new Dictionary<SKEMAObject, int>();
+
+            Dictionary<string, SKEMAObject> definitions;
+
+            public ReferenceSolver(Dictionary<string, SKEMAObject> definitions)
+            {
+                this.definitions = definitions;
+            }
+
+            internal bool ResolveReferences(Dictionary<string, SKEMAObject> definitions)
+            {
+                // TODO: Find all strongly connected components in definitions.
+                foreach (var v in definitions.Values)
+                {
+                    if (indexMap.ContainsKey(v))
+                    {
+                        StrongConnect(v);
+                    }
+                }
+
+                // TODO: substiture all references with their definition.
+
+                throw new NotImplementedException();
+            }
+
+            private LinkedList<SKEMAObject> StrongConnect(SKEMAObject v)
+            {
+                indexMap[v] = index;
+                lowlinkMap[v] = index;
+                index++;
+                S.Push(v);
+
+                // Find the referenced definitions in the SKEMAObject
+
+
+
+                return null;
+            }
+
+            private List<SKEMAObject> FindReferences(SKEMAObject skema)
+            {
+                List<SKEMAObject> references = new List<SKEMAObject>();
+                switch (skema.Type)
+                {
+                    default:
+                    case SKEMAType.REFERENCE:
+                    case SKEMAType.ANY:
+                    case SKEMAType.STRING:
+                    case SKEMAType.INTEGER:
+                    case SKEMAType.FLOAT:
+                    case SKEMAType.BOOLEAN:
+                    case SKEMAType.DATETIME:
+                        return new List<SKEMAObject>();
+                    case SKEMAType.MAP:
+                        foreach (string key in skema.Keys)
+                        {
+                            if (skema[key].Type == SKEMAType.REFERENCE)
+                            {
+                                references.Add(skema[key]);
+                            }
+                            else
+                            {
+                                references.AddRange(FindReferences(skema[key]));
+                            }
+                        }
+                        return references;
+                    case SKEMAType.ARRAY:
+                        references.AddRange(FindReferences(skema.ArrayElementSKEMA));
+                        return references;
+                }
+            }
+        }
+    }    
 }

@@ -60,7 +60,7 @@ public SKONObject metadata = new SKONObject();
 
     public SKEMAObject data = SKEMAObject.Any;
 
-	public Dictionary<string, SKEMAObject> definitions;
+	public Dictionary<string, SKEMAObject> definitions = new Dictionary<string, SKEMAObject>();
 
 	private string[] dateTimeFormats = {
         "yyyy-MM-dd",
@@ -176,8 +176,8 @@ public SKONObject metadata = new SKONObject();
 				mapElements[key] = value; 
 			} else {
 				definition(out key, out value);
+				definitions[key] = value; 
 			}
-			definitions[key] = value; 
 			ExpectWeak(3, 1);
 		}
 	}

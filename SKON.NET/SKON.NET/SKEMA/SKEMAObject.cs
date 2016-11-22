@@ -125,7 +125,27 @@ namespace SKON.SKEMA
         }
 
         public SKEMAType Type => type;
-        
+
+        public List<string> Keys => new List<string>(mapSKEMA.Keys);
+
+        public SKEMAObject this[string key]
+        {
+            get
+            {
+                if (this.mapSKEMA?.ContainsKey(key) ?? false)
+                {
+                    return this.mapSKEMA[key];
+                }
+
+                return Any;
+            }
+
+            set
+            {
+                Add(key, value);
+            }
+        }
+
         public static implicit operator SKEMAObject(SKEMAType type) => new SKEMAObject(type);
 
         public static implicit operator SKEMAObject(Dictionary<string, SKEMAObject> mapSKEMA) => new SKEMAObject(mapSKEMA);
@@ -226,20 +246,6 @@ namespace SKON.SKEMA
 
             result = default(SKEMAObject);
             return false;
-        }
-
-        public bool ResolveReferences(Dictionary<string, SKEMAObject> definitions)
-        {
-            if ((this.Type == SKEMAType.MAP || this.Type == SKEMAType.ARRAY) == false)
-            {
-                throw new InvalidOperationException("Can only resolve references for SKEMAObejcts of type MAP and ARRAY!");
-            }
-
-            // TODO: Find all strongly connected components in definitions.
-
-            // TODO: substiture all references with their definition.
-
-            throw new NotImplementedException();
         }
         
         public bool Valid(SKONObject obj)
