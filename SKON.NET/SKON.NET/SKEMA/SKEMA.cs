@@ -63,7 +63,7 @@ namespace SKON.SKEMA
 
             if (parser.errors.count > 0)
             {
-                throw new FormatException(string.Format("Could not parse file! Got {0} errors!"));
+                throw new FormatException(string.Format("Could not parse file! Got {0} errors!", parser.errors.count));
             }
 
             new ReferenceSolver(parser.definitions).ResolveReferences();
@@ -71,7 +71,7 @@ namespace SKON.SKEMA
             return parser.data;
         }
 
-        internal class ReferenceSolver
+        public class ReferenceSolver
         {
             int index = 0;
             Stack<SKEMAObject> S = new Stack<SKEMAObject>();

@@ -102,29 +102,49 @@ namespace UnitTests
         }
 
         [Test]
-        public void CyclicReferenceTest()
+        public void CyclicReferences()
         {
-            SKEMAObject one = new SKEMAObject("Two");
-            SKEMAObject two = new SKEMAObject("One");
+            Assert.Throws<FormatException>(() => SKEMA.Parse(
+                @"define One: #Two,
+                define Two: #One,
 
-            Dictionary<string, SKEMAObject> definitions = new Dictionary<string, SKEMAObject>();
-
-            definitions["One"] = one;
-            definitions["Two"] = two;
-
-            SKEMAObject skema = SKEMAObject.ArrayOf(new SKEMAObject("One"));
-
-            Assert.IsFalse(skema.ResolveReferences(definitions));
+                Value: [ #One ],"));
         }
 
         [Test]
-        public void TestSKEMATest()
+        public void TestSKEMA()
         {
-            SKEMAObject testSKEMA = TestSKEMA.TestSKEMAObject;
+            SKEMAObject testSKEMA = global::SKON.SKEMA.TestSKEMA.TestSKEMAObject;
 
             SKONObject testData = TestSKON.TestSKONObject;
 
             Assert.IsTrue(testSKEMA.Valid(testData));
+        }
+
+        [Test]
+        public void GenericParsing()
+        {
+            string skema = 
+                @"define Color: { Red: Integer, Blue: Integer, Green: Integer, },
+
+                Colors: [ #Color ],";
+
+            SKEMAObject skemaObj = SKEMA.Parse(skema);
+        }
+
+        [Test]
+        public void TreeSKEMA()
+        {
+            string skema = 
+                @"define Node: 
+                { 
+                    Value: Any,
+                    optional Nodes: [ #Node ],
+                },
+            
+                Tree: #Node,";
+
+            SKEMAObject skemaObj = SKEMA.Parse(skema);
         }
     }
 }

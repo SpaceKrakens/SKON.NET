@@ -46,6 +46,7 @@ namespace SKON.SKEMA
 
         private readonly SKEMAType type;
 
+        // TODO: Implement optional elements!
         private Dictionary<string, SKEMAObject> mapSKEMA;
 
         private bool loose;
@@ -118,7 +119,7 @@ namespace SKON.SKEMA
             this.arraySKEMA = arraySKEMA;
         }
 
-        public SKEMAObject(string reference)
+        internal SKEMAObject(string reference)
         {
             this.type = SKEMAType.REFERENCE;
             this.reference = reference;

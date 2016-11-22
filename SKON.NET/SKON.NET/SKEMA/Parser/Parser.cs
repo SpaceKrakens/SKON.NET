@@ -42,7 +42,7 @@ public class Parser {
 	public const int _datetime_type = 19;
 	public const int _ref = 20;
 	public const int _def = 21;
-	public const int _optional = 22;
+	public const int _opt = 22;
 	public const int maxT = 26;
 
 	const bool _T = true;
@@ -170,8 +170,8 @@ public SKONObject metadata = new SKONObject();
 
 	void open_skema_map(out Dictionary<string, SKEMAObject> mapElements ) {
 		string key; SKEMAObject value; mapElements = new Dictionary<string, SKEMAObject>(); 
-		while (la.kind == 8 || la.kind == 21) {
-			if (la.kind == 8) {
+		while (la.kind == 8 || la.kind == 21 || la.kind == 22) {
+			if (la.kind == 8 || la.kind == 22) {
 				skema_map_element(out key, out value);
 				mapElements[key] = value; 
 			} else {
@@ -253,6 +253,10 @@ public SKONObject metadata = new SKONObject();
 	}
 
 	void skema_map_element(out string key, out SKEMAObject obj) {
+		if (la.kind == 22) {
+			Get();
+		}
+		
 		Ident(out key);
 		Expect(2);
 		skema_value(out obj);
@@ -370,7 +374,7 @@ public SKONObject metadata = new SKONObject();
 	
 	static readonly bool[,] set = {
 		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
-		{_T,_x,_x,_x, _x,_T,_x,_x, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_T,_x,_x, _x,_x,_x,_x},
+		{_T,_x,_x,_x, _x,_T,_x,_x, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_T,_T,_x, _x,_x,_x,_x},
 		{_T,_x,_x,_x, _x,_T,_x,_x, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
 		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_T,_T, _T,_T,_T,_T, _x,_x,_x,_x, _x,_x,_x,_x},
 		{_x,_x,_x,_x, _T,_x,_T,_x, _x,_T,_x,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_x,_x},
@@ -410,7 +414,7 @@ public class Errors {
 			case 19: s = "datetime_type expected"; break;
 			case 20: s = "ref expected"; break;
 			case 21: s = "def expected"; break;
-			case 22: s = "optional expected"; break;
+			case 22: s = "opt expected"; break;
 			case 23: s = "\"true\" expected"; break;
 			case 24: s = "\"false\" expected"; break;
 			case 25: s = "\"null\" expected"; break;

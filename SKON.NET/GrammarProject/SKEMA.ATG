@@ -85,9 +85,9 @@ TOKENS
   boolean_type = "Boolean".
   datetime_type = "DateTime".
 
-  ref = '#'.
+  ref = '#' letter { letter | digit }.
   def = "define".
-  optional = "optional".
+  opt = "optional".
 
 COMMENTS FROM "/*" TO "*/" NESTED
 COMMENTS FROM "//" TO lf
@@ -158,7 +158,8 @@ open_skon_map<. out Dictionary<string, SKONObject> mapElements .>	(. string key;
 
 /*-------------------------------------------------------------------------*/
 skema_map_element<out string key, out SKEMAObject obj>				
-=	Ident<out key>													
+=	[opt]															(.  .)
+	Ident<out key>													
     colon 
     skema_value<out obj>											
     .
