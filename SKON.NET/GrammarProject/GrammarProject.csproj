@@ -42,6 +42,7 @@
     <None Include="build.bat" />
     <None Include="Parser.frame" />
     <None Include="Scanner.frame" />
+    <None Include="SKEMA.ATG" />
     <None Include="SKON.ATG" />
   </ItemGroup>
   <ItemGroup>

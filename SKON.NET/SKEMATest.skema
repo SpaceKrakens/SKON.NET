@@ -1,0 +1,45 @@
+~Version: 1~
+
+Version: String,
+
+VersionName: String,
+
+Author:
+{
+	FirstName: String,
+	LastName: String,
+	Nickname: String,
+	Email: String,
+},
+
+ExampleString: String,
+
+ExampleInteger: Integer,
+
+ExampleFloat: Float,
+
+ExampleBoolean: Boolean,
+
+ExampleDatetime: DateTime,
+
+ExampleArray: [ String ],
+
+ExampleMap: {
+	ThisIsAKey: String,
+
+	ThisIsAnotherKey: Integer,
+},
+
+ArrayOfMaps: [ { Key: String, } ],
+
+MapOfAllDataTypes: {
+	String: String,
+	Integer: Integer,
+	Float: Float,
+	Boolean: Boolean,
+	Datetime: DateTime,
+	Array: [ Any ],
+	Map: { },
+},
+
+ArrayOfArrayOfStrings: [ [ String ] ],

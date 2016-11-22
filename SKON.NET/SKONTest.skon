@@ -1,4 +1,6 @@
-﻿//This is a example file showing different ways to use SKON.
+﻿~Version: 1~
+
+//This is a example file showing different ways to use SKON.
 
 /*
     Comments can be used in single line '//',
@@ -51,7 +53,7 @@ ArrayOfMaps: [
         Key: "AnotherValue",
     },
     {
-        AnotherKey: "YetAnotherValue",
+        Key: "YetAnotherValue",
     },
 ],
 

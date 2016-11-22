@@ -1,5 +1,4 @@
 #region LICENSE
-
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="SKON.cs" company="SpaceKrakens">
 //   MIT License
@@ -15,6 +14,7 @@ namespace SKON
     using System.Text;
 
     using Internal;
+    using Internal.Utils;
 
     /// <summary>
     /// Central class for all SKON related functions.
@@ -24,17 +24,17 @@ namespace SKON
         /// <summary>
         /// The indent spaces.
         /// </summary>
-        private const string IndentSpaces = "    "; // 4 spaces
+        private const string IndentSpaces = "    ";
 
         /// <summary>
         /// The indent tab.
         /// </summary>
-        private const string IndentTab = "\t"; // A tab
+        private const string IndentTab = "\t";
 
         /// <summary>
         /// Gets or sets a value indicating whether to use tabs.
         /// </summary>
-        private static bool UseTabs { get; set; }
+        public static bool UseTabs { get; set; }
 
         /// <summary>
         /// The indent string.
@@ -52,16 +52,8 @@ namespace SKON
             if (File.Exists(path))
             {
                 Scanner sc = new Scanner(path);
-                Parser parser = new Parser(sc);
 
-                if (errorStream != null)
-                {
-                    parser.errors.errorStream = errorStream;
-                }
-                
-                parser.Parse();
-
-                return parser.data;
+                return Parse(sc, errorStream);
             }
             else
             {
@@ -77,19 +69,52 @@ namespace SKON
         /// <returns>The newly created SKONObject.</returns>
         public static SKONObject Parse(string skon, TextWriter errorStream = null)
         {
-            Scanner sc = new Scanner(GenerateStreamFromString(skon));
+            using (MemoryStream stream = ParserUtils.GenerateStreamFromString(skon))
+            {
+                Scanner sc = new Scanner(stream);
+                
+                return Parse(sc, errorStream);
+            }
+        }
+
+        /// <summary>
+        /// Parses a SKON stream to a SKONObject.
+        /// </summary>
+        /// <param name="stream">The SKON data stream.</param>
+        /// <param name="errorStream">The TextWriter to write error messages to.</param>
+        /// <returns></returns>
+        public static SKONObject Parse(Stream stream, TextWriter errorStream = null)
+        {
+            Scanner sc = new Scanner(stream);
+
+            return Parse(sc, errorStream);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sc"></param>
+        /// <param name="errorStream"></param>
+        /// <returns></returns>
+        private static SKONObject Parse(Scanner sc, TextWriter errorStream)
+        {
             Parser parser = new Parser(sc);
 
             if (errorStream != null)
             {
                 parser.errors.errorStream = errorStream;
             }
-            
+
             parser.Parse();
+
+            if (parser.errors.count > 0)
+            {
+                throw new FormatException(string.Format("Could not parse file! Got {0} errors!"));
+            }
 
             return parser.data;
         }
-
+        
         /// <summary>
         /// Writes a SKONObject to a file. This will overwrite the current content of the file.
         /// </summary>
@@ -97,7 +122,7 @@ namespace SKON
         /// <param name="obj">The SKONObject to turn into a string and write to a file.</param>
         public static void WriteToFile(string filepath, SKONObject obj)
         {
-            if (obj.Type != ValueType.MAP)
+            if (obj.Type != SKONValueType.MAP)
             {
                 throw new ArgumentException("SKONObject to write must be of type map!");
             }
@@ -121,17 +146,7 @@ namespace SKON
 
             return sb.ToString();
         }
-
-        /// <summary>
-        /// Generates a UTF8 stream from a string.
-        /// </summary>
-        /// <param name="value">The string to convert</param>
-        /// <returns>The UTF8 stream</returns>
-        private static MemoryStream GenerateStreamFromString(string value)
-        {
-            return new MemoryStream(Encoding.UTF8.GetBytes(value ?? string.Empty));
-        }
-
+        
         /// <summary>
         /// Writes a SKONObject value.
         /// </summary>
@@ -140,6 +155,11 @@ namespace SKON
         /// <returns>A string to write into a file.</returns>
         private static string WriteObject(SKONObject obj, int indent)
         {
+            if (obj == null)
+            {
+                return string.Empty;
+            }
+
             string indentString = string.Empty;
 
             for (int i = 0; i < indent; i++)
@@ -149,19 +169,19 @@ namespace SKON
 
             switch (obj.Type)
             {
-                case ValueType.EMPTY:
+                case SKONValueType.EMPTY:
                     return "null";
-                case ValueType.STRING:
+                case SKONValueType.STRING:
                     return "\"" + obj.String + "\"";
-                case ValueType.INTEGER:
+                case SKONValueType.INTEGER:
                     return obj.Int.ToString();
-                case ValueType.DOUBLE:
+                case SKONValueType.FLOAT:
                     return obj.Double.ToString().Replace(',', '.');
-                case ValueType.BOOLEAN:
+                case SKONValueType.BOOLEAN:
                     return obj.Boolean.ToString().ToLower();
-                case ValueType.DATETIME:
+                case SKONValueType.DATETIME:
                     return (obj.DateTime ?? default(DateTime)).ToString("yyyy-MM-ddThh:mm:ss.fffzzz");
-                case ValueType.MAP:
+                case SKONValueType.MAP:
                     StringBuilder mapsb = new StringBuilder();
 
                     if (obj.Keys.Count <= 0)
@@ -180,7 +200,7 @@ namespace SKON
                     mapsb.Append(indentString + "}");
 
                     return mapsb.ToString();
-                case ValueType.ARRAY:
+                case SKONValueType.ARRAY:
                     StringBuilder arraysb = new StringBuilder();
 
                     if (obj.Length <= 0)

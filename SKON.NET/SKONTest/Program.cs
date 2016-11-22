@@ -17,6 +17,7 @@ namespace SKONTest
     using System.Text;
     using System.Threading.Tasks;
     using SKON;
+    using SKON.SKEMA;
 
     /// <summary>
     /// Test program for SKON
@@ -43,20 +44,57 @@ namespace SKONTest
             Stopwatch sw = new Stopwatch();
 
             sw.Start();
-
-            SKONObject data = SKON.LoadFile(filePath, Console.Out);
+            
+            SKONObject data = SKON.LoadFile(filePath);
 
             sw.Stop();
 
-            Console.WriteLine("Successfully parsed file in {0}ms!", sw.ElapsedMilliseconds);
+            Console.WriteLine("Successfully parsed SKON file in {0}ms!", sw.ElapsedMilliseconds);
+
+            Console.WriteLine();
+            
+            sw.Reset();
+
+            sw.Start();
+            SKON.WriteToFile("./ResultSKON.skon", data);
+            sw.Stop();
+
+            Console.WriteLine("Successfully wrote file in {0}ms!", sw.ElapsedMilliseconds);
 
             Console.WriteLine();
 
-            Console.WriteLine(SKON.Write(data));
+            Console.Write("Show written file? Y/N (N):");
 
-            SKON.WriteToFile("./ResultSKON.skon", data);
+            if (Console.ReadLine() == "Y")
+            {
+                string[] result = File.ReadAllLines("./ResultSKON.skon");
 
-            Console.ReadKey();
+                for (int i = 0; i < result.Length; i++)
+                {
+                    Console.WriteLine(result[i]);
+                }
+            }
+
+            Console.Write("Run SKEMATests? Y/N (Y):");
+
+            string ans = Console.ReadLine();
+
+            if (ans.Length == 0 || ans == "Y")
+            {
+                sw.Reset();
+
+                sw.Start();
+
+                SKEMAObject skemaObj = SKEMA.LoadFile("./SKEMATest.skema");
+
+                sw.Stop();
+
+                Console.WriteLine("Successfully parsed SKEMA file in {0}ms!", sw.ElapsedMilliseconds);
+
+                Console.WriteLine();
+            }
+
+            Console.ReadKey(true);
         }
     }
 }
