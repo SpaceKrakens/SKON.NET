@@ -60,7 +60,7 @@ TOKENS
   rbrace    = '}'.
   lbracket  = '['.
   rbracket  = ']'.
-  ident     = letter { letter | digit }.
+  ident     = letter { letter | digit } CONTEXT (":").
   string_   = '"' { stringch | '\\' escapech | '\\' 'u' hex hex hex hex} '"'.
   badString = '"' { stringch | '\\' escapech } (cr | lf).
   integer_  = ['-'] digit {digit}.
@@ -77,13 +77,6 @@ TOKENS
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit ('+'|'-') digit digit ':' digit digit
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('+'|'-') digit digit ':' digit digit
 			).
-
-  any_type = "Any".
-  string_type = "String".
-  integer_type = "Integer".
-  float_type = "Float".
-  boolean_type = "Boolean".
-  datetime_type = "DateTime".
 
   ref = '#' letter { letter | digit }.
   def = "define".
@@ -206,12 +199,12 @@ skon_value<out SKONObject skonObject>								(. skonObject = null; .)
 												
 /*-------------------------------------------------------------------------*/
 type<out SKEMAObject skemaObj>										(. skemaObj = null; .)
-=	any_type														(. skemaObj = SKEMAObject.Any; .)
-	| string_type													(. skemaObj = SKEMAObject.String; .)
-	| integer_type													(. skemaObj = SKEMAObject.Integer; .)
-	| float_type													(. skemaObj = SKEMAObject.Float; .)
-	| boolean_type													(. skemaObj = SKEMAObject.Boolean; .)
-	| datetime_type													(. skemaObj = SKEMAObject.DateTime; .)
+=	"Any"															(. skemaObj = SKEMAObject.Any; .)
+	| "String"														(. skemaObj = SKEMAObject.String; .)
+	| "Integer"														(. skemaObj = SKEMAObject.Integer; .)
+	| "Float"														(. skemaObj = SKEMAObject.Float; .)
+	| "Boolean"														(. skemaObj = SKEMAObject.Boolean; .)
+	| "DateTime"													(. skemaObj = SKEMAObject.DateTime; .)
 	.
 
 /*-------------------------------------------------------------------------*/

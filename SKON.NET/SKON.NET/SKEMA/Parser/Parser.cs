@@ -34,15 +34,9 @@ public class Parser {
 	public const int _integer_ = 11;
 	public const int _double_ = 12;
 	public const int _datetime_ = 13;
-	public const int _any_type = 14;
-	public const int _string_type = 15;
-	public const int _integer_type = 16;
-	public const int _float_type = 17;
-	public const int _boolean_type = 18;
-	public const int _datetime_type = 19;
-	public const int _ref = 20;
-	public const int _def = 21;
-	public const int _opt = 22;
+	public const int _ref = 14;
+	public const int _def = 15;
+	public const int _opt = 16;
 	public const int maxT = 26;
 
 	const bool _T = true;
@@ -170,8 +164,8 @@ public SKONObject metadata = new SKONObject();
 
 	void open_skema_map(out Dictionary<string, SKEMAObject> mapElements ) {
 		string key; SKEMAObject value; mapElements = new Dictionary<string, SKEMAObject>(); 
-		while (la.kind == 8 || la.kind == 21 || la.kind == 22) {
-			if (la.kind == 8 || la.kind == 22) {
+		while (la.kind == 8 || la.kind == 15 || la.kind == 16) {
+			if (la.kind == 8 || la.kind == 16) {
 				skema_map_element(out key, out value);
 				mapElements[key] = value; 
 			} else {
@@ -229,7 +223,7 @@ public SKONObject metadata = new SKONObject();
 			skema_map(out skemaObj);
 		} else if (la.kind == 6) {
 			skema_array(out skemaObj);
-		} else if (la.kind == 20) {
+		} else if (la.kind == 14) {
 			Get();
 			skemaObj = new SKEMAObject(t.val.Substring(1)); 
 		} else SynErr(27);
@@ -253,7 +247,7 @@ public SKONObject metadata = new SKONObject();
 	}
 
 	void skema_map_element(out string key, out SKEMAObject obj) {
-		if (la.kind == 22) {
+		if (la.kind == 16) {
 			Get();
 		}
 		
@@ -263,7 +257,7 @@ public SKONObject metadata = new SKONObject();
 	}
 
 	void definition(out string key, out SKEMAObject def) {
-		Expect(21);
+		Expect(15);
 		Ident(out key);
 		Expect(2);
 		skema_value(out def);
@@ -305,17 +299,17 @@ public SKONObject metadata = new SKONObject();
 			skon_array(out skonObject);
 			break;
 		}
-		case 23: {
+		case 17: {
 			Get();
 			skonObject = new SKONObject(true); 
 			break;
 		}
-		case 24: {
+		case 18: {
 			Get();
 			skonObject = new SKONObject(false); 
 			break;
 		}
-		case 25: {
+		case 19: {
 			Get();
 			skonObject = new SKONObject(); 
 			break;
@@ -327,32 +321,32 @@ public SKONObject metadata = new SKONObject();
 	void type(out SKEMAObject skemaObj) {
 		skemaObj = null; 
 		switch (la.kind) {
-		case 14: {
+		case 20: {
 			Get();
 			skemaObj = SKEMAObject.Any; 
 			break;
 		}
-		case 15: {
+		case 21: {
 			Get();
 			skemaObj = SKEMAObject.String; 
 			break;
 		}
-		case 16: {
+		case 22: {
 			Get();
 			skemaObj = SKEMAObject.Integer; 
 			break;
 		}
-		case 17: {
+		case 23: {
 			Get();
 			skemaObj = SKEMAObject.Float; 
 			break;
 		}
-		case 18: {
+		case 24: {
 			Get();
 			skemaObj = SKEMAObject.Boolean; 
 			break;
 		}
-		case 19: {
+		case 25: {
 			Get();
 			skemaObj = SKEMAObject.DateTime; 
 			break;
@@ -374,11 +368,11 @@ public SKONObject metadata = new SKONObject();
 	
 	static readonly bool[,] set = {
 		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
-		{_T,_x,_x,_x, _x,_T,_x,_x, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_T,_T,_x, _x,_x,_x,_x},
+		{_T,_x,_x,_x, _x,_T,_x,_x, _T,_x,_x,_x, _x,_x,_x,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
 		{_T,_x,_x,_x, _x,_T,_x,_x, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
-		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_T,_T, _T,_T,_T,_T, _x,_x,_x,_x, _x,_x,_x,_x},
-		{_x,_x,_x,_x, _T,_x,_T,_x, _x,_T,_x,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_x,_x},
-		{_T,_x,_x,_x, _T,_x,_T,_T, _x,_T,_x,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_x,_x}
+		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _T,_T,_T,_T, _T,_T,_x,_x},
+		{_x,_x,_x,_x, _T,_x,_T,_x, _x,_T,_x,_T, _T,_T,_x,_x, _x,_T,_T,_T, _x,_x,_x,_x, _x,_x,_x,_x},
+		{_T,_x,_x,_x, _T,_x,_T,_T, _x,_T,_x,_T, _T,_T,_x,_x, _x,_T,_T,_T, _x,_x,_x,_x, _x,_x,_x,_x}
 
 	};
 } // end Parser
@@ -406,18 +400,18 @@ public class Errors {
 			case 11: s = "integer_ expected"; break;
 			case 12: s = "double_ expected"; break;
 			case 13: s = "datetime_ expected"; break;
-			case 14: s = "any_type expected"; break;
-			case 15: s = "string_type expected"; break;
-			case 16: s = "integer_type expected"; break;
-			case 17: s = "float_type expected"; break;
-			case 18: s = "boolean_type expected"; break;
-			case 19: s = "datetime_type expected"; break;
-			case 20: s = "ref expected"; break;
-			case 21: s = "def expected"; break;
-			case 22: s = "opt expected"; break;
-			case 23: s = "\"true\" expected"; break;
-			case 24: s = "\"false\" expected"; break;
-			case 25: s = "\"null\" expected"; break;
+			case 14: s = "ref expected"; break;
+			case 15: s = "def expected"; break;
+			case 16: s = "opt expected"; break;
+			case 17: s = "\"true\" expected"; break;
+			case 18: s = "\"false\" expected"; break;
+			case 19: s = "\"null\" expected"; break;
+			case 20: s = "\"Any\" expected"; break;
+			case 21: s = "\"String\" expected"; break;
+			case 22: s = "\"Integer\" expected"; break;
+			case 23: s = "\"Float\" expected"; break;
+			case 24: s = "\"Boolean\" expected"; break;
+			case 25: s = "\"DateTime\" expected"; break;
 			case 26: s = "??? expected"; break;
 			case 27: s = "invalid skema_value"; break;
 			case 28: s = "invalid skon_value"; break;

@@ -130,6 +130,8 @@ namespace UnitTests
                 Colors: [ #Color ],";
 
             SKEMAObject skemaObj = SKEMA.Parse(skema);
+
+            Console.Write(SKEMA.Write(skemaObj));
         }
 
         [Test]

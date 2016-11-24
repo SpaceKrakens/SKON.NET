@@ -88,6 +88,7 @@ namespace SKON.SKEMA
         }
 
         private string reference;
+        internal string Reference => reference;
 
         private SKEMAObject(SKEMAType type)
         {
