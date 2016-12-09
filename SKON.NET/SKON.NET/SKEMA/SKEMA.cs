@@ -163,14 +163,11 @@ namespace SKON.SKEMA
 
                     return mapsb.ToString();
                 case SKEMAType.ARRAY:
-                    if (obj.ArrayElementSKEMA.Type == SKEMAType.MAP || obj.ArrayElementSKEMA.Type == SKEMAType.ARRAY)
+                    if (obj.ArrayElementSKEMA == null)
                     {
-                        return "\n[" + WriteObject(obj.ArrayElementSKEMA, indent + 1) + "\n]";
+                        return "[  ]";
                     }
-                    else
-                    {
-                        return "[" + WriteObject(obj.ArrayElementSKEMA, indent + 1) + "]";
-                    }
+                    return "\n[" + WriteObject(obj.ArrayElementSKEMA, indent + 1) + "\n]";
                 default:
                     return null;
             }
