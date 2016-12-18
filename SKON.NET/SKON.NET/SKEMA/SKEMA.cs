@@ -293,7 +293,7 @@ namespace SKON.SKEMA
                     case SKEMAType.MAP:
                         foreach (string key in skema.Keys)
                         {
-                            if (skema[skema[key]] == true)
+                            if (skema.IsOptional(key) == true)
                             {
                                 continue;
                             }

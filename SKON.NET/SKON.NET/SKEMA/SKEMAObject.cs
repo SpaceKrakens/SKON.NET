@@ -89,22 +89,8 @@ namespace SKON.SKEMA
         internal string Reference => reference;
 
         private SKEMAObject referenceDefininton;
-
-        private SKEMAObject(SKEMAType type)
-        {
-            this.type = type;
-
-            if (this.type == SKEMAType.MAP)
-            {
-                mapSKEMA = new Dictionary<string, SKEMAObject>();
-            }
-            else if (this.type == SKEMAType.ARRAY)
-            {
-                arraySKEMA = new SKEMAObject(SKEMAType.ANY);
-            }
-        }
-
-        public SKEMAObject(Dictionary<string, SKEMAObject> mapSKEMA, bool loose = false, Dictionary<SKEMAObject, bool> optionalMap = null)
+        
+        public SKEMAObject(Dictionary<string, SKEMAObject> mapSKEMA, bool loose = false, Dictionary<string, bool> optionalMap = null)
         {
             this.type = SKEMAType.MAP;
 
@@ -149,13 +135,7 @@ namespace SKON.SKEMA
             }
         }
 
-        public bool this[SKEMAObject key]
-        {
-            get
-            {
-                return optionalMap[key];
-            }
-        }
+        public bool IsOptional(string key) => optionalMap?.ContainsKey(key) == false;
 
         public static implicit operator SKEMAObject(SKEMAType type) => new SKEMAObject(type);
 
