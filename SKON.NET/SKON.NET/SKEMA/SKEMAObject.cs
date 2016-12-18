@@ -87,8 +87,6 @@ namespace SKON.SKEMA
 
         private string reference;
         internal string Reference => reference;
-
-        private SKEMAObject referenceDefininton;
         
         public SKEMAObject(Dictionary<string, SKEMAObject> mapSKEMA, bool loose = false, Dictionary<string, bool> optionalMap = null)
         {
