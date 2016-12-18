@@ -11,9 +11,6 @@ namespace SKON.SKEMA
 {
     using System;
     using System.Collections.Generic;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using ValueType = SKONValueType;
     
     public enum SKEMAType
     {
@@ -48,6 +45,7 @@ namespace SKON.SKEMA
 
         // TODO: Implement optional elements!
         private Dictionary<string, SKEMAObject> mapSKEMA;
+        private Dictionary<string, bool> optionalMap;
 
         private bool loose;
         public bool Loose {
@@ -90,6 +88,8 @@ namespace SKON.SKEMA
         private string reference;
         internal string Reference => reference;
 
+        private SKEMAObject referenceDefininton;
+
         private SKEMAObject(SKEMAType type)
         {
             this.type = type;
@@ -104,11 +104,12 @@ namespace SKON.SKEMA
             }
         }
 
-        public SKEMAObject(Dictionary<string, SKEMAObject> mapSKEMA, bool loose = false)
+        public SKEMAObject(Dictionary<string, SKEMAObject> mapSKEMA, bool loose = false, Dictionary<SKEMAObject, bool> optionalMap = null)
         {
             this.type = SKEMAType.MAP;
 
-            this.mapSKEMA = mapSKEMA;
+            this.mapSKEMA = mapSKEMA ?? new Dictionary<string, SKEMAObject>();
+            this.optionalMap = optionalMap;
 
             this.loose = loose;
         }
@@ -145,6 +146,14 @@ namespace SKON.SKEMA
             set
             {
                 Add(key, value);
+            }
+        }
+
+        public bool this[SKEMAObject key]
+        {
+            get
+            {
+                return optionalMap[key];
             }
         }
 
@@ -267,29 +276,48 @@ namespace SKON.SKEMA
                 case SKEMAType.DATETIME:
                     return true;
                 case SKEMAType.MAP:
-                    if (loose == false && mapSKEMA.Keys.Count != obj.Keys.Count)
+                    if (optionalMap == null)
                     {
-                        return false;
-                    }
-                    
-                    if (obj.ContainsAllKeys(mapSKEMA.Keys) == false)
-                    {
-                        return false;
-                    }
-                    
-                    foreach (string key in mapSKEMA.Keys)
-                    {
-                        if (mapSKEMA[key].Valid(obj[key]) == false)
+                        if (loose == false && mapSKEMA.Keys.Count != obj.Keys.Count)
                         {
                             return false;
                         }
-                    }
 
-                    return true;
+                        if (obj.ContainsAllKeys(mapSKEMA.Keys) == false)
+                        {
+                            return false;
+                        }
+
+                        foreach (string key in mapSKEMA.Keys)
+                        {
+                            if (mapSKEMA[key].Valid(obj[key]) == false)
+                            {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    }
+                    else
+                    {
+                        foreach (string key in mapSKEMA.Keys)
+                        {
+                            if (optionalMap.ContainsKey(key) == false && (mapSKEMA?[key].Valid(obj[key]) ?? false) == false)
+                            {
+                                return false;
+                            }
+                            else if (mapSKEMA.ContainsKey(key) && mapSKEMA[key].Valid(obj[key]) == false)
+                            {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    }
                 case SKEMAType.ARRAY:
                     foreach (SKONObject value in obj.Values)
                     {
-                        if (arraySKEMA.Valid(value) == false)
+                        if (arraySKEMA?.Valid(value) == false)
                         {
                             return false;
                         }

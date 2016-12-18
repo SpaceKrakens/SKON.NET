@@ -293,6 +293,11 @@ namespace SKON.SKEMA
                     case SKEMAType.MAP:
                         foreach (string key in skema.Keys)
                         {
+                            if (skema[skema[key]] == true)
+                            {
+                                continue;
+                            }
+
                             if (skema[key].Type == SKEMAType.REFERENCE)
                             {
                                 references.Add(skema[key]);
