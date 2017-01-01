@@ -199,5 +199,19 @@ namespace UnitTests
 
             Assert.IsFalse(obj.Valid(testData));
         }
+
+        [Test]
+        public void ParseOptionalElements()
+        {
+            string skema =
+                @"Required: Any,
+                optional Optional: Any,";
+
+            SKEMAObject obj = SKEMA.Parse(skema);
+
+            Assert.IsFalse(obj.IsOptional("Required"));
+
+            Assert.IsTrue(obj.IsOptional("Optional"));
+        }
     }
 }

@@ -146,14 +146,15 @@ public SKONObject metadata = new SKONObject();
 	
 	void SKEMA() {
 		Dictionary<string, SKONObject> metadataElements = new Dictionary<string, SKONObject>();
-		Dictionary<string, SKEMAObject> mapElements = new Dictionary<string, SKEMAObject>();
+		Dictionary<string, SKEMAObject> mapElements;
+		Dictionary<string, bool> optionalMap;
 		string key; SKONObject value; 
 		while (la.kind == 1) {
 			meta_data(out key, out value);
 		}
 		this.metadata = new SKONObject(metadataElements); 
-		open_skema_map(out mapElements);
-		this.data = new SKEMAObject(mapElements); 
+		open_skema_map(out mapElements, out optionalMap);
+		this.data = new SKEMAObject(mapElements, optionalMap); 
 	}
 
 	void meta_data(out string key, out SKONObject obj) {
@@ -162,12 +163,12 @@ public SKONObject metadata = new SKONObject();
 		Expect(1);
 	}
 
-	void open_skema_map(out Dictionary<string, SKEMAObject> mapElements ) {
-		string key; SKEMAObject value; mapElements = new Dictionary<string, SKEMAObject>(); 
+	void open_skema_map(out Dictionary<string, SKEMAObject> mapElements, out Dictionary<string, bool> optionalMap ) {
+		string key; SKEMAObject value; bool optional; mapElements = new Dictionary<string, SKEMAObject>(); optionalMap = new Dictionary<string, bool>(); 
 		while (la.kind == 8 || la.kind == 15 || la.kind == 16) {
 			if (la.kind == 8 || la.kind == 16) {
-				skema_map_element(out key, out value);
-				mapElements[key] = value; 
+				skema_map_element(out key, out value, out optional);
+				mapElements[key] = value; if(optional) { optionalMap[key] = true; } 
 			} else {
 				definition(out key, out value);
 				definitions[key] = value; 
@@ -183,15 +184,15 @@ public SKONObject metadata = new SKONObject();
 	}
 
 	void skema_map(out SKEMAObject map) {
-		Dictionary<string, SKEMAObject> mapElements; 
+		Dictionary<string, SKEMAObject> mapElements; Dictionary<string, bool> optionalMap; 
 		Expect(4);
-		open_skema_map(out mapElements);
-		map = new SKEMAObject(mapElements); 
+		open_skema_map(out mapElements, out optionalMap);
+		map = new SKEMAObject(mapElements, optionalMap); 
 		Expect(5);
 	}
 
 	void skon_map(out SKONObject map) {
-		Dictionary<string, SKONObject> mapElements; 
+		Dictionary<string, SKONObject> mapElements;  
 		Expect(4);
 		open_skon_map(out mapElements);
 		map = new SKONObject(mapElements); 
@@ -246,11 +247,12 @@ public SKONObject metadata = new SKONObject();
 		}
 	}
 
-	void skema_map_element(out string key, out SKEMAObject obj) {
+	void skema_map_element(out string key, out SKEMAObject obj, out bool optional) {
+		optional = false; 
 		if (la.kind == 16) {
 			Get();
+			optional = true; 
 		}
-		
 		Ident(out key);
 		Expect(2);
 		skema_value(out obj);
