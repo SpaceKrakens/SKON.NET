@@ -46,7 +46,7 @@ namespace VerboseScannerParser
 
             defaultPath = "./SKEMATest.skema";
 
-            Console.Write("SKON Input file?:");
+            Console.Write("SKEMA Input file?:");
 
             filePath = Console.ReadLine();
 
