@@ -11,10 +11,7 @@ namespace SKON.SKEMA
 {
     using System;
     using System.Collections.Generic;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using ValueType = SKONValueType;
-    
+
     public enum SKEMAType
     {
         REFERENCE = -1,
@@ -48,27 +45,8 @@ namespace SKON.SKEMA
 
         // TODO: Implement optional elements!
         private Dictionary<string, SKEMAObject> mapSKEMA;
-
-        private bool loose;
-        public bool Loose {
-            get
-            {
-                if (Type != SKEMAType.MAP)
-                {
-                    throw new InvalidOperationException("Only SKEMAObjects of type MAP can be loose!");
-                }
-                return loose;
-            }
-            set
-            {
-                if (Type != SKEMAType.MAP)
-                {
-                    throw new InvalidOperationException("Only SKEMAObjects of type MAP can be loose!");
-                }
-                loose = value;
-            }
-        }
-
+        private Dictionary<string, bool> optionalMap;
+        
         private SKEMAObject arraySKEMA;
         public SKEMAObject ArrayElementSKEMA
         {
@@ -88,6 +66,7 @@ namespace SKON.SKEMA
         }
 
         private string reference;
+        internal string Reference => reference;
 
         private SKEMAObject(SKEMAType type)
         {
@@ -96,6 +75,7 @@ namespace SKON.SKEMA
             if (this.type == SKEMAType.MAP)
             {
                 mapSKEMA = new Dictionary<string, SKEMAObject>();
+                optionalMap = new Dictionary<string, bool>();
             }
             else if (this.type == SKEMAType.ARRAY)
             {
@@ -103,13 +83,12 @@ namespace SKON.SKEMA
             }
         }
 
-        public SKEMAObject(Dictionary<string, SKEMAObject> mapSKEMA, bool loose = false)
+        public SKEMAObject(Dictionary<string, SKEMAObject> mapSKEMA, Dictionary<string, bool> optionalMap = null)
         {
             this.type = SKEMAType.MAP;
 
-            this.mapSKEMA = mapSKEMA;
-
-            this.loose = loose;
+            this.mapSKEMA = mapSKEMA ?? new Dictionary<string, SKEMAObject>();
+            this.optionalMap = optionalMap ?? new Dictionary<string, bool>();
         }
 
         private SKEMAObject(SKEMAObject arraySKEMA)
@@ -133,12 +112,7 @@ namespace SKON.SKEMA
         {
             get
             {
-                if (this.mapSKEMA?.ContainsKey(key) ?? false)
-                {
-                    return this.mapSKEMA[key];
-                }
-
-                return Any;
+                return Get(key, Any);
             }
 
             set
@@ -147,10 +121,27 @@ namespace SKON.SKEMA
             }
         }
 
+        public bool IsOptional(string key) => optionalMap.ContainsKey(key);
+
+        public void SetOptional(string key, bool optional)
+        {
+            if (type == SKEMAType.MAP)
+            {
+                if (optional == true)
+                {
+                    optionalMap[key] = true;
+                }
+                else if (optionalMap.ContainsKey(key))
+                {
+                    optionalMap.Remove(key);
+                }
+            }
+        }
+
         public static implicit operator SKEMAObject(SKEMAType type) => new SKEMAObject(type);
 
         public static implicit operator SKEMAObject(Dictionary<string, SKEMAObject> mapSKEMA) => new SKEMAObject(mapSKEMA);
-        
+
         public bool Optional { get; set; }
 
         public void Add(string key, SKEMAObject value)
@@ -162,7 +153,7 @@ namespace SKON.SKEMA
 
             this.mapSKEMA[key] = value;
         }
-        
+
         public bool Remove(string key)
         {
             if (this.Type != SKEMAType.MAP)
@@ -195,7 +186,7 @@ namespace SKON.SKEMA
 
             return true;
         }
-        
+
         public bool ContainsAllKeys(IEnumerable<string> keys)
         {
             if (this.Type != SKEMAType.MAP)
@@ -213,7 +204,7 @@ namespace SKON.SKEMA
 
             return true;
         }
-        
+
         public bool ContainsAllKeys(List<string> keys)
         {
             for (int i = 0; i < keys.Count; i++)
@@ -248,7 +239,7 @@ namespace SKON.SKEMA
             result = default(SKEMAObject);
             return false;
         }
-        
+
         public bool Valid(SKONObject obj)
         {
             if (this.type != SKEMAType.ANY && (int)this.type != (int)obj.Type)
@@ -266,29 +257,64 @@ namespace SKON.SKEMA
                 case SKEMAType.DATETIME:
                     return true;
                 case SKEMAType.MAP:
-                    if (loose == false && mapSKEMA.Keys.Count != obj.Keys.Count)
+                    if (optionalMap == null)
                     {
-                        return false;
-                    }
-                    
-                    if (obj.ContainsAllKeys(mapSKEMA.Keys) == false)
-                    {
-                        return false;
-                    }
-                    
-                    foreach (string key in mapSKEMA.Keys)
-                    {
-                        if (mapSKEMA[key].Valid(obj[key]) == false)
+                        if (mapSKEMA.Count != obj.Keys.Count)
                         {
                             return false;
                         }
-                    }
 
-                    return true;
+                        foreach (string key in mapSKEMA.Keys)
+                        {
+                            if (obj.ContainsKey(key) == false)
+                            {
+                                return false;
+                            }
+
+                            if (mapSKEMA[key].Valid(obj[key]) == false)
+                            {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    }
+                    else
+                    {
+                        if (obj.Keys.Count > mapSKEMA.Count || obj.Keys.Count < mapSKEMA.Count - optionalMap?.Count)
+                        {
+                            return false;
+                        }
+
+                        if (this.ContainsAllKeys(obj.Keys) == false)
+                        {
+                            return false;
+                        }
+
+                        foreach (string key in mapSKEMA.Keys)
+                        {
+                            if (obj.ContainsKey(key) == false)
+                            {
+                                if (optionalMap.ContainsKey(key))
+                                {
+                                    continue;
+                                }
+
+                                return false;
+                            }
+
+                            if (mapSKEMA[key].Valid(obj[key]) == false)
+                            {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    }
                 case SKEMAType.ARRAY:
                     foreach (SKONObject value in obj.Values)
                     {
-                        if (arraySKEMA.Valid(value) == false)
+                        if (arraySKEMA?.Valid(value) == false)
                         {
                             return false;
                         }

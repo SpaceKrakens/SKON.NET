@@ -39,7 +39,7 @@ namespace SKON
         /// <summary>
         /// The indent string.
         /// </summary>
-        private static string IndentString => UseTabs ? IndentTab : IndentSpaces;
+        internal static string IndentString => UseTabs ? IndentTab : IndentSpaces;
 
         /// <summary>
         /// Loads a text file as a SKON Map.
@@ -122,11 +122,6 @@ namespace SKON
         /// <param name="obj">The SKONObject to turn into a string and write to a file.</param>
         public static void WriteToFile(string filepath, SKONObject obj)
         {
-            if (obj.Type != SKONValueType.MAP)
-            {
-                throw new ArgumentException("SKONObject to write must be of type map!");
-            }
-
             File.WriteAllText(filepath, Write(obj), Encoding.UTF8);
         }
 
@@ -137,6 +132,11 @@ namespace SKON
         /// <returns>A string to write into a file.</returns>
         public static string Write(SKONObject obj)
         {
+            if (obj.Type != SKONValueType.MAP)
+            {
+                throw new ArgumentException("SKONObject to write must be of type map!");
+            }
+
             StringBuilder sb = new StringBuilder();
 
             foreach (string key in obj.Keys)
@@ -190,7 +190,7 @@ namespace SKON
                         return mapsb.ToString();
                     }
 
-                    mapsb.Append('\n' + indentString + "{\n");
+                    mapsb.Append("\n" + indentString + "{\n");
 
                     foreach (string key in obj.Keys)
                     {

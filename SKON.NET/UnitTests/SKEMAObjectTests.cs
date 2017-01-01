@@ -130,6 +130,8 @@ namespace UnitTests
                 Colors: [ #Color ],";
 
             SKEMAObject skemaObj = SKEMA.Parse(skema);
+
+            Console.Write(SKEMA.Write(skemaObj));
         }
 
         [Test]
@@ -145,6 +147,71 @@ namespace UnitTests
                 Tree: #Node,";
 
             SKEMAObject skemaObj = SKEMA.Parse(skema);
+        }
+
+        [Test]
+        public void ReplacingMapElements()
+        {
+            SKEMAObject obj = new Dictionary<string, SKEMAObject>() { { "Replace", SKEMAObject.Any } };
+
+            Assert.AreEqual(SKEMAType.MAP, obj.Type);
+            Assert.AreEqual(SKEMAType.ANY, obj["Replace"].Type);
+
+            obj["Replace"] = SKEMAObject.String;
+
+            Assert.AreEqual(SKEMAType.STRING, obj["Replace"].Type);
+
+            obj["Replace"] = SKEMAObject.ArrayOf(SKEMAObject.Boolean);
+            
+            Assert.AreEqual(SKEMAType.ARRAY, obj["Replace"].Type);
+
+            Assert.AreEqual(SKEMAType.BOOLEAN, obj["Replace"].ArrayElementSKEMA.Type);
+
+            obj["Replace"].ArrayElementSKEMA = SKEMAObject.ArrayOf(SKEMAObject.Float);
+            
+            Console.WriteLine(SKEMA.Write(obj));
+
+            Assert.AreEqual(SKEMAType.ARRAY, obj["Replace"].ArrayElementSKEMA.Type);
+            
+            Assert.AreEqual(SKEMAType.FLOAT, obj["Replace"].ArrayElementSKEMA.ArrayElementSKEMA.Type);
+        }
+
+        [Test]
+        public void OptionalElements()
+        {
+            SKEMAObject obj = new Dictionary<string, SKEMAObject>() { { "Required", SKEMAObject.String }, { "Optional", SKEMAObject.Integer } };
+
+            obj.SetOptional("Optional", true);
+
+            Assert.IsTrue(obj.IsOptional("Optional"));
+
+            SKONObject testData = new Dictionary<string, SKONObject>() { { "Required", new SKONObject(SKONObjectTests.TestString) }, { "Optional", new SKONObject(SKONObjectTests.TestInt) } };
+
+            Assert.IsTrue(obj.Valid(testData));
+            
+            testData.Remove("Optional");
+
+            Assert.IsFalse(testData.ContainsKey("Optional"));
+
+            Assert.IsTrue(obj.Valid(testData));
+
+            testData.Remove("Required");
+
+            Assert.IsFalse(obj.Valid(testData));
+        }
+
+        [Test]
+        public void ParseOptionalElements()
+        {
+            string skema =
+                @"Required: Any,
+                optional Optional: Any,";
+
+            SKEMAObject obj = SKEMA.Parse(skema);
+
+            Assert.IsFalse(obj.IsOptional("Required"));
+
+            Assert.IsTrue(obj.IsOptional("Optional"));
         }
     }
 }

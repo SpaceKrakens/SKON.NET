@@ -60,7 +60,7 @@ TOKENS
   rbrace    = '}'.
   lbracket  = '['.
   rbracket  = ']'.
-  ident     = letter { letter | digit }.
+  ident     = letter { letter | digit } CONTEXT (":").
   string_   = '"' { stringch | '\\' escapech | '\\' 'u' hex hex hex hex} '"'.
   badString = '"' { stringch | '\\' escapech } (cr | lf).
   integer_  = ['-'] digit {digit}.
@@ -78,13 +78,6 @@ TOKENS
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('+'|'-') digit digit ':' digit digit
 			).
 
-  any_type = "Any".
-  string_type = "String".
-  integer_type = "Integer".
-  float_type = "Float".
-  boolean_type = "Boolean".
-  datetime_type = "DateTime".
-
   ref = '#' letter { letter | digit }.
   def = "define".
   opt = "optional".
@@ -97,10 +90,11 @@ IGNORE ' ' + '\r' + '\t' + '\n'
 PRODUCTIONS
 /*-------------------------------------------------------------------------*/
 SKEMA																(. Dictionary<string, SKONObject> metadataElements = new Dictionary<string, SKONObject>();
-																		Dictionary<string, SKEMAObject> mapElements = new Dictionary<string, SKEMAObject>();
+																		Dictionary<string, SKEMAObject> mapElements;
+																		Dictionary<string, bool> optionalMap;
 																		string key; SKONObject value; .)
 =	{ meta_data<out key, out value> }								(. this.metadata = new SKONObject(metadataElements); .)
-	open_skema_map<out mapElements>									(. this.data = new SKEMAObject(mapElements); .)
+	open_skema_map<out mapElements, out optionalMap>				(. this.data = new SKEMAObject(mapElements, optionalMap); .)
     .															
 
 /*-------------------------------------------------------------------------*/
@@ -110,14 +104,14 @@ meta_data<out string key, out SKONObject obj>
 	tilda.
 
 /*-------------------------------------------------------------------------*/
-skema_map<out SKEMAObject map>										(. Dictionary<string, SKEMAObject> mapElements; .)
+skema_map<out SKEMAObject map>										(. Dictionary<string, SKEMAObject> mapElements; Dictionary<string, bool> optionalMap; .)
 =	lbrace
-	open_skema_map<out mapElements>									(. map = new SKEMAObject(mapElements); .)
+	open_skema_map<out mapElements, out optionalMap>				(. map = new SKEMAObject(mapElements, optionalMap); .)
 	rbrace
 	.
 
 /*-------------------------------------------------------------------------*/
-skon_map<out SKONObject map>										(. Dictionary<string, SKONObject> mapElements; .)
+skon_map<out SKONObject map>										(. Dictionary<string, SKONObject> mapElements;  .)
 =	lbrace
     open_skon_map<out mapElements>									(. map = new SKONObject(mapElements); .)
     rbrace
@@ -138,11 +132,11 @@ skon_array<out SKONObject array>									(. List<SKONObject> arrayElements; .)
     .
 
 /*-------------------------------------------------------------------------*/
-open_skema_map<. out Dictionary<string, SKEMAObject> mapElements .>	(. string key; SKEMAObject value; mapElements = new Dictionary<string, SKEMAObject>(); .)
+open_skema_map<. out Dictionary<string, SKEMAObject> mapElements, out Dictionary<string, bool> optionalMap .>	(. string key; SKEMAObject value; bool optional; mapElements = new Dictionary<string, SKEMAObject>(); optionalMap = new Dictionary<string, bool>(); .)
 =	{
 		(
-			skema_map_element<out key, out value>					(. mapElements[key] = value; .)
-			| definition<out key, out value>						(. definitions[key] = value; .)
+			skema_map_element<out key, out value, out optional>													(. mapElements[key] = value; if(optional) { optionalMap[key] = true; } .)
+			| definition<out key, out value>																	(. definitions[key] = value; .)
 		)							
 		WEAK comma
 	}
@@ -157,8 +151,10 @@ open_skon_map<. out Dictionary<string, SKONObject> mapElements .>	(. string key;
     .
 
 /*-------------------------------------------------------------------------*/
-skema_map_element<out string key, out SKEMAObject obj>				
-=	[opt]															(.  .)
+skema_map_element<out string key, out SKEMAObject obj, out bool optional>	(. optional = false; .)
+=	[
+		opt																	(. optional = true; .)
+	]
 	Ident<out key>													
     colon 
     skema_value<out obj>											
@@ -206,12 +202,12 @@ skon_value<out SKONObject skonObject>								(. skonObject = null; .)
 												
 /*-------------------------------------------------------------------------*/
 type<out SKEMAObject skemaObj>										(. skemaObj = null; .)
-=	any_type														(. skemaObj = SKEMAObject.Any; .)
-	| string_type													(. skemaObj = SKEMAObject.String; .)
-	| integer_type													(. skemaObj = SKEMAObject.Integer; .)
-	| float_type													(. skemaObj = SKEMAObject.Float; .)
-	| boolean_type													(. skemaObj = SKEMAObject.Boolean; .)
-	| datetime_type													(. skemaObj = SKEMAObject.DateTime; .)
+=	"Any"															(. skemaObj = SKEMAObject.Any; .)
+	| "String"														(. skemaObj = SKEMAObject.String; .)
+	| "Integer"														(. skemaObj = SKEMAObject.Integer; .)
+	| "Float"														(. skemaObj = SKEMAObject.Float; .)
+	| "Boolean"														(. skemaObj = SKEMAObject.Boolean; .)
+	| "DateTime"													(. skemaObj = SKEMAObject.DateTime; .)
 	.
 
 /*-------------------------------------------------------------------------*/

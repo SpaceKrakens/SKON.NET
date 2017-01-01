@@ -67,13 +67,101 @@ namespace SKONTest
 
             if (Console.ReadLine() == "Y")
             {
+                ConsoleColor color = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+
                 string[] result = File.ReadAllLines("./ResultSKON.skon");
 
                 for (int i = 0; i < result.Length; i++)
                 {
                     Console.WriteLine(result[i]);
                 }
+
+                Console.ForegroundColor = color;
             }
+            
+            defaultPath = "./SKEMATest.skema";
+
+            Console.Write("SKEMA input file?:");
+
+            filePath = Console.ReadLine();
+
+            if (File.Exists(filePath) == false)
+            {
+                filePath = defaultPath;
+            }
+
+            sw.Reset();
+
+            sw.Start();
+            SKEMAObject skema = SKEMA.LoadFile(filePath);
+            sw.Stop();
+
+            Console.WriteLine("Successfully parsed SKEMA file in {0}ms!", sw.ElapsedMilliseconds);
+
+            Console.WriteLine();
+
+            sw.Reset();
+
+            sw.Start();
+            SKEMA.WriteToFile("./ResultSKEMA.skema", skema);
+            sw.Stop();
+
+            Console.WriteLine("Successfully wrote SKEMA file in {0}ms!", sw.ElapsedMilliseconds);
+
+            Console.WriteLine();
+
+            Console.Write("Show written SKEMA file? Y/N (N):");
+
+            if (Console.ReadLine() == "Y")
+            {
+                ConsoleColor color = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+
+                string[] result = File.ReadAllLines("./ResultSKEMA.skema");
+
+                for (int i = 0; i < result.Length; i++)
+                {
+                    Console.WriteLine(result[i]);
+                }
+
+                Console.ForegroundColor = color;
+            }
+
+            defaultPath = "./SKONTest.skon";
+
+            Console.Write("SKON input file?:");
+
+            filePath = Console.ReadLine();
+
+            if (File.Exists(filePath) == false)
+            {
+                filePath = defaultPath;
+            }
+
+            sw.Reset();
+
+            sw.Start();
+            SKONObject skon = SKON.LoadFile(filePath);
+            sw.Stop();
+
+            Console.WriteLine("Successfully parsed SKON file in {0}ms!", sw.ElapsedMilliseconds);
+
+            Console.WriteLine();
+
+            Console.Write("Show SKON? Y/N (N):");
+
+            if (Console.ReadLine() == "Y")
+            {
+                ConsoleColor color = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+
+                Console.WriteLine(SKON.Write(skon));
+
+                Console.ForegroundColor = color;
+            }
+
+            Console.WriteLine();
 
             Console.Write("Run SKEMATests? Y/N (Y):");
 
@@ -85,11 +173,18 @@ namespace SKONTest
 
                 sw.Start();
 
-                SKEMAObject skemaObj = SKEMA.LoadFile("./SKEMATest.skema");
+                bool result = skema.Valid(skon);
 
                 sw.Stop();
 
-                Console.WriteLine("Successfully parsed SKEMA file in {0}ms!", sw.ElapsedMilliseconds);
+                if (result == true)
+                {
+                    Console.WriteLine("Successfully verified SKON file in {0}ms!", sw.ElapsedMilliseconds);
+                }
+                else
+                {
+                    Console.WriteLine("Failed to verify SKON file. {0}ms!", sw.ElapsedMilliseconds);
+                }
 
                 Console.WriteLine();
             }
