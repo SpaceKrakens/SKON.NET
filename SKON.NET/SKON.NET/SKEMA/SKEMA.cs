@@ -167,7 +167,7 @@ namespace SKON.SKEMA
                     {
                         return "[  ]";
                     }
-                    return "\n[" + WriteObject(obj.ArrayElementSKEMA, indent + 1) + "\n]";
+                    return "\n[\n" + WriteObject(obj.ArrayElementSKEMA, indent + 1) + "\n]";
                 default:
                     return null;
             }
