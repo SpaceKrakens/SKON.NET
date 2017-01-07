@@ -627,7 +627,7 @@ namespace SKON
         {
             return this.mapValues?.ContainsKey(key) ?? false;
         }
-
+        
         /// <summary>
         /// Checks to see if this SKONObject contains all keys in the given array.
         /// </summary>

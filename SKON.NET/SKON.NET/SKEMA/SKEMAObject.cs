@@ -67,6 +67,8 @@ namespace SKON.SKEMA
 
         private string reference;
         internal string Reference => reference;
+        
+        internal SKEMAObject ReferenceSKEMA { get; set; }
 
         private SKEMAObject(SKEMAType type)
         {
@@ -242,13 +244,20 @@ namespace SKON.SKEMA
 
         public bool Valid(SKONObject obj)
         {
-            if (this.type != SKEMAType.ANY && (int)this.type != (int)obj.Type)
+            if (this.type != SKEMAType.REFERENCE && this.type != SKEMAType.ANY && (int)this.type != (int)obj.Type)
             {
                 return false;
             }
 
             switch (this.type)
             {
+                case SKEMAType.REFERENCE:
+                    if (ReferenceSKEMA == null)
+                    {
+                        throw new InvalidOperationException("Trying to validate SKEMA without fully resolved references!");
+                    }
+
+                    return ReferenceSKEMA.Valid(obj);
                 case SKEMAType.ANY:
                 case SKEMAType.STRING:
                 case SKEMAType.INTEGER:

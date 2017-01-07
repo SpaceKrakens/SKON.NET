@@ -37,6 +37,7 @@ namespace SKON.Internal.Utils
             {
                 return txt;
             }
+
             StringBuilder retval = new StringBuilder(txt.Length);
             for (int anchor = 0; anchor <= txt.Length;)
             {
