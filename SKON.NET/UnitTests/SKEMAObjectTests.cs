@@ -109,6 +109,44 @@ namespace UnitTests
                 define Two: #One,
 
                 Value: [ #One ],"));
+
+            Assert.Throws<FormatException>(() => SKEMA.Parse(
+                @"define One: #One,"));
+
+            Assert.Throws<FormatException>(() => SKEMA.Parse(
+                @"define One: 
+                {
+                    Two: #Two,
+                    optional One: #One,
+                    Three: #Three,
+                },
+                
+                define Two: { Three: [ #Three ], },
+
+                define Three: [ #One ],
+
+                One: #One,"));
+
+            Assert.Throws<FormatException>(() => SKEMA.Parse(
+                @"define One: #Two,
+                define Two: #Three,
+                define Three: #Four,
+                define Four: #Five,
+                define Five: #Six,
+                define Six: #Seven,
+                define Seven: #Eight,
+                define Eight: #Nine,
+                define Nine: #Ten,
+                define Ten: #One,"));
+
+            Assert.Throws<FormatException>(() => SKEMA.Parse(
+                @"define One: #Two,
+                define Two: #One,
+
+                define A: #B,
+                define B: #A,
+
+                A: #One,"));
         }
 
         [Test]
@@ -124,14 +162,42 @@ namespace UnitTests
         [Test]
         public void GenericParsing()
         {
-            string skema = 
-                @"define Color: { Red: Integer, Blue: Integer, Green: Integer, },
+            string skema =
+                @"define Color: { Red: Integer, Green: Integer, Blue: Integer, },
 
                 Colors: [ #Color ],";
 
             SKEMAObject skemaObj = SKEMA.Parse(skema);
 
             Console.Write(SKEMA.Write(skemaObj));
+
+            SKONObject data = new Dictionary<string, SKONObject>
+            {
+                {
+                    "Colors", new SKONObject[] 
+                    {
+                        new Dictionary<string, SKONObject>
+                        {
+                            { "Red", 140 },
+                            { "Green", 50 },
+                            { "Blue", 235 },
+                        },
+
+                        new Dictionary<string, SKONObject>
+                        {
+                            { "Red", 50 },
+                            { "Green", 50 },
+                            { "Blue", 50 },
+                        },
+                    }
+                },
+            };
+
+            Assert.IsTrue(skemaObj.Valid(data));
+
+            data["Colors"].Add(new Dictionary<string, SKONObject> { { "H", 260 }, { "S", 0.3 }, { "V", 1 } });
+
+            Assert.IsFalse(skemaObj.Valid(data));
         }
 
         [Test]
@@ -147,6 +213,44 @@ namespace UnitTests
                 Tree: #Node,";
 
             SKEMAObject skemaObj = SKEMA.Parse(skema);
+
+            SKONObject data = new Dictionary<string, SKONObject>
+            {
+                {
+                    "Tree", new Dictionary<string, SKONObject>
+                    {
+                        {
+                            "Value", "TestString"
+                        },
+
+                        {
+                            "Nodes", new SKONObject[]
+                            {
+                                new Dictionary<string, SKONObject>
+                                {
+                                    { "Value", 10 },
+                                    {
+                                        "Nodes", new SKONObject[]
+                                        {
+                                            new Dictionary<string, SKONObject>
+                                            {
+                                                { "Value", true }
+                                            }
+                                        }
+                                    }
+                                },
+
+                                new Dictionary<string, SKONObject>
+                                {
+                                    { "Value", DateTime.Now }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            Assert.IsTrue(skemaObj.Valid(data));
         }
 
         [Test]

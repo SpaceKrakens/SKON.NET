@@ -58,6 +58,10 @@ namespace UnitTests
             invalidUnicodeHex = "as";
 
             Assert.Throws<FormatException>(() => ParserUtils.ConvertToUnicode(invalidUnicodeHex));
+
+            invalidUnicodeHex = ".aft";
+
+            Assert.Throws<FormatException>(() => ParserUtils.ConvertToUnicode(invalidUnicodeHex));
         }
 
         [Test]
