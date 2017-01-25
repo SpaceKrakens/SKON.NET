@@ -25,7 +25,7 @@ namespace SKON.SKEMA
         ARRAY
     }
 
-    public class SKEMAObject
+    public class SKEMAObject : IEquatable<SKEMAObject>
     {
         public static SKEMAObject Any => new SKEMAObject(SKEMAType.ANY);
 
@@ -41,9 +41,10 @@ namespace SKON.SKEMA
 
         public static SKEMAObject ArrayOf(SKEMAObject obj) => new SKEMAObject(obj);
 
-        private readonly SKEMAType type;
+        public static SKEMAObject AsReference(SKEMAObject obj, string definitionName) => new SKEMAObject(definitionName, obj);
 
-        // TODO: Implement optional elements!
+        private readonly SKEMAType type;
+        
         private Dictionary<string, SKEMAObject> mapSKEMA;
         private Dictionary<string, bool> optionalMap;
         
@@ -66,9 +67,9 @@ namespace SKON.SKEMA
         }
 
         private string reference;
-        internal string Reference => reference;
+        public string Reference => reference;
         
-        internal SKEMAObject ReferenceSKEMA { get; set; }
+        public SKEMAObject ReferenceSKEMA { get; internal set; }
 
         private SKEMAObject(SKEMAType type)
         {
@@ -106,6 +107,13 @@ namespace SKON.SKEMA
             this.reference = reference;
         }
 
+        internal SKEMAObject(string reference, SKEMAObject definition)
+        {
+            this.type = SKEMAType.REFERENCE;
+            this.reference = reference;
+            ReferenceSKEMA = definition;
+        }
+
         public SKEMAType Type => type;
 
         public List<string> Keys => new List<string>(mapSKEMA.Keys);
@@ -138,6 +146,16 @@ namespace SKON.SKEMA
                     optionalMap.Remove(key);
                 }
             }
+        }
+
+        public static bool operator ==(SKEMAObject left, SKEMAObject right)
+        {
+            return left?.Equals(right) ?? false;
+        }
+
+        public static bool operator !=(SKEMAObject left, SKEMAObject right)
+        {
+            return !(left == right);
         }
 
         public static implicit operator SKEMAObject(SKEMAType type) => new SKEMAObject(type);
@@ -331,6 +349,91 @@ namespace SKON.SKEMA
                     return true;
                 default:
                     return false;
+            }
+        }
+
+        public bool Equals(SKEMAObject other)
+        {
+            if ((object)other == null)
+            {
+                return false;
+            }
+
+            if (this.Type != other.Type)
+            {
+                return false;
+            }
+
+            bool isEqual = true;
+
+            switch (this.Type)
+            {
+                case SKEMAType.REFERENCE:
+                    return this.ReferenceSKEMA?.Equals(other.ReferenceSKEMA) ?? false;
+                case SKEMAType.ANY:
+                case SKEMAType.STRING:
+                case SKEMAType.INTEGER:
+                case SKEMAType.FLOAT:
+                case SKEMAType.BOOLEAN:
+                case SKEMAType.DATETIME:
+                    return true;
+                case SKEMAType.MAP:
+                    if (this.Keys.Count != other.Keys.Count)
+                    {
+                        return false;
+                    }
+
+                    foreach (string key in this.Keys)
+                    {
+                        isEqual &= (this[key].Equals(other[key]));
+                    }
+
+                    return isEqual;
+                case SKEMAType.ARRAY:
+                    return ArrayElementSKEMA.Equals(other.ArrayElementSKEMA);
+                default:
+                    return false;
+            }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) 
+            {
+                return false;
+            }
+
+            if (obj is SKEMAObject)
+            {
+                return this.Equals((SKEMAObject)obj);
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                switch (this.Type)
+                {
+                    case SKEMAType.REFERENCE:
+                        return ((this.Type.GetHashCode() * 17) + Reference.GetHashCode()) * 17;
+                    case SKEMAType.ANY:
+                    case SKEMAType.STRING:
+                    case SKEMAType.INTEGER:
+                    case SKEMAType.FLOAT:
+                    case SKEMAType.BOOLEAN:
+                    case SKEMAType.DATETIME:
+                        return this.Type.GetHashCode();
+                    case SKEMAType.MAP:
+                        return this.Type.GetHashCode() * 17 + mapSKEMA.GetHashCode();
+                    case SKEMAType.ARRAY:
+                        // We don't do GetHashCode() directly to avoid recursion.
+                        return this.Type.GetHashCode() * 17 + ArrayElementSKEMA.Type.GetHashCode();
+                    default:
+                        return base.GetHashCode();
+                }
             }
         }
     }

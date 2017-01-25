@@ -300,12 +300,12 @@ namespace SKON
         
         public static bool operator ==(SKONObject left, SKONObject right)
         {
-            return (object)left != null ? left.Equals(right) : false;
+            return left?.Equals(right) ?? false;
         }
 
         public static bool operator !=(SKONObject left, SKONObject right)
         {
-            return (object)left == null ? !left.Equals(right) : true;
+            return !(left == right);
         }
 
         /// <summary>
@@ -904,7 +904,6 @@ namespace SKON
 
                     return isEqual;
                 case SKONValueType.ARRAY:
-
                     if (this.Length != other.Length)
                     {
                         return false;

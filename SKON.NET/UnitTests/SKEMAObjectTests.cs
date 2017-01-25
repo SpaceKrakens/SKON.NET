@@ -104,16 +104,16 @@ namespace UnitTests
         [Test]
         public void CyclicReferences()
         {
-            Assert.Throws<FormatException>(() => SKEMA.Parse(
+            Assert.Throws<CouldNotSolveReferencesException>(() => SKEMA.Parse(
                 @"define One: #Two,
                 define Two: #One,
 
                 Value: [ #One ],"));
 
-            Assert.Throws<FormatException>(() => SKEMA.Parse(
+            Assert.Throws<CouldNotSolveReferencesException>(() => SKEMA.Parse(
                 @"define One: #One,"));
 
-            Assert.Throws<FormatException>(() => SKEMA.Parse(
+            Assert.Throws<CouldNotSolveReferencesException>(() => SKEMA.Parse(
                 @"define One: 
                 {
                     Two: #Two,
@@ -127,7 +127,7 @@ namespace UnitTests
 
                 One: #One,"));
 
-            Assert.Throws<FormatException>(() => SKEMA.Parse(
+            Assert.Throws<CouldNotSolveReferencesException>(() => SKEMA.Parse(
                 @"define One: #Two,
                 define Two: #Three,
                 define Three: #Four,
@@ -139,7 +139,7 @@ namespace UnitTests
                 define Nine: #Ten,
                 define Ten: #One,"));
 
-            Assert.Throws<FormatException>(() => SKEMA.Parse(
+            Assert.Throws<CouldNotSolveReferencesException>(() => SKEMA.Parse(
                 @"define One: #Two,
                 define Two: #One,
 
@@ -254,6 +254,47 @@ namespace UnitTests
         }
 
         [Test]
+        public void SelfReferencingSKEMA()
+        {
+            string skema = @"define A: #A, A: #A,";
+
+            SKEMAObject obj = SKEMA.Parse(skema);
+
+            string res = SKEMA.Write(obj);
+
+            Console.WriteLine(res);
+
+            SKEMAObject resObj = SKEMA.Parse(res);
+
+            skema = @"define A: { optional A: #A, }, A: #A,";
+
+            obj = SKEMA.Parse(skema);
+
+            res = SKEMA.Write(obj);
+
+            Console.WriteLine(res);
+
+            resObj = SKEMA.Parse(res);
+
+            Assert.IsTrue(resObj == obj);
+
+            // FIXME: FindReferences(...) in SKEMA is not following references to references!
+            // But if they where followed there would have to be special care taken to not spin around in circular references.
+
+            skema = @"define A: { optional A: #A, optional B: #B, }, define B: #A, A: #A, ";
+
+            obj = SKEMA.Parse(skema);
+
+            res = SKEMA.Write(obj);
+
+            Console.WriteLine(res);
+
+            resObj = SKEMA.Parse(res);
+
+            Assert.IsTrue(resObj == obj);
+        }
+
+        [Test]
         public void ReplacingMapElements()
         {
             SKEMAObject obj = new Dictionary<string, SKEMAObject>() { { "Replace", SKEMAObject.Any } };
@@ -316,6 +357,92 @@ namespace UnitTests
             Assert.IsFalse(obj.IsOptional("Required"));
 
             Assert.IsTrue(obj.IsOptional("Optional"));
+        }
+
+        [Test]
+        public void WriteSKEMA()
+        {
+            string skema =
+               @"define Color: { Red: Integer, Green: Integer, Blue: Integer, },
+
+                Colors: [ #Color ],";
+
+            SKEMAObject skemaObj = SKEMA.Parse(skema);
+
+            string res = SKEMA.Write(skemaObj);
+
+            SKEMAObject newSkemaObj = SKEMA.Parse(res);
+
+            //Assert.AreEqual(skemaObj, newSkemaObj);
+
+            Console.WriteLine(res);
+
+            skema =
+                @"define Node: 
+                { 
+                    Value: Any,
+                    optional Nodes: [ #Node ],
+                },
+            
+                Tree: #Node,";
+
+            skemaObj = SKEMA.Parse(skema);
+
+            res = SKEMA.Write(skemaObj);
+
+            newSkemaObj = SKEMA.Parse(res);
+
+            //Assert.AreEqual(skemaObj, newSkemaObj);
+
+            Console.WriteLine(res);
+        }
+
+        [Test]
+        public void WriteRecursiveSKEMA()
+        {
+            SKEMAObject skema1 = new Dictionary<string, SKEMAObject>();
+
+            SKEMAObject skema2 = new Dictionary<string, SKEMAObject> { { "Test", skema1 } };
+
+            skema1.Add("Test2", skema2);
+            
+            //string res = SKEMA.Write(skema1);
+        }
+
+        [Test]
+        public void ObjectEquality()
+        {
+            SKEMAObject obj1 = SKEMAObject.String;
+
+            SKEMAObject obj2 = SKEMAObject.String;
+
+            Assert.IsTrue(obj1.Equals(obj2));
+
+            Assert.IsTrue(obj1 == obj2);
+
+            Assert.IsTrue(obj1.GetHashCode() == obj2.GetHashCode());
+
+            obj1 = SKEMAObject.AsReference(obj1, "Test");
+
+            obj2 = SKEMAObject.AsReference(obj2, "Test");
+
+            Assert.IsTrue(obj1.Equals(obj2));
+
+            Assert.IsTrue(obj1 == obj2);
+
+            Assert.IsTrue(obj1.GetHashCode() == obj2.GetHashCode());
+
+            obj2 = SKEMAObject.Any;
+
+            Assert.IsFalse(obj1.Equals(obj2));
+
+            Assert.IsFalse(obj1 == obj2);
+
+            obj1 = new Dictionary<string, SKEMAObject> { { "Test", SKEMAObject.Float } };
+
+            Assert.IsFalse(obj1.Equals(obj2));
+
+            Assert.IsFalse(obj1 == obj2);
         }
     }
 }
