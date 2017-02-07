@@ -150,7 +150,7 @@ namespace SKON.SKEMA
 
         public static bool operator ==(SKEMAObject left, SKEMAObject right)
         {
-            return left?.Equals(right) ?? false;
+            return left?.Equals(right) ?? ((object)right == null);
         }
 
         public static bool operator !=(SKEMAObject left, SKEMAObject right)
@@ -352,11 +352,19 @@ namespace SKON.SKEMA
             }
         }
 
+        //FIXME! Equals method is not working well
+        // It can requrse
+        
         public bool Equals(SKEMAObject other)
         {
             if ((object)other == null)
             {
                 return false;
+            }
+
+            if (object.ReferenceEquals(this, other))
+            {
+                return true;
             }
 
             if (this.Type != other.Type)
@@ -369,7 +377,12 @@ namespace SKON.SKEMA
             switch (this.Type)
             {
                 case SKEMAType.REFERENCE:
-                    return this.ReferenceSKEMA?.Equals(other.ReferenceSKEMA) ?? false;
+                    if (this.Reference != other.Reference)
+                    {
+                        return false;
+                    }
+                    
+                    return this.ReferenceSKEMA?.Equals(other.ReferenceSKEMA) ?? (other.ReferenceSKEMA == null);
                 case SKEMAType.ANY:
                 case SKEMAType.STRING:
                 case SKEMAType.INTEGER:
