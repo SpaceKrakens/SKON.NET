@@ -344,52 +344,7 @@ namespace SKON.SKEMA
 
             return references;
         }
-
-        /*
-        private static void FindReferences(SKEMAObject skema, List<SKEMAObject> references, bool skipOptional = false)
-        {
-            switch (skema.Type)
-            {
-                default:
-                case SKEMAType.REFERENCE:
-                    if (references.Contains(skema))
-                    {
-                        break;
-                    }
-
-                    references.Add(skema);
-
-                    if (skema.ReferenceSKEMA != null)
-                    {
-                        references.AddRange(FindReferences(skema));
-                    }
-                    break;
-                case SKEMAType.ANY:
-                case SKEMAType.STRING:
-                case SKEMAType.INTEGER:
-                case SKEMAType.FLOAT:
-                case SKEMAType.BOOLEAN:
-                case SKEMAType.DATETIME:
-                    break;
-                case SKEMAType.MAP:
-                    foreach (string key in skema.Keys)
-                    {
-                        if (skipOptional && skema.IsOptional(key) == true)
-                        {
-                            Console.WriteLine("Key " + key + " is optional. Skipping!");
-                            continue;
-                        }
-
-                        references.AddRange(FindReferences(skema[key]));
-                    }
-                    break;
-                case SKEMAType.ARRAY:
-                    references.AddRange(FindReferences(skema.ArrayElementSKEMA));
-                    break;
-            }
-        }
-        */
-
+        
         private class ReferenceSolver
         {
             List<LinkedList<SKEMAObject>> stronglyConnectedComponents = new List<LinkedList<SKEMAObject>>();
@@ -507,13 +462,6 @@ namespace SKON.SKEMA
 
                 List<SKEMAObject> successors = VertexSuccessors(v);
                 
-                /*
-                if (successors == null || successors.Count <= 0)
-                {
-                    return;
-                }
-                */
-
                 SKEMAObject w;
 
                 // Find the referenced definitions in the SKEMAObject
