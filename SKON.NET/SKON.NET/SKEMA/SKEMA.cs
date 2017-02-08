@@ -137,10 +137,10 @@ namespace SKON.SKEMA
                         break;
                 }
 
-                Console.WriteLine($"Found {successors.Count} successsors!");
+                //Console.WriteLine($"Found {successors.Count} successsors!");
                 foreach (var s in successors)
                 {
-                    Console.WriteLine(s.Type);
+                    //Console.WriteLine(s.Type);
                 }
 
                 return successors;
@@ -152,7 +152,7 @@ namespace SKON.SKEMA
 
                 foreach (var scc in sccs)
                 {
-                    Console.WriteLine($"Component (Length {scc.Count}):");
+                    //Console.WriteLine($"Component (Length {scc.Count}):");
 
                     if (scc.Count == 1 && scc.First.Value.Type != SKEMAType.REFERENCE)
                     {
@@ -164,12 +164,12 @@ namespace SKON.SKEMA
                     
                     foreach (SKEMAObject element in scc)
                     {
-                        Console.WriteLine(element.Type);
+                        //Console.WriteLine(element.Type);
 
                         if (element.Type == SKEMAType.REFERENCE && element.ReferenceSKEMA != null)
                         {
                             containsDefiniton = true;
-                            Console.WriteLine("Component Contains Definition!");
+                            //Console.WriteLine("Component Contains Definition!");
                             break;
                         }
                     }
@@ -307,7 +307,7 @@ namespace SKON.SKEMA
                     {
                         if (skipOptional && skema.IsOptional(key) == true)
                         {
-                            Console.WriteLine("Key " + key + " is optional. Skipping!");
+                            //Console.WriteLine("Key " + key + " is optional. Skipping!");
                             continue;
                         }
 
@@ -357,7 +357,7 @@ namespace SKON.SKEMA
             
             internal bool ResolveReferences(SKEMAObject data, Dictionary<string, SKEMAObject> definitions, out List<LinkedList<SKEMAObject>> components)
             {
-                Console.WriteLine($"Resolving references... ({definitions.Count} definitions)");
+                //Console.WriteLine($"Resolving references... ({definitions.Count} definitions)");
 
                 // See https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm for the algorithm used
 
@@ -397,7 +397,7 @@ namespace SKON.SKEMA
                     }
                 }
 
-                Console.WriteLine("Substituting references...");
+                //Console.WriteLine("Substituting references...");
 
                 SubstituteDefinitionReferences(definitions);
 
@@ -440,7 +440,7 @@ namespace SKON.SKEMA
                         continue;
                     }
 
-                    Console.WriteLine($"Replacing reference with definition for {reference.Reference}");
+                    //Console.WriteLine($"Replacing reference with definition for {reference.Reference}");
                     if (definitions.ContainsKey(reference.Reference))
                     {
                         reference.ReferenceSKEMA = definitions[reference.Reference];
@@ -490,7 +490,7 @@ namespace SKON.SKEMA
                         component.AddLast(w);
                     } while (w != v);
 
-                    Console.WriteLine("Added strongly connected component of lenght " + component.Count);
+                    //Console.WriteLine("Added strongly connected component of lenght " + component.Count);
                     stronglyConnectedComponents.Add(component);
                 }
             }
