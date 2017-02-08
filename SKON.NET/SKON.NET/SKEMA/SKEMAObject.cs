@@ -150,12 +150,32 @@ namespace SKON.SKEMA
 
         public static bool operator ==(SKEMAObject left, SKEMAObject right)
         {
-            return left?.Equals(right) ?? ((object)right == null);
+            if (ReferenceEquals(left, right))
+            {
+                return true;
+            }
+
+            if (Equals(left, null))
+            {
+                return false;
+            }
+
+            return left.Equals(right);
         }
 
         public static bool operator !=(SKEMAObject left, SKEMAObject right)
         {
-            return !(left == right);
+            if (ReferenceEquals(left, right))
+            {
+                return false;
+            }
+
+            if (Equals(left, null))
+            {
+                return true;
+            }
+            
+            return !left.Equals(right);
         }
 
         public static implicit operator SKEMAObject(SKEMAType type) => new SKEMAObject(type);
@@ -357,12 +377,29 @@ namespace SKON.SKEMA
         
         public bool Equals(SKEMAObject other)
         {
-            if ((object)other == null)
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            if (Equals(other, null))
+            {
+                return false;
+            }
+            
+            if (this.Type != other.Type)
             {
                 return false;
             }
 
-            if (object.ReferenceEquals(this, other))
+            return EqualsInternal(other, new Stack<SKEMAObject>());
+        }
+
+        private bool EqualsInternal(SKEMAObject other, Stack<SKEMAObject> compared)
+        {
+            compared.Push(this);
+            
+            if (ReferenceEquals(this, other))
             {
                 return true;
             }
@@ -372,8 +409,6 @@ namespace SKON.SKEMA
                 return false;
             }
 
-            bool isEqual = true;
-
             switch (this.Type)
             {
                 case SKEMAType.REFERENCE:
@@ -381,8 +416,28 @@ namespace SKON.SKEMA
                     {
                         return false;
                     }
-                    
-                    return this.ReferenceSKEMA?.Equals(other.ReferenceSKEMA) ?? (other.ReferenceSKEMA == null);
+
+                    if (object.ReferenceEquals(this.ReferenceSKEMA, other.ReferenceSKEMA))
+                    {
+                        return true;
+                    }
+
+                    if (Equals(ReferenceSKEMA, null) || Equals(other.ReferenceSKEMA, null))
+                    {
+                        return false;
+                    }
+
+                    if (ReferenceSKEMA.Type != other.ReferenceSKEMA.Type)
+                    {
+                        return false;
+                    }
+
+                    if (compared.Contains(this.ReferenceSKEMA) == false)
+                    {
+                        return this.ReferenceSKEMA.EqualsInternal(other.ReferenceSKEMA, compared);
+                    }
+
+                    return true;
                 case SKEMAType.ANY:
                 case SKEMAType.STRING:
                 case SKEMAType.INTEGER:
@@ -391,6 +446,8 @@ namespace SKON.SKEMA
                 case SKEMAType.DATETIME:
                     return true;
                 case SKEMAType.MAP:
+                    bool isEqual = true;
+
                     if (this.Keys.Count != other.Keys.Count)
                     {
                         return false;
@@ -398,12 +455,39 @@ namespace SKON.SKEMA
 
                     foreach (string key in this.Keys)
                     {
-                        isEqual &= (this[key].Equals(other[key]));
+                        SKEMAObject obj;
+                        if (this.TryGet(key, out obj))
+                        {
+                            if (compared.Contains(obj) == false)
+                            {
+                                isEqual &= (this[key].EqualsInternal(other[key], compared));
+                            }
+                        }
                     }
 
                     return isEqual;
                 case SKEMAType.ARRAY:
-                    return ArrayElementSKEMA.Equals(other.ArrayElementSKEMA);
+                    if (ReferenceEquals(this.ArrayElementSKEMA, other.ArrayElementSKEMA))
+                    {
+                        return true;
+                    }
+
+                    if (Equals(this.ArrayElementSKEMA, null) ||Equals(other.ArrayElementSKEMA, null))
+                    {
+                        return false;
+                    }
+
+                    if (ArrayElementSKEMA.Type != other.ArrayElementSKEMA.Type)
+                    {
+                        return false;
+                    }
+
+                    if (compared.Contains(this.ArrayElementSKEMA) == false)
+                    {
+                        return this.ArrayElementSKEMA.EqualsInternal(other.ArrayElementSKEMA, compared);
+                    }
+
+                    return true;
                 default:
                     return false;
             }

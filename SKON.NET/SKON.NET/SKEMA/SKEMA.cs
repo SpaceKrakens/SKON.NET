@@ -468,20 +468,9 @@ namespace SKON.SKEMA
 
             private void SubstituteDefinitionReferences(Dictionary<string, SKEMAObject> definitions)
             {
-                foreach (SKEMAObject def in definitions.Values)
+                foreach (string defKey in definitions.Keys)
                 {
-                    foreach (SKEMAObject reference in FindReferences(def))
-                    {
-                        Console.WriteLine($"Replacing reference with definition for {reference.Reference}");
-                        if (definitions.ContainsKey(reference.Reference))
-                        {
-                            reference.ReferenceSKEMA = definitions[reference.Reference];
-                        }
-                        else
-                        {
-                            throw new DefinitionNotFoundException(reference);
-                        }
-                    }
+                    SubstituteReferences(definitions[defKey], definitions);
                 }
             }
 
@@ -491,10 +480,16 @@ namespace SKON.SKEMA
 
                 foreach (var reference in references)
                 {
+                    if (reference.ReferenceSKEMA != null)
+                    {
+                        continue;
+                    }
+
                     Console.WriteLine($"Replacing reference with definition for {reference.Reference}");
                     if (definitions.ContainsKey(reference.Reference))
                     {
                         reference.ReferenceSKEMA = definitions[reference.Reference];
+                        SubstituteReferences(reference.ReferenceSKEMA, definitions);
                     }
                     else
                     {

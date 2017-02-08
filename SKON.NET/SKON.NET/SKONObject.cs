@@ -882,6 +882,11 @@ namespace SKON
         /// <returns>Wether or not the objects are equal.</returns>
         public bool Equals(SKONObject other)
         {
+            if (object.ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
             if ((object)other == null)
             {
                 return false;

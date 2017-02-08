@@ -269,12 +269,8 @@ namespace UnitTests
             Console.WriteLine(res);
 
             SKEMAObject resObj = SKEMA.Parse(res);
-
-            // FIXME! The SKEMAObject.Equals method can requrse. This leads to a stack overflow!
-            // To fix this multiple methods could be used.
-            // The best way is probably to do a similar solution to the FlattenTree method in SKEMA and keep a stack of all the compared nodes
-
-            //Assert.IsTrue(resObj == obj);
+            
+            Assert.IsTrue(resObj == obj);
             
             skema = @"define A: { optional A: #A, optional B: #B, }, define B: #A, A: #A, ";
 
