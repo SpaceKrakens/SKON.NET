@@ -46,8 +46,6 @@
   <ItemGroup>
     <Compile Include="Parser\Parser.cs" />
     <Compile Include="Parser\Scanner.cs" />
-    <Compile Include="Serialization\SKONObjectAttribute.cs" />
-    <Compile Include="Serialization\SKONPropertyAttribute.cs" />
     <Compile Include="SKEMA\Parser\Parser.cs" />
     <Compile Include="SKEMA\Parser\Scanner.cs" />
     <Compile Include="SKEMA\SKEMA.cs" />
