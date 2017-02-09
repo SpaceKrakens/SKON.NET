@@ -284,9 +284,10 @@ namespace SKON
         {
             get
             {
-                if (this.mapValues?.ContainsKey(key) ?? false)
+                SKONObject obj = null;
+                if (this.mapValues?.TryGetValue(key, out obj) ?? false)
                 {
-                    return this.mapValues[key];
+                    return obj;
                 }
 
                 return Empty;
@@ -300,12 +301,12 @@ namespace SKON
         
         public static bool operator ==(SKONObject left, SKONObject right)
         {
-            return (object)left != null ? left.Equals(right) : false;
+            return left?.Equals(right) ?? false;
         }
 
         public static bool operator !=(SKONObject left, SKONObject right)
         {
-            return (object)left == null ? !left.Equals(right) : true;
+            return !(left == right);
         }
 
         /// <summary>
@@ -752,12 +753,16 @@ namespace SKON
         
         public bool TryGet(string key, out string result)
         {
-            if (this.Type == SKONValueType.MAP && mapValues.ContainsKey(key))
+            if (this.Type == SKONValueType.MAP)
             {
-                if (mapValues[key].Type == SKONValueType.STRING)
+                SKONObject obj;
+                if (mapValues.TryGetValue(key, out obj))
                 {
-                    result = mapValues[key].String;
-                    return true;
+                    if (obj.Type == SKONValueType.STRING)
+                    {
+                        result = obj.stringValue;
+                        return true;
+                    }
                 }
             }
             
@@ -767,13 +772,16 @@ namespace SKON
 
         public bool TryGet(string key, out int result)
         {
-            if (this.Type == SKONValueType.MAP && mapValues.ContainsKey(key))
+            if (this.Type == SKONValueType.MAP)
             {
-                if (mapValues[key].Type == SKONValueType.INTEGER)
+                SKONObject obj;
+                if (mapValues.TryGetValue(key, out obj))
                 {
-                    // We acccess the value directly because we know it has a value
-                    result = mapValues[key].intValue;
-                    return true;
+                    if (obj.Type == SKONValueType.INTEGER)
+                    {
+                        result = obj.intValue;
+                        return true;
+                    }
                 }
             }
 
@@ -783,13 +791,16 @@ namespace SKON
 
         public bool TryGet(string key, out double result)
         {
-            if (this.Type == SKONValueType.MAP && mapValues.ContainsKey(key))
+            if (this.Type == SKONValueType.MAP)
             {
-                if (mapValues[key].Type == SKONValueType.FLOAT)
+                SKONObject obj;
+                if (mapValues.TryGetValue(key, out obj))
                 {
-                    // We acccess the value directly because we know it has a value
-                    result = mapValues[key].doubleValue;
-                    return true;
+                    if (obj.Type == SKONValueType.FLOAT)
+                    {
+                        result = obj.doubleValue;
+                        return true;
+                    }
                 }
             }
 
@@ -799,13 +810,16 @@ namespace SKON
 
         public bool TryGet(string key, out bool result)
         {
-            if (this.Type == SKONValueType.MAP && mapValues.ContainsKey(key))
+            if (this.Type == SKONValueType.MAP)
             {
-                if (mapValues[key].Type == SKONValueType.BOOLEAN)
+                SKONObject obj;
+                if (mapValues.TryGetValue(key, out obj))
                 {
-                    // We acccess the value directly because we know it has a value
-                    result = mapValues[key].booleanValue;
-                    return true;
+                    if (obj.Type == SKONValueType.BOOLEAN)
+                    {
+                        result = obj.booleanValue;
+                        return true;
+                    }
                 }
             }
 
@@ -815,13 +829,16 @@ namespace SKON
 
         public bool TryGet(string key, out DateTime result)
         {
-            if (this.Type == SKONValueType.MAP && mapValues.ContainsKey(key))
+            if (this.Type == SKONValueType.MAP)
             {
-                if (mapValues[key].Type == SKONValueType.DATETIME)
+                SKONObject obj;
+                if (mapValues.TryGetValue(key, out obj))
                 {
-                    // We acccess the value directly because we know it has a value
-                    result = mapValues[key].dateTimeValue;
-                    return true;
+                    if (obj.Type == SKONValueType.DATETIME)
+                    {
+                        result = obj.dateTimeValue;
+                        return true;
+                    }
                 }
             }
 
@@ -865,6 +882,11 @@ namespace SKON
         /// <returns>Wether or not the objects are equal.</returns>
         public bool Equals(SKONObject other)
         {
+            if (object.ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
             if ((object)other == null)
             {
                 return false;
@@ -904,7 +926,6 @@ namespace SKON
 
                     return isEqual;
                 case SKONValueType.ARRAY:
-
                     if (this.Length != other.Length)
                     {
                         return false;

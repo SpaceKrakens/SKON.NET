@@ -66,12 +66,12 @@ namespace SKON.SKEMA
                 throw new FormatException(string.Format("Could not parse file! Got {0} errors!", parser.errors.count));
             }
 
-            ReferenceSolver rs = new ReferenceSolver(parser.definitions);
+            ReferenceSolver rs = new ReferenceSolver();
 
             // The strongly connected components. Should be used for better error messages.
             List<LinkedList<SKEMAObject>> components;
 
-            if (rs.ResolveReferences(parser.data, out components) == false)
+            if (rs.ResolveReferences(parser.data, parser.definitions, out components) == false)
             {
                 throw new CouldNotSolveReferencesException(components);
             }
@@ -97,6 +97,101 @@ namespace SKON.SKEMA
             }
 
             StringBuilder sb = new StringBuilder();
+
+            List<LinkedList<SKEMAObject>> sccs = new ReferenceSolver().FindStronglyConnectedComponents(obj, (v) =>
+            {
+                List<SKEMAObject> successors = new List<SKEMAObject>();
+
+                switch (v.Type)
+                {
+                    case SKEMAType.REFERENCE:
+                        if (v.ReferenceSKEMA.Type == SKEMAType.REFERENCE || v.ReferenceSKEMA.Type == SKEMAType.ARRAY || v.ReferenceSKEMA.Type == SKEMAType.MAP)
+                        {
+                            successors.Add(v.ReferenceSKEMA);
+                        }
+                        break;
+                    case SKEMAType.ANY:
+                    case SKEMAType.STRING:
+                    case SKEMAType.INTEGER:
+                    case SKEMAType.FLOAT:
+                    case SKEMAType.BOOLEAN:
+                    case SKEMAType.DATETIME:
+                        break;
+                    case SKEMAType.MAP:
+                        foreach (string key in v.Keys)
+                        {
+                            SKEMAObject w = v[key];
+                            if (w.Type == SKEMAType.REFERENCE || w.Type == SKEMAType.ARRAY || w.Type == SKEMAType.MAP)
+                            {
+                                successors.Add(w);
+                            }
+                        }
+                        break;
+                    case SKEMAType.ARRAY:
+                        if(v.ArrayElementSKEMA.Type == SKEMAType.REFERENCE || v.ArrayElementSKEMA.Type == SKEMAType.ARRAY || v.ArrayElementSKEMA.Type == SKEMAType.MAP)
+                        {
+                            successors.Add(v.ArrayElementSKEMA);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                //Console.WriteLine($"Found {successors.Count} successsors!");
+                foreach (var s in successors)
+                {
+                    //Console.WriteLine(s.Type);
+                }
+
+                return successors;
+            });
+
+            if (sccs.Count > 1)
+            {
+                List<LinkedList<SKEMAObject>> badSccs = new List<LinkedList<SKEMAObject>>();
+
+                foreach (var scc in sccs)
+                {
+                    //Console.WriteLine($"Component (Length {scc.Count}):");
+
+                    if (scc.Count == 1 && scc.First.Value.Type != SKEMAType.REFERENCE)
+                    {
+                        // This strongly connected component can't be bad
+                        continue;
+                    }
+
+                    bool containsDefiniton = false;
+                    
+                    foreach (SKEMAObject element in scc)
+                    {
+                        //Console.WriteLine(element.Type);
+
+                        if (element.Type == SKEMAType.REFERENCE && element.ReferenceSKEMA != null)
+                        {
+                            containsDefiniton = true;
+                            //Console.WriteLine("Component Contains Definition!");
+                            break;
+                        }
+                    }
+
+                    if (containsDefiniton == false)
+                    {
+                        badSccs.Add(scc);
+                    }
+                }
+
+                if (badSccs.Count > 0)
+                {
+                    throw new CouldNotSolveReferencesException(badSccs);
+                }
+            }
+            
+            List<SKEMAObject> references = FindReferences(obj);
+
+            foreach (SKEMAObject reference in references)
+            {
+                sb.Append("define " + reference.Reference + ": " + WriteObject(reference.ReferenceSKEMA, 0) + ",\n");
+            }
 
             foreach (string key in obj.Keys)
             {
@@ -155,7 +250,7 @@ namespace SKON.SKEMA
 
                     foreach (string key in obj.Keys)
                     {
-                        mapsb.Append(indentString + SKON.IndentString + $"{key}: {WriteObject(obj[key], indent + 1)},\n");
+                        mapsb.Append(indentString + SKON.IndentString + (obj.IsOptional(key) ? "optional " : "") + $"{key}: {WriteObject(obj[key], indent + 1)},\n");
                     }
 
                     mapsb.Append(indentString + "}");
@@ -166,12 +261,90 @@ namespace SKON.SKEMA
                     {
                         return "[  ]";
                     }
-                    return "\n[\n" + WriteObject(obj.ArrayElementSKEMA, indent + 1) + "\n]";
+                    return "\n" + 
+                        indentString +"[" + ((obj.ArrayElementSKEMA.Type != SKEMAType.MAP && obj.ArrayElementSKEMA.Type != SKEMAType.ARRAY) ? "\n" : "") + 
+                        indentString + SKON.IndentString + WriteObject(obj.ArrayElementSKEMA, indent + 1) + "\n" + 
+                        indentString + "]";
                 default:
                     return null;
             }
         }
 
+        private static List<SKEMAObject> FlattenTree(SKEMAObject skema, bool skipOptional = false)
+        {
+            // This would be a set if we where targeting .NET greater than 3.5
+            List<SKEMAObject> result = new List<SKEMAObject>();
+            
+            FlattenTreeInternal(result, skema, skipOptional);
+
+            return result;
+        }
+
+        private static void FlattenTreeInternal(List<SKEMAObject> result, SKEMAObject skema, bool skipOptional)
+        {
+            result.Add(skema);
+
+            switch (skema.Type)
+            {
+                case SKEMAType.REFERENCE:
+                    if (skema.ReferenceSKEMA != null)
+                    {
+                        if (result.Contains(skema.ReferenceSKEMA) == false)
+                        {
+                            FlattenTreeInternal(result, skema.ReferenceSKEMA, skipOptional);
+                        }
+                    }
+                    break;
+                case SKEMAType.ANY:
+                case SKEMAType.STRING:
+                case SKEMAType.INTEGER:
+                case SKEMAType.FLOAT:
+                case SKEMAType.BOOLEAN:
+                case SKEMAType.DATETIME:
+                    break;
+                case SKEMAType.MAP:
+                    foreach (string key in skema.Keys)
+                    {
+                        if (skipOptional && skema.IsOptional(key) == true)
+                        {
+                            //Console.WriteLine("Key " + key + " is optional. Skipping!");
+                            continue;
+                        }
+
+                        if (result.Contains(skema[key]) == false)
+                        {
+                            FlattenTreeInternal(result, skema[key], skipOptional);
+                        }
+                    }
+                    break;
+                case SKEMAType.ARRAY:
+                    if (skema.ArrayElementSKEMA != null)
+                    {
+                        if (result.Contains(skema.ArrayElementSKEMA) == false)
+                        {
+                            FlattenTreeInternal(result, skema.ArrayElementSKEMA, skipOptional);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        
+        private static List<SKEMAObject> FindReferences(SKEMAObject skema, bool skipOptional = false, bool removeSelf = true)
+        {
+            List<SKEMAObject> references = new List<SKEMAObject>();
+            
+            references = FlattenTree(skema, skipOptional).FindAll(s => s.Type == SKEMAType.REFERENCE);
+
+            if (removeSelf && skema.Type == SKEMAType.REFERENCE)
+            {
+                references.Remove(skema);
+            }
+
+            return references;
+        }
+        
         private class ReferenceSolver
         {
             List<LinkedList<SKEMAObject>> stronglyConnectedComponents = new List<LinkedList<SKEMAObject>>();
@@ -181,57 +354,97 @@ namespace SKON.SKEMA
 
             Dictionary<SKEMAObject, int> indexMap = new Dictionary<SKEMAObject, int>();
             Dictionary<SKEMAObject, int> lowlinkMap = new Dictionary<SKEMAObject, int>();
-
-            Dictionary<string, SKEMAObject> definitions;
-
-            public ReferenceSolver(Dictionary<string, SKEMAObject> definitions)
+            
+            internal bool ResolveReferences(SKEMAObject data, Dictionary<string, SKEMAObject> definitions, out List<LinkedList<SKEMAObject>> components)
             {
-                this.definitions = definitions;
-            }
+                //Console.WriteLine($"Resolving references... ({definitions.Count} definitions)");
 
-            internal bool ResolveReferences(SKEMAObject obj, out List<LinkedList<SKEMAObject>> components)
-            {
-                Console.WriteLine($"Resolving references... ({definitions.Count} definitions)");
-                
                 // See https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm for the algorithm used
 
-                foreach (SKEMAObject v in definitions.Values)
+                components = FindStronglyConnectedComponents(definitions, (v) => 
                 {
-                    if (indexMap.ContainsKey(v) == false)
+                    List<SKEMAObject> successors = new List<SKEMAObject>();
+                    foreach (var successor in FindReferences(v, true, false))
                     {
-                        StrongConnect(v);
+                        if (definitions.ContainsKey(successor.Reference))
+                        {
+                            successors.Add(definitions[successor.Reference]);
+                        }
+                        else
+                        {
+                            throw new DefinitionNotFoundException(successor);
+                        }
+                    }
+                    return successors;
+                });
+                
+                if (components.Count > 0)
+                {
+                    foreach (var comp in components)
+                    {
+                        if (comp.Count == 1 && comp.First.Value.Type == SKEMAType.REFERENCE)
+                        {
+                            if (definitions[comp.First.Value.Reference] == comp.First.Value)
+                            {
+                                return false;
+                            }
+                        }
+
+                        if (comp.Count > 1)
+                        {
+                            return false;
+                        }
                     }
                 }
 
-                components = stronglyConnectedComponents;
+                //Console.WriteLine("Substituting references...");
 
-                if (stronglyConnectedComponents.Count > 0)
-                {
-                    return false;
-                }
+                SubstituteDefinitionReferences(definitions);
 
-                Console.WriteLine("Substituting references...");
-
-                foreach (SKEMAObject definition in definitions.Values)
-                {
-                    SubstituteReferences(definition);
-                }
-
-                SubstituteReferences(obj);
+                SubstituteReferences(data, definitions);
 
                 return true;
             }
+            
+            internal List<LinkedList<SKEMAObject>> FindStronglyConnectedComponents(SKEMAObject obj, VertexSuccessors VertexSuccessors)
+            {
+                foreach (string v in obj.Keys)
+                {
+                    if (indexMap.ContainsKey(obj[v]) == false)
+                    {
+                        StrongConnect(obj[v], VertexSuccessors);
+                    }
+                }
 
-            private void SubstituteReferences(SKEMAObject obj)
+                return stronglyConnectedComponents;
+            }
+
+            //FIXME: This method is not working as the itterated objects are not the same as the ones in the definitions Dictionary
+
+            private void SubstituteDefinitionReferences(Dictionary<string, SKEMAObject> definitions)
+            {
+                foreach (string defKey in definitions.Keys)
+                {
+                    SubstituteReferences(definitions[defKey], definitions);
+                }
+            }
+
+            private void SubstituteReferences(SKEMAObject obj, Dictionary<string, SKEMAObject> definitions)
             {
                 List<SKEMAObject> references = FindReferences(obj);
 
                 foreach (var reference in references)
                 {
-                    Console.WriteLine($"Replacing reference with definition for {reference.Reference}");
+                    if (reference.ReferenceSKEMA != null)
+                    {
+                        continue;
+                    }
+
+                    //Console.WriteLine($"Replacing reference with definition for {reference.Reference}");
                     if (definitions.ContainsKey(reference.Reference))
                     {
                         reference.ReferenceSKEMA = definitions[reference.Reference];
+                        SubstituteReferences(reference.ReferenceSKEMA, definitions);
                     }
                     else
                     {
@@ -240,38 +453,25 @@ namespace SKON.SKEMA
                 }
             }
 
-            private void StrongConnect(SKEMAObject v)
+            private void StrongConnect(SKEMAObject v, VertexSuccessors VertexSuccessors)
             {
                 indexMap[v] = index;
                 lowlinkMap[v] = index;
                 index++;
                 S.Push(v);
 
-                List<SKEMAObject> references = FindReferences(v, true);
-
-                if (references.Count <= 0)
-                {
-                    return;
-                }
-
+                List<SKEMAObject> successors = VertexSuccessors(v);
+                
                 SKEMAObject w;
 
                 // Find the referenced definitions in the SKEMAObject
-                foreach (SKEMAObject reference in references)
+                foreach (SKEMAObject reference in successors)
                 {
-                    
-                    if (definitions.ContainsKey(reference.Reference))
-                    {
-                        w = definitions[reference.Reference];
-                    }
-                    else
-                    {
-                        throw new DefinitionNotFoundException(reference);
-                    }
+                    w = reference;
 
                     if (indexMap.ContainsKey(w) == false)
                     {
-                        StrongConnect(w);
+                        StrongConnect(w, VertexSuccessors);
 
                         lowlinkMap[v] = Math.Min(lowlinkMap[v], lowlinkMap[w]);
                     }
@@ -290,51 +490,12 @@ namespace SKON.SKEMA
                         component.AddLast(w);
                     } while (w != v);
 
-                    Console.WriteLine("Added strongly connected component of lenght " + component.Count);
+                    //Console.WriteLine("Added strongly connected component of lenght " + component.Count);
                     stronglyConnectedComponents.Add(component);
                 }
             }
-
-            private List<SKEMAObject> FindReferences(SKEMAObject skema, bool skipOptional = false)
-            {
-                List<SKEMAObject> references = new List<SKEMAObject>();
-                switch (skema.Type)
-                {
-                    default:
-                    case SKEMAType.REFERENCE:
-                        references.Add(skema);
-                        return references;
-                    case SKEMAType.ANY:
-                    case SKEMAType.STRING:
-                    case SKEMAType.INTEGER:
-                    case SKEMAType.FLOAT:
-                    case SKEMAType.BOOLEAN:
-                    case SKEMAType.DATETIME:
-                        return references;
-                    case SKEMAType.MAP:
-                        foreach (string key in skema.Keys)
-                        {
-                            if (skipOptional && skema.IsOptional(key) == true)
-                            {
-                                Console.WriteLine("Key " + key + " is optional. Skipping!");
-                                continue;
-                            }
-
-                            if (skema[key].Type == SKEMAType.REFERENCE)
-                            {
-                                references.Add(skema[key]);
-                            }
-                            else
-                            {
-                                references.AddRange(FindReferences(skema[key]));
-                            }
-                        }
-                        return references;
-                    case SKEMAType.ARRAY:
-                        references.AddRange(FindReferences(skema.ArrayElementSKEMA));
-                        return references;
-                }
-            }
+            
+            internal delegate List<SKEMAObject> VertexSuccessors(SKEMAObject obj);
         }
     }
 
@@ -358,7 +519,7 @@ namespace SKON.SKEMA
         /// </summary>
         public List<LinkedList<SKEMAObject>> stronglyConnectedComponents;
 
-        internal CouldNotSolveReferencesException(List<LinkedList<SKEMAObject>> scc) : base($"Could not solve SKEMA references due to {scc.Count} strongly connected components!")
+        internal CouldNotSolveReferencesException(List<LinkedList<SKEMAObject>> scc) : base($"Could not solve SKEMA references due to {scc.Count} strongly connected component(s)!")
         {
             stronglyConnectedComponents = scc;
         }

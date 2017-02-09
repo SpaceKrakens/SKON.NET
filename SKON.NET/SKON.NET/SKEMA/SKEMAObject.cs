@@ -25,7 +25,7 @@ namespace SKON.SKEMA
         ARRAY
     }
 
-    public class SKEMAObject
+    public class SKEMAObject : IEquatable<SKEMAObject>
     {
         public static SKEMAObject Any => new SKEMAObject(SKEMAType.ANY);
 
@@ -41,9 +41,10 @@ namespace SKON.SKEMA
 
         public static SKEMAObject ArrayOf(SKEMAObject obj) => new SKEMAObject(obj);
 
-        private readonly SKEMAType type;
+        public static SKEMAObject AsReference(SKEMAObject obj, string definitionName) => new SKEMAObject(definitionName, obj);
 
-        // TODO: Implement optional elements!
+        private readonly SKEMAType type;
+        
         private Dictionary<string, SKEMAObject> mapSKEMA;
         private Dictionary<string, bool> optionalMap;
         
@@ -66,9 +67,9 @@ namespace SKON.SKEMA
         }
 
         private string reference;
-        internal string Reference => reference;
+        public string Reference => reference;
         
-        internal SKEMAObject ReferenceSKEMA { get; set; }
+        public SKEMAObject ReferenceSKEMA { get; internal set; }
 
         private SKEMAObject(SKEMAType type)
         {
@@ -106,6 +107,13 @@ namespace SKON.SKEMA
             this.reference = reference;
         }
 
+        internal SKEMAObject(string reference, SKEMAObject definition)
+        {
+            this.type = SKEMAType.REFERENCE;
+            this.reference = reference;
+            ReferenceSKEMA = definition;
+        }
+
         public SKEMAType Type => type;
 
         public List<string> Keys => new List<string>(mapSKEMA.Keys);
@@ -138,6 +146,36 @@ namespace SKON.SKEMA
                     optionalMap.Remove(key);
                 }
             }
+        }
+
+        public static bool operator ==(SKEMAObject left, SKEMAObject right)
+        {
+            if (ReferenceEquals(left, right))
+            {
+                return true;
+            }
+
+            if (Equals(left, null))
+            {
+                return false;
+            }
+
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(SKEMAObject left, SKEMAObject right)
+        {
+            if (ReferenceEquals(left, right))
+            {
+                return false;
+            }
+
+            if (Equals(left, null))
+            {
+                return true;
+            }
+            
+            return !left.Equals(right);
         }
 
         public static implicit operator SKEMAObject(SKEMAType type) => new SKEMAObject(type);
@@ -331,6 +369,168 @@ namespace SKON.SKEMA
                     return true;
                 default:
                     return false;
+            }
+        }
+
+        //FIXME! Equals method is not working well
+        // It can requrse
+        
+        public bool Equals(SKEMAObject other)
+        {
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            if (Equals(other, null))
+            {
+                return false;
+            }
+            
+            if (this.Type != other.Type)
+            {
+                return false;
+            }
+
+            return EqualsInternal(other, new Stack<SKEMAObject>());
+        }
+
+        private bool EqualsInternal(SKEMAObject other, Stack<SKEMAObject> compared)
+        {
+            compared.Push(this);
+            
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            if (this.Type != other.Type)
+            {
+                return false;
+            }
+
+            switch (this.Type)
+            {
+                case SKEMAType.REFERENCE:
+                    if (this.Reference != other.Reference)
+                    {
+                        return false;
+                    }
+
+                    if (object.ReferenceEquals(this.ReferenceSKEMA, other.ReferenceSKEMA))
+                    {
+                        return true;
+                    }
+
+                    if (Equals(ReferenceSKEMA, null) || Equals(other.ReferenceSKEMA, null))
+                    {
+                        return false;
+                    }
+
+                    if (ReferenceSKEMA.Type != other.ReferenceSKEMA.Type)
+                    {
+                        return false;
+                    }
+
+                    if (compared.Contains(this.ReferenceSKEMA) == false)
+                    {
+                        return this.ReferenceSKEMA.EqualsInternal(other.ReferenceSKEMA, compared);
+                    }
+
+                    return true;
+                case SKEMAType.ANY:
+                case SKEMAType.STRING:
+                case SKEMAType.INTEGER:
+                case SKEMAType.FLOAT:
+                case SKEMAType.BOOLEAN:
+                case SKEMAType.DATETIME:
+                    return true;
+                case SKEMAType.MAP:
+                    bool isEqual = true;
+
+                    if (this.Keys.Count != other.Keys.Count)
+                    {
+                        return false;
+                    }
+
+                    foreach (string key in this.Keys)
+                    {
+                        SKEMAObject obj;
+                        if (this.TryGet(key, out obj))
+                        {
+                            if (compared.Contains(obj) == false)
+                            {
+                                isEqual &= (this[key].EqualsInternal(other[key], compared));
+                            }
+                        }
+                    }
+
+                    return isEqual;
+                case SKEMAType.ARRAY:
+                    if (ReferenceEquals(this.ArrayElementSKEMA, other.ArrayElementSKEMA))
+                    {
+                        return true;
+                    }
+
+                    if (Equals(this.ArrayElementSKEMA, null) ||Equals(other.ArrayElementSKEMA, null))
+                    {
+                        return false;
+                    }
+
+                    if (ArrayElementSKEMA.Type != other.ArrayElementSKEMA.Type)
+                    {
+                        return false;
+                    }
+
+                    if (compared.Contains(this.ArrayElementSKEMA) == false)
+                    {
+                        return this.ArrayElementSKEMA.EqualsInternal(other.ArrayElementSKEMA, compared);
+                    }
+
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) 
+            {
+                return false;
+            }
+
+            if (obj is SKEMAObject)
+            {
+                return this.Equals((SKEMAObject)obj);
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                switch (this.Type)
+                {
+                    case SKEMAType.REFERENCE:
+                        return ((this.Type.GetHashCode() * 17) + Reference.GetHashCode()) * 17;
+                    case SKEMAType.ANY:
+                    case SKEMAType.STRING:
+                    case SKEMAType.INTEGER:
+                    case SKEMAType.FLOAT:
+                    case SKEMAType.BOOLEAN:
+                    case SKEMAType.DATETIME:
+                        return this.Type.GetHashCode();
+                    case SKEMAType.MAP:
+                        return this.Type.GetHashCode() * 17 + mapSKEMA.GetHashCode();
+                    case SKEMAType.ARRAY:
+                        // We don't do GetHashCode() directly to avoid recursion.
+                        return this.Type.GetHashCode() * 17 + ArrayElementSKEMA.Type.GetHashCode();
+                    default:
+                        return base.GetHashCode();
+                }
             }
         }
     }

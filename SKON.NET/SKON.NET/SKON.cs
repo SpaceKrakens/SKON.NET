@@ -15,6 +15,7 @@ namespace SKON
 
     using Internal;
     using Internal.Utils;
+    using System.Reflection;
 
     /// <summary>
     /// Central class for all SKON related functions.
