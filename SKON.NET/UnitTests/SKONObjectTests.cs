@@ -645,6 +645,18 @@ namespace UnitTests
             recursiveArray.Add(new Dictionary<string, SKONObject> { { "Test2", recursiveArray } });
 
             Assert.DoesNotThrow(() => recursiveArray.Equals(recursiveArray[1]));
+
+            // Equality between two recursive objects
+
+            SKONObject rec1 = new Dictionary<string, SKONObject>();
+
+            rec1.Add("Rec", rec1);
+
+            SKONObject rec2 = new Dictionary<string, SKONObject>();
+
+            rec2.Add("Rec", rec2);
+
+            Assert.IsTrue(rec1.Equals(rec2));
         }
     }
 }

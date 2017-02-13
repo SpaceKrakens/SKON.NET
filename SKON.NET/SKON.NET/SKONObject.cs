@@ -896,7 +896,19 @@ namespace SKON
             {
                 return false;
             }
-            
+
+            return EqualsInternal(other, new Dictionary<SKONObject, bool>());
+        }
+        
+        private bool EqualsInternal(SKONObject other, Dictionary<SKONObject, bool> contains)
+        {
+            if (contains.ContainsKey(this))
+            {
+                return true;
+            }
+
+            contains.Add(this, true);
+
             bool isEqual = true;
 
             switch (this.Type)
@@ -921,7 +933,12 @@ namespace SKON
 
                     foreach (string key in this.Keys)
                     {
-                        isEqual &= (this[key] == other[key]);
+                        if (ReferenceEquals(this[key], other[key]))
+                        {
+                            continue;
+                        }
+
+                        isEqual &= (this[key].EqualsInternal(other[key], contains));
                     }
 
                     return isEqual;
@@ -933,7 +950,12 @@ namespace SKON
 
                     for (int i = 0; i < this.Length; i++)
                     {
-                        isEqual &= (this[i] == other[i]);
+                        if (ReferenceEquals(this[i], other[i]))
+                        {
+                            continue;
+                        }
+
+                        isEqual &= (this[i].EqualsInternal(other[i], contains));
                     }
 
                     return isEqual;
@@ -941,9 +963,14 @@ namespace SKON
                     return false;
             }
         }
-        
+
         public override bool Equals(object obj)
         {
+            if (object.ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
             if (obj == null || GetType() != obj.GetType())
             {
                 return false;

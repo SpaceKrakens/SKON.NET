@@ -392,12 +392,15 @@ namespace SKON.SKEMA
                 return false;
             }
 
-            return EqualsInternal(other, new Stack<SKEMAObject>());
+            // Dictionary should be HashTable but .NET 2.0 does not have a implementation for that
+            return EqualsInternal(other, new Dictionary<SKEMAObject, bool>());
         }
 
-        private bool EqualsInternal(SKEMAObject other, Stack<SKEMAObject> compared)
+        private bool EqualsInternal(SKEMAObject other, Dictionary<SKEMAObject, bool> compared)
         {
-            compared.Push(this);
+            //TODO: Should all internal equals operations be EqualsInternal?
+
+            compared.Add(this, true);
             
             if (ReferenceEquals(this, other))
             {
@@ -432,7 +435,7 @@ namespace SKON.SKEMA
                         return false;
                     }
 
-                    if (compared.Contains(this.ReferenceSKEMA) == false)
+                    if (compared.ContainsKey(this.ReferenceSKEMA) == false)
                     {
                         return this.ReferenceSKEMA.EqualsInternal(other.ReferenceSKEMA, compared);
                     }
@@ -458,7 +461,7 @@ namespace SKON.SKEMA
                         SKEMAObject obj;
                         if (this.TryGet(key, out obj))
                         {
-                            if (compared.Contains(obj) == false)
+                            if (compared.ContainsKey(obj) == false)
                             {
                                 isEqual &= (this[key].EqualsInternal(other[key], compared));
                             }
@@ -472,7 +475,7 @@ namespace SKON.SKEMA
                         return true;
                     }
 
-                    if (Equals(this.ArrayElementSKEMA, null) ||Equals(other.ArrayElementSKEMA, null))
+                    if (ReferenceEquals(this.ArrayElementSKEMA, null) || ReferenceEquals(other.ArrayElementSKEMA, null))
                     {
                         return false;
                     }
@@ -482,7 +485,7 @@ namespace SKON.SKEMA
                         return false;
                     }
 
-                    if (compared.Contains(this.ArrayElementSKEMA) == false)
+                    if (compared.ContainsKey(this.ArrayElementSKEMA) == false)
                     {
                         return this.ArrayElementSKEMA.EqualsInternal(other.ArrayElementSKEMA, compared);
                     }
