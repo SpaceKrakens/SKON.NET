@@ -634,7 +634,7 @@ namespace UnitTests
         [Test]
         public void RecursiveObject()
         {
-            SKONObject recursiveArray = new int[] { };
+            SKONObject recursiveArray = SKONObject.GetEmptyArray();
 
             recursiveArray.Add(recursiveArray);
 
@@ -648,11 +648,11 @@ namespace UnitTests
 
             // Equality between two recursive objects
 
-            SKONObject rec1 = new Dictionary<string, SKONObject>();
+            SKONObject rec1 = SKONObject.GetEmptyMap();
 
             rec1.Add("Rec", rec1);
 
-            SKONObject rec2 = new Dictionary<string, SKONObject>();
+            SKONObject rec2 = SKONObject.GetEmptyMap();
 
             rec2.Add("Rec", rec2);
 

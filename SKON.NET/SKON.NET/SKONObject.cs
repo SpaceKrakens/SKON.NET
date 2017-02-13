@@ -236,11 +236,6 @@ namespace SKON
         public ICollection<SKONObject> Values => this.arrayValues ?? new List<SKONObject>();
 
         /// <summary>
-        /// Gets an empty SKONObject.
-        /// </summary>
-        internal static SKONObject Empty => new SKONObject();
-
-        /// <summary>
         /// Gets or sets the SKONObject value at the integer index i for a SKONObject Array.
         /// </summary>
         /// <param name="i">The index to get a SKONObject for.</param>
@@ -298,7 +293,16 @@ namespace SKON
                 Add(key, value);
             }
         }
-        
+
+        /// <summary>
+        /// Gets an empty SKONObject.
+        /// </summary>
+        internal static SKONObject Empty => new SKONObject();
+
+        public static SKONObject GetEmptyArray() => new SKONObject(new List<SKONObject>());
+
+        public static SKONObject GetEmptyMap() => new SKONObject(new Dictionary<string, SKONObject>());
+
         public static bool operator ==(SKONObject left, SKONObject right)
         {
             return left?.Equals(right) ?? false;
