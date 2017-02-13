@@ -16,6 +16,7 @@ namespace SKON
     using Internal;
     using Internal.Utils;
     using System.Reflection;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Central class for all SKON related functions.
@@ -138,6 +139,11 @@ namespace SKON
                 throw new ArgumentException("SKONObject to write must be of type map!");
             }
 
+            if (ContainsLoops(obj))
+            {
+                throw new ArgumentException("Could not write SKONObject due to recursive references!");
+            }
+
             StringBuilder sb = new StringBuilder();
 
             foreach (string key in obj.Keys)
@@ -148,6 +154,57 @@ namespace SKON
             return sb.ToString();
         }
         
+        public static bool ContainsLoops(SKONObject obj)
+        {
+            // This should be a HashMap but .NET 2.0 does not have this data type
+            Dictionary<SKONObject, bool> contains = new Dictionary<SKONObject, bool>();
+
+            return ContainsLoopsInternal(obj, contains);
+        }
+
+        private static bool ContainsLoopsInternal(SKONObject obj, Dictionary<SKONObject, bool> contains)
+        {
+            if (contains.ContainsKey(obj))
+            {
+                return true;
+            }
+
+            contains.Add(obj, true);
+
+            switch (obj.Type)
+            {
+                case SKONValueType.EMPTY:
+                case SKONValueType.STRING:
+                case SKONValueType.INTEGER:
+                case SKONValueType.FLOAT:
+                case SKONValueType.BOOLEAN:
+                case SKONValueType.DATETIME:
+                    return false;
+                case SKONValueType.MAP:
+                    foreach (var key in obj.Keys)
+                    {
+                        if (ContainsLoopsInternal(obj[key], contains))
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                case SKONValueType.ARRAY:
+                    foreach (var element in obj.Values)
+                    {
+                        if (ContainsLoopsInternal(element, contains))
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                default:
+                    return false;
+            }
+        }
+
         /// <summary>
         /// Writes a SKONObject value.
         /// </summary>
