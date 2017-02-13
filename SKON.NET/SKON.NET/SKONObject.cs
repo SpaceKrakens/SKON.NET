@@ -236,11 +236,6 @@ namespace SKON
         public ICollection<SKONObject> Values => this.arrayValues ?? new List<SKONObject>();
 
         /// <summary>
-        /// Gets an empty SKONObject.
-        /// </summary>
-        internal static SKONObject Empty => new SKONObject();
-
-        /// <summary>
         /// Gets or sets the SKONObject value at the integer index i for a SKONObject Array.
         /// </summary>
         /// <param name="i">The index to get a SKONObject for.</param>
@@ -298,7 +293,16 @@ namespace SKON
                 Add(key, value);
             }
         }
-        
+
+        /// <summary>
+        /// Gets an empty SKONObject.
+        /// </summary>
+        internal static SKONObject Empty => new SKONObject();
+
+        public static SKONObject GetEmptyArray() => new SKONObject(new List<SKONObject>());
+
+        public static SKONObject GetEmptyMap() => new SKONObject(new Dictionary<string, SKONObject>());
+
         public static bool operator ==(SKONObject left, SKONObject right)
         {
             return left?.Equals(right) ?? false;
@@ -896,7 +900,19 @@ namespace SKON
             {
                 return false;
             }
-            
+
+            return EqualsInternal(other, new Dictionary<SKONObject, bool>());
+        }
+        
+        private bool EqualsInternal(SKONObject other, Dictionary<SKONObject, bool> contains)
+        {
+            if (contains.ContainsKey(this))
+            {
+                return true;
+            }
+
+            contains.Add(this, true);
+
             bool isEqual = true;
 
             switch (this.Type)
@@ -921,7 +937,12 @@ namespace SKON
 
                     foreach (string key in this.Keys)
                     {
-                        isEqual &= (this[key] == other[key]);
+                        if (ReferenceEquals(this[key], other[key]))
+                        {
+                            continue;
+                        }
+
+                        isEqual &= (this[key].EqualsInternal(other[key], contains));
                     }
 
                     return isEqual;
@@ -933,7 +954,12 @@ namespace SKON
 
                     for (int i = 0; i < this.Length; i++)
                     {
-                        isEqual &= (this[i] == other[i]);
+                        if (ReferenceEquals(this[i], other[i]))
+                        {
+                            continue;
+                        }
+
+                        isEqual &= (this[i].EqualsInternal(other[i], contains));
                     }
 
                     return isEqual;
@@ -941,9 +967,14 @@ namespace SKON
                     return false;
             }
         }
-        
+
         public override bool Equals(object obj)
         {
+            if (object.ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
             if (obj == null || GetType() != obj.GetType())
             {
                 return false;

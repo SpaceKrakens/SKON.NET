@@ -630,5 +630,33 @@ namespace UnitTests
 
             Assert.Throws<IndexOutOfRangeException>(() => { arrayObj[6] = "!"; });
         }
+
+        [Test]
+        public void RecursiveObject()
+        {
+            SKONObject recursiveArray = SKONObject.GetEmptyArray();
+
+            recursiveArray.Add(recursiveArray);
+
+            Assert.DoesNotThrow(() => recursiveArray.Equals(recursiveArray));
+
+            Assert.Throws<ArgumentException>(() => SKON.Write(new Dictionary<string, SKONObject> { { "Test", recursiveArray } }));
+
+            recursiveArray.Add(new Dictionary<string, SKONObject> { { "Test2", recursiveArray } });
+
+            Assert.DoesNotThrow(() => recursiveArray.Equals(recursiveArray[1]));
+
+            // Equality between two recursive objects
+
+            SKONObject rec1 = SKONObject.GetEmptyMap();
+
+            rec1.Add("Rec", rec1);
+
+            SKONObject rec2 = SKONObject.GetEmptyMap();
+
+            rec2.Add("Rec", rec2);
+
+            Assert.IsTrue(rec1.Equals(rec2));
+        }
     }
 }
