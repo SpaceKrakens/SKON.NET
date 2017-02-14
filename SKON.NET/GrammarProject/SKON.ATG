@@ -22,8 +22,6 @@ COMPILER SKON
 
     private DateTime ParseDatetime(string value)
     {
-		value = value.Substring(1);
-
         DateTime dateTime;
 
         if (DateTime.TryParseExact(value, dateTimeFormats, null, DateTimeStyles.None, out dateTime))
@@ -32,7 +30,8 @@ COMPILER SKON
         }
         else
         {
-            return ParserUtils.UnixTimeStampToDateTime(long.Parse(value));
+			SynErr(13);
+            return default(DateTime);
         }
     }
 
@@ -49,6 +48,7 @@ CHARACTERS
   escapech    = "bnfrt/" + '\\' + '"'.  
   hex       = "0123456789abcdefABCDEF".
   dot       = '.'.
+  identch	= ANY - '{' - '}' - '[' - ']' - '"' - '.' - ','.
 
 TOKENS
   tilda     = '~'.
@@ -58,13 +58,12 @@ TOKENS
   rbrace    = '}'.
   lbracket  = '['.
   rbracket  = ']'.
-  ident     = letter { letter | digit }.
-  string_   = '"' { stringch | '\\' escapech | '\\' 'u' hex hex hex hex} '"'.
+  ident     = identch { identch } ':'.
+  string_   = '"' { stringch | '\\' escapech } '"'.
   badString = '"' { stringch | '\\' escapech } (cr | lf).
   integer_  = ['-'] digit {digit}.
   double_   = ['-'] digit {digit} (((dot digit {digit}) [('E' | 'e') [('+' | '-')] digit {digit}]) | (('E' | 'e') [('+' | '-')] digit {digit})).
-  datetime_	= '@' (digit {digit}
-			| digit digit digit digit '-' digit digit '-' digit digit
+  datetime_	= ( digit digit digit digit '-' digit digit '-' digit digit
 			| digit digit ':' digit digit ':' digit digit ('Z'|'z')
 			| digit digit ':' digit digit ':' digit digit '.' digit digit digit ('Z'|'z')
 			| digit digit ':' digit digit ':' digit digit ('+'|'-') digit digit ':' digit digit
@@ -72,8 +71,7 @@ TOKENS
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit ('Z'|'z')
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('Z'|'z')
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit ('+'|'-') digit digit ':' digit digit
-			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('+'|'-') digit digit ':' digit digit).
-
+			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('+'|'-') digit digit ':' digit digit ).
 
 COMMENTS FROM "/*" TO "*/"
 COMMENTS FROM "//" TO lf
@@ -89,7 +87,6 @@ SKON															(. Dictionary<string, SKONObject> mapElements = new Dictionar
 	[ 
 		meta_SKEMA<out skema>									(. metadata.SKEMA = skema; .)
 	]
-	SYNC
 	open_map<out mapElements>									(. this.data = new SKONObject(mapElements); .)
     .															
 
@@ -139,7 +136,6 @@ open_map<. out Dictionary<string, SKONObject> mapElements .>	(. string key; SKON
 /*-------------------------------------------------------------------------*/
 map_element<out string key, out SKONObject obj>					(. string name; SKONObject skonObject; .)
 =	Ident<out name>												(. key = name; .)
-    colon 
     value<out skonObject>										(. obj = skonObject; .)
     .
 
@@ -165,7 +161,6 @@ value<out SKONObject skonObject>								(. skonObject = null; .)
     | skon_array<out skonObject>										
     | "true"													(. skonObject = new SKONObject(true); .)
     | "false"													(. skonObject = new SKONObject(false); .)
-    | "null"													(. skonObject = new SKONObject(); .)
     .												
                
 END SKON.

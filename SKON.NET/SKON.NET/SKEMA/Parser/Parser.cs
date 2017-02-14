@@ -50,39 +50,11 @@ public class Parser {
 	public Token la;   // lookahead token
 	int errDist = minErrDist;
 
-public SKONObject metadata = new SKONObject();
+public SKONMetadata metadata = new SKONMetadata();
 
     public SKEMAObject data = SKEMAObject.Any;
 
 	public Dictionary<string, SKEMAObject> definitions = new Dictionary<string, SKEMAObject>();
-
-	private string[] dateTimeFormats = {
-        "yyyy-MM-dd",
-        "hh:mm:ssZ",
-        "hh:mm:ss.fffZ",
-        "hh:mm:sszzz",
-        "hh:mm:ss.fffzzz",
-        "yyyy-MM-ddThh:mm:ssZ",
-        "yyyy-MM-ddThh:mm:ss.fffZ",
-        "yyyy-MM-ddThh:mm:sszzz",
-        "yyyy-MM-ddThh:mm:ss.fffzzz"
-    };
-
-    private DateTime ParseDatetime(string value)
-    {
-		value = value.Substring(1);
-
-        DateTime dateTime;
-
-        if (DateTime.TryParseExact(value, dateTimeFormats, null, DateTimeStyles.None, out dateTime))
-        {
-            return dateTime;
-        }
-        else
-        {
-            return ParserUtils.UnixTimeStampToDateTime(long.Parse(value));
-        }
-    }
 
 /*-------------------------------------------------------------------------*/
 
@@ -148,18 +120,43 @@ public SKONObject metadata = new SKONObject();
 		Dictionary<string, SKONObject> metadataElements = new Dictionary<string, SKONObject>();
 		Dictionary<string, SKEMAObject> mapElements;
 		Dictionary<string, bool> optionalMap;
-		string key; SKONObject value; 
-		while (la.kind == 1) {
-			meta_data(out key, out value);
+		int version; string docVersion; string skema; 
+		meta_version(out version);
+		metadata.LanguageVersion = version; 
+		meta_docVersion(out docVersion);
+		metadata.DocuemntVersion = docVersion; 
+		if (la.kind == 1) {
+			meta_SKEMA(out skema);
+			metadata.SKEMA = skema; 
 		}
-		this.metadata = new SKONObject(metadataElements); 
 		open_skema_map(out mapElements, out optionalMap);
 		this.data = new SKEMAObject(mapElements, optionalMap); 
 	}
 
-	void meta_data(out string key, out SKONObject obj) {
+	void meta_version(out int ver) {
 		Expect(1);
-		skon_map_element(out key, out obj);
+		Expect(17);
+		Expect(2);
+		Expect(11);
+		if (int.TryParse(t.val, out ver) == false) ver = -1; 
+		Expect(1);
+	}
+
+	void meta_docVersion(out string ver) {
+		Expect(1);
+		Expect(18);
+		Expect(2);
+		Expect(9);
+		if (t.val.Length > 2) ver = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else ver = "INVALID"; 
+		Expect(1);
+	}
+
+	void meta_SKEMA(out string skema) {
+		Expect(1);
+		Expect(19);
+		Expect(2);
+		Expect(9);
+		if (t.val.Length > 2) skema = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else skema = "INVALID"; 
 		Expect(1);
 	}
 
@@ -177,35 +174,12 @@ public SKONObject metadata = new SKONObject();
 		}
 	}
 
-	void skon_map_element(out string key, out SKONObject obj) {
-		Ident(out key);
-		Expect(2);
-		skon_value(out obj);
-	}
-
 	void skema_map(out SKEMAObject map) {
 		Dictionary<string, SKEMAObject> mapElements; Dictionary<string, bool> optionalMap; 
 		Expect(4);
 		open_skema_map(out mapElements, out optionalMap);
 		map = new SKEMAObject(mapElements, optionalMap); 
 		Expect(5);
-	}
-
-	void skon_map(out SKONObject map) {
-		Dictionary<string, SKONObject> mapElements;  
-		Expect(4);
-		open_skon_map(out mapElements);
-		map = new SKONObject(mapElements); 
-		Expect(5);
-	}
-
-	void open_skon_map(out Dictionary<string, SKONObject> mapElements ) {
-		string key; SKONObject value; mapElements = new Dictionary<string, SKONObject>(); 
-		while (la.kind == 8) {
-			skon_map_element(out key, out value);
-			mapElements[key] = value; 
-			ExpectWeak(3, 2);
-		}
 	}
 
 	void skema_array(out SKEMAObject array) {
@@ -218,7 +192,7 @@ public SKONObject metadata = new SKONObject();
 
 	void skema_value(out SKEMAObject skemaObj) {
 		skemaObj = null; 
-		if (StartOf(3)) {
+		if (StartOf(2)) {
 			type(out skemaObj);
 		} else if (la.kind == 4) {
 			skema_map(out skemaObj);
@@ -228,23 +202,6 @@ public SKONObject metadata = new SKONObject();
 			Get();
 			skemaObj = new SKEMAObject(t.val.Substring(1)); 
 		} else SynErr(27);
-	}
-
-	void skon_array(out SKONObject array) {
-		List<SKONObject> arrayElements; 
-		Expect(6);
-		open_skon_array(out arrayElements);
-		array = new SKONObject(arrayElements); 
-		Expect(7);
-	}
-
-	void open_skon_array(out List<SKONObject> arrayElements ) {
-		SKONObject skonObject; arrayElements = new List<SKONObject>(); 
-		while (StartOf(4)) {
-			skon_value(out skonObject);
-			arrayElements.Add(skonObject); 
-			ExpectWeak(3, 5);
-		}
 	}
 
 	void skema_map_element(out string key, out SKEMAObject obj, out bool optional) {
@@ -268,56 +225,6 @@ public SKONObject metadata = new SKONObject();
 	void Ident(out string name) {
 		Expect(8);
 		name = t.val; 
-	}
-
-	void skon_value(out SKONObject skonObject) {
-		skonObject = null; 
-		switch (la.kind) {
-		case 9: {
-			Get();
-			skonObject = new SKONObject(ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2))); 
-			break;
-		}
-		case 11: {
-			Get();
-			skonObject = new SKONObject(int.Parse(t.val)); 
-			break;
-		}
-		case 12: {
-			Get();
-			skonObject = new SKONObject(double.Parse(t.val, CultureInfo.InvariantCulture)); 
-			break;
-		}
-		case 13: {
-			Get();
-			skonObject = new SKONObject(ParseDatetime(t.val)); 
-			break;
-		}
-		case 4: {
-			skon_map(out skonObject);
-			break;
-		}
-		case 6: {
-			skon_array(out skonObject);
-			break;
-		}
-		case 17: {
-			Get();
-			skonObject = new SKONObject(true); 
-			break;
-		}
-		case 18: {
-			Get();
-			skonObject = new SKONObject(false); 
-			break;
-		}
-		case 19: {
-			Get();
-			skonObject = new SKONObject(); 
-			break;
-		}
-		default: SynErr(28); break;
-		}
 	}
 
 	void type(out SKEMAObject skemaObj) {
@@ -353,7 +260,7 @@ public SKONObject metadata = new SKONObject();
 			skemaObj = SKEMAObject.DateTime; 
 			break;
 		}
-		default: SynErr(29); break;
+		default: SynErr(28); break;
 		}
 	}
 
@@ -371,10 +278,7 @@ public SKONObject metadata = new SKONObject();
 	static readonly bool[,] set = {
 		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
 		{_T,_x,_x,_x, _x,_T,_x,_x, _T,_x,_x,_x, _x,_x,_x,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
-		{_T,_x,_x,_x, _x,_T,_x,_x, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
-		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _T,_T,_T,_T, _T,_T,_x,_x},
-		{_x,_x,_x,_x, _T,_x,_T,_x, _x,_T,_x,_T, _T,_T,_x,_x, _x,_T,_T,_T, _x,_x,_x,_x, _x,_x,_x,_x},
-		{_T,_x,_x,_x, _T,_x,_T,_T, _x,_T,_x,_T, _T,_T,_x,_x, _x,_T,_T,_T, _x,_x,_x,_x, _x,_x,_x,_x}
+		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _T,_T,_T,_T, _T,_T,_x,_x}
 
 	};
 } // end Parser
@@ -405,9 +309,9 @@ public class Errors {
 			case 14: s = "ref expected"; break;
 			case 15: s = "def expected"; break;
 			case 16: s = "opt expected"; break;
-			case 17: s = "\"true\" expected"; break;
-			case 18: s = "\"false\" expected"; break;
-			case 19: s = "\"null\" expected"; break;
+			case 17: s = "\"Version\" expected"; break;
+			case 18: s = "\"DocumentVersion\" expected"; break;
+			case 19: s = "\"SKEMA\" expected"; break;
 			case 20: s = "\"Any\" expected"; break;
 			case 21: s = "\"String\" expected"; break;
 			case 22: s = "\"Integer\" expected"; break;
@@ -416,8 +320,7 @@ public class Errors {
 			case 25: s = "\"DateTime\" expected"; break;
 			case 26: s = "??? expected"; break;
 			case 27: s = "invalid skema_value"; break;
-			case 28: s = "invalid skon_value"; break;
-			case 29: s = "invalid type"; break;
+			case 28: s = "invalid type"; break;
 
 			default: s = "error " + n; break;
 		}

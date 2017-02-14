@@ -34,7 +34,7 @@ public class Parser {
 	public const int _integer_ = 11;
 	public const int _double_ = 12;
 	public const int _datetime_ = 13;
-	public const int maxT = 20;
+	public const int maxT = 19;
 
 	const bool _T = true;
 	const bool _x = false;
@@ -65,8 +65,6 @@ public SKONMetadata metadata = new SKONMetadata();
 
     private DateTime ParseDatetime(string value)
     {
-		value = value.Substring(1);
-
         DateTime dateTime;
 
         if (DateTime.TryParseExact(value, dateTimeFormats, null, DateTimeStyles.None, out dateTime))
@@ -75,7 +73,8 @@ public SKONMetadata metadata = new SKONMetadata();
         }
         else
         {
-            return ParserUtils.UnixTimeStampToDateTime(long.Parse(value));
+			SynErr(13);
+            return default(DateTime);
         }
     }
 
@@ -150,7 +149,6 @@ public SKONMetadata metadata = new SKONMetadata();
 			meta_SKEMA(out skema);
 			metadata.SKEMA = skema; 
 		}
-		while (!(la.kind == 0 || la.kind == 8)) {SynErr(21); Get();}
 		open_map(out mapElements);
 		this.data = new SKONObject(mapElements); 
 	}
@@ -220,7 +218,6 @@ public SKONMetadata metadata = new SKONMetadata();
 		string name; SKONObject skonObject; 
 		Ident(out name);
 		key = name; 
-		Expect(2);
 		value(out skonObject);
 		obj = skonObject; 
 	}
@@ -271,12 +268,7 @@ public SKONMetadata metadata = new SKONMetadata();
 			skonObject = new SKONObject(false); 
 			break;
 		}
-		case 19: {
-			Get();
-			skonObject = new SKONObject(); 
-			break;
-		}
-		default: SynErr(22); break;
+		default: SynErr(20); break;
 		}
 	}
 
@@ -292,10 +284,10 @@ public SKONMetadata metadata = new SKONMetadata();
 	}
 	
 	static readonly bool[,] set = {
-		{_T,_x,_x,_x, _x,_x,_x,_x, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x},
-		{_T,_x,_x,_x, _x,_T,_x,_x, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x},
-		{_x,_x,_x,_x, _T,_x,_T,_x, _x,_T,_x,_T, _T,_T,_x,_x, _x,_T,_T,_T, _x,_x},
-		{_T,_x,_x,_x, _T,_x,_T,_T, _T,_T,_x,_T, _T,_T,_x,_x, _x,_T,_T,_T, _x,_x}
+		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x},
+		{_T,_x,_x,_x, _x,_T,_x,_x, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x},
+		{_x,_x,_x,_x, _T,_x,_T,_x, _x,_T,_x,_T, _T,_T,_x,_x, _x,_T,_T,_x, _x},
+		{_T,_x,_x,_x, _T,_x,_T,_T, _x,_T,_x,_T, _T,_T,_x,_x, _x,_T,_T,_x, _x}
 
 	};
 } // end Parser
@@ -328,10 +320,8 @@ public class Errors {
 			case 16: s = "\"SKEMA\" expected"; break;
 			case 17: s = "\"true\" expected"; break;
 			case 18: s = "\"false\" expected"; break;
-			case 19: s = "\"null\" expected"; break;
-			case 20: s = "??? expected"; break;
-			case 21: s = "this symbol not expected in SKON"; break;
-			case 22: s = "invalid value"; break;
+			case 19: s = "??? expected"; break;
+			case 20: s = "invalid value"; break;
 
 			default: s = "error " + n; break;
 		}
