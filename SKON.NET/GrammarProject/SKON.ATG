@@ -3,8 +3,8 @@ using System.Globalization;
 using SKON.Internal.Utils;
 
 COMPILER SKON
-
-	public SKONObject metadata = new SKONObject();
+	
+	public SKONMetadata metadata = new SKONMetadata();
 
     public SKONObject data = new SKONObject();
 
@@ -75,24 +75,43 @@ TOKENS
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('+'|'-') digit digit ':' digit digit).
 
 
-COMMENTS FROM "/*" TO "*/" NESTED
+COMMENTS FROM "/*" TO "*/"
 COMMENTS FROM "//" TO lf
 
 IGNORE ' ' + '\r' + '\t' + '\n'
 
 PRODUCTIONS
 /*-------------------------------------------------------------------------*/
-SKON															(. Dictionary<string, SKONObject> metadataElements = new Dictionary<string, SKONObject>();
-																   Dictionary<string, SKONObject> mapElements = new Dictionary<string, SKONObject>();
-																   string key; SKONObject value; .)
-=	{ meta_data<out key, out value> }							(. this.metadata = new SKONObject(metadataElements); .)
+SKON															(. Dictionary<string, SKONObject> mapElements = new Dictionary<string, SKONObject>();
+																   int version; string docVersion; string skema; .)
+=	meta_version<out version>									(. metadata.LanguageVersion = version; .)
+	meta_docVersion<out docVersion>								(. metadata.DocuemntVersion = docVersion; .)
+	[ 
+		meta_SKEMA<out skema>									(. metadata.SKEMA = skema; .)
+	]
+	SYNC
 	open_map<out mapElements>									(. this.data = new SKONObject(mapElements); .)
     .															
 
 /*-------------------------------------------------------------------------*/
-meta_data<out string key, out SKONObject obj>
+meta_version<out int ver>
 =	tilda
-	map_element<out key, out obj>
+	"Version" colon 
+	integer_													(. if (int.TryParse(t.val, out ver) == false) ver = -1; .)
+	tilda.
+
+/*-------------------------------------------------------------------------*/
+meta_docVersion<out string ver>
+=	tilda
+	"DocumentVersion" colon 
+	string_														(. if (t.val.Length > 2) ver = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else ver = "INVALID"; .)
+	tilda.
+
+/*-------------------------------------------------------------------------*/
+meta_SKEMA<out string skema>
+=	tilda
+	"SKEMA" colon
+	string_														(. if (t.val.Length > 2) skema = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else skema = "INVALID"; .)
 	tilda.
 
 /*-------------------------------------------------------------------------*/

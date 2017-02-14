@@ -212,8 +212,8 @@ public class UTF8Buffer: Buffer {
 public class Scanner {
 	const char EOL = '\n';
 	const int eofSym = 0; /* pdt */
-	const int maxT = 17;
-	const int noSym = 17;
+	const int maxT = 20;
+	const int noSym = 20;
 
 
 	public Buffer buffer; // scanner buffer
@@ -344,11 +344,6 @@ public class Scanner {
 						if (level == 0) { oldEols = line - line0; NextCh(); return true; }
 						NextCh();
 					}
-				} else if (ch == '/') {
-					NextCh();
-					if (ch == '*') {
-						level++; NextCh();
-					}
 				} else if (ch == Buffer.EOF) return false;
 				else NextCh();
 			}
@@ -361,9 +356,12 @@ public class Scanner {
 
 	void CheckLiteral() {
 		switch (t.val) {
-			case "true": t.kind = 14; break;
-			case "false": t.kind = 15; break;
-			case "null": t.kind = 16; break;
+			case "Version": t.kind = 14; break;
+			case "DocumentVersion": t.kind = 15; break;
+			case "SKEMA": t.kind = 16; break;
+			case "true": t.kind = 17; break;
+			case "false": t.kind = 18; break;
+			case "null": t.kind = 19; break;
 			default: break;
 		}
 	}
