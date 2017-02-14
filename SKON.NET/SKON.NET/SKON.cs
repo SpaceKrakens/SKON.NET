@@ -12,11 +12,12 @@ namespace SKON
     using System;
     using System.IO;
     using System.Text;
+    using System.Reflection;
+    using System.Collections.Generic;
 
     using Internal;
     using Internal.Utils;
-    using System.Reflection;
-    using System.Collections.Generic;
+    using Serialization;
 
     public struct SKONMetadata
     {
@@ -30,6 +31,8 @@ namespace SKON
     /// </summary> 
     public static class SKON
     {
+        public const int LanguageVersion = 1;
+
         /// <summary>
         /// The indent spaces.
         /// </summary>
@@ -159,7 +162,7 @@ namespace SKON
         /// </summary>
         /// <param name="obj">The object to write.</param>
         /// <returns>A string to write into a file.</returns>
-        public static string Write(SKONObject obj)
+        public static string Write(SKONObject obj, SKONMetadata metadata = default(SKONMetadata))
         {
             if (obj.Type != SKONValueType.MAP)
             {
@@ -171,7 +174,17 @@ namespace SKON
                 throw new ArgumentException("Could not write SKONObject due to recursive references!");
             }
 
+            //There might be something we would want to do if the versions don't match
+            metadata.LanguageVersion = LanguageVersion;
+
             StringBuilder sb = new StringBuilder();
+
+            sb.Append($"~Version: {metadata.LanguageVersion}~");
+            sb.Append($"~DocumentVersion: \"{metadata.DocuemntVersion}\"~");
+            if (metadata.SKEMA != null || metadata.SKEMA.Length > 0)
+            {
+                sb.Append($"~SKEMA: {metadata.SKEMA}~");
+            }
 
             foreach (string key in obj.Keys)
             {

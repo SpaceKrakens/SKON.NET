@@ -21,6 +21,13 @@ namespace UnitTests
     [TestFixture]
     class SKEMAObjectTests
     {
+        const string metadataString = "~Version: 1~\n~DocumentVersion: \"\"~\n";
+
+        private static SKEMAObject ParseWithMetadata(string skema)
+        {
+            return SKEMA.Parse(metadataString + skema);
+        }
+
         [Test]
         public void AnySKEMA()
         {
@@ -104,16 +111,16 @@ namespace UnitTests
         [Test]
         public void CyclicReferences()
         {
-            Assert.Throws<CouldNotSolveReferencesException>(() => SKEMA.Parse(
+            Assert.Throws<CouldNotSolveReferencesException>(() => ParseWithMetadata(
                 @"define One: #Two,
                 define Two: #One,
 
                 Value: [ #One ],"));
 
-            Assert.Throws<CouldNotSolveReferencesException>(() => SKEMA.Parse(
+            Assert.Throws<CouldNotSolveReferencesException>(() => ParseWithMetadata(
                 @"define One: #One,"));
 
-            Assert.Throws<CouldNotSolveReferencesException>(() => SKEMA.Parse(
+            Assert.Throws<CouldNotSolveReferencesException>(() => ParseWithMetadata(
                 @"define One: 
                 {
                     Two: #Two,
@@ -127,7 +134,7 @@ namespace UnitTests
 
                 One: #One,"));
 
-            Assert.Throws<CouldNotSolveReferencesException>(() => SKEMA.Parse(
+            Assert.Throws<CouldNotSolveReferencesException>(() => ParseWithMetadata(
                 @"define One: #Two,
                 define Two: #Three,
                 define Three: #Four,
@@ -139,7 +146,7 @@ namespace UnitTests
                 define Nine: #Ten,
                 define Ten: #One,"));
 
-            Assert.Throws<CouldNotSolveReferencesException>(() => SKEMA.Parse(
+            Assert.Throws<CouldNotSolveReferencesException>(() => ParseWithMetadata(
                 @"define One: #Two,
                 define Two: #One,
 
@@ -167,7 +174,7 @@ namespace UnitTests
 
                 Colors: [ #Color ],";
 
-            SKEMAObject skemaObj = SKEMA.Parse(skema);
+            SKEMAObject skemaObj = ParseWithMetadata(skema);
 
             Console.Write(SKEMA.Write(skemaObj));
 
@@ -212,7 +219,7 @@ namespace UnitTests
             
                 Tree: #Node,";
 
-            SKEMAObject skemaObj = SKEMA.Parse(skema);
+            SKEMAObject skemaObj = ParseWithMetadata(skema);
 
             SKONObject data = new Dictionary<string, SKONObject>
             {
@@ -258,11 +265,11 @@ namespace UnitTests
         {
             string skema = @"define A: #A, A: #A,";
 
-            Assert.Throws<CouldNotSolveReferencesException>(() => SKEMA.Parse(skema));
+            Assert.Throws<CouldNotSolveReferencesException>(() => ParseWithMetadata(skema));
             
             skema = @"define A: { optional A: #A, }, A: #A,";
 
-            SKEMAObject obj = SKEMA.Parse(skema);
+            SKEMAObject obj = ParseWithMetadata(skema);
 
             string res = SKEMA.Write(obj);
 
@@ -274,7 +281,7 @@ namespace UnitTests
             
             skema = @"define A: { optional A: #A, optional B: #B, }, define B: #A, A: #A, ";
 
-            obj = SKEMA.Parse(skema);
+            obj = ParseWithMetadata(skema);
 
             res = SKEMA.Write(obj);
 
@@ -343,7 +350,7 @@ namespace UnitTests
                 @"Required: Any,
                 optional Optional: Any,";
 
-            SKEMAObject obj = SKEMA.Parse(skema);
+            SKEMAObject obj = ParseWithMetadata(skema);
 
             Assert.IsFalse(obj.IsOptional("Required"));
 
@@ -358,7 +365,7 @@ namespace UnitTests
 
                 Colors: [ #Color ],";
 
-            SKEMAObject skemaObj = SKEMA.Parse(skema);
+            SKEMAObject skemaObj = ParseWithMetadata(skema);
 
             string res = SKEMA.Write(skemaObj);
 
@@ -377,7 +384,7 @@ namespace UnitTests
             
                 Tree: #Node,";
 
-            skemaObj = SKEMA.Parse(skema);
+            skemaObj = ParseWithMetadata(skema);
 
             res = SKEMA.Write(skemaObj);
 

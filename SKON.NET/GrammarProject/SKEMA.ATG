@@ -20,9 +20,10 @@ CHARACTERS
   stringch  = ANY - '"' - '\\' - cr - lf.
   charch    = ANY - '\'' - '\\' - cr - lf.
   printable =  '\u0020' .. '\u007e'.
-  escapech    = "bnfrt/" + '\\' + '"'.  
+  escapech    = "bnfrt" + '\\' + '"'.  
   hex       = "0123456789abcdefABCDEF".
   dot       = '.'.
+  identch	= ANY - '{' - '}' - '[' - ']' - '"' - '.' - ',' - '~' - ':' - '\r' - '\n' - '\t' - ' '.
 
 TOKENS
   tilda     = '~'.
@@ -32,7 +33,7 @@ TOKENS
   rbrace    = '}'.
   lbracket  = '['.
   rbracket  = ']'.
-  ident     = letter { letter | digit } CONTEXT (":").
+  ident     = identch { identch } CONTEXT (":").
   string_   = '"' { stringch | '\\' escapech | '\\' 'u' hex hex hex hex} '"'.
   badString = '"' { stringch | '\\' escapech } (cr | lf).
   integer_  = ['-'] digit {digit}.
@@ -59,8 +60,7 @@ IGNORE ' ' + '\r' + '\t' + '\n'
 
 PRODUCTIONS
 /*-------------------------------------------------------------------------*/
-SKEMA																(. Dictionary<string, SKONObject> metadataElements = new Dictionary<string, SKONObject>();
-																		Dictionary<string, SKEMAObject> mapElements;
+SKEMA																(.  Dictionary<string, SKEMAObject> mapElements;
 																		Dictionary<string, bool> optionalMap;
 																		int version; string docVersion; string skema; .)
 =	meta_version<out version>										(. metadata.LanguageVersion = version; .)
@@ -73,24 +73,24 @@ SKEMA																(. Dictionary<string, SKONObject> metadataElements = new Di
 
 /*-------------------------------------------------------------------------*/
 meta_version<out int ver>
-=	tilda
-	"Version" colon 
+=	"~Version" colon
 	integer_													(. if (int.TryParse(t.val, out ver) == false) ver = -1; .)
-	tilda.
+	tilda
+	.
 
 /*-------------------------------------------------------------------------*/
 meta_docVersion<out string ver>
-=	tilda
-	"DocumentVersion" colon 
+=	"~DocumentVersion" colon 
 	string_														(. if (t.val.Length > 2) ver = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else ver = "INVALID"; .)
-	tilda.
+	tilda
+	.
 
 /*-------------------------------------------------------------------------*/
 meta_SKEMA<out string skema>
-=	tilda
-	"SKEMA" colon
+=	"~SKEMA" colon
 	string_														(. if (t.val.Length > 2) skema = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else skema = "INVALID"; .)
-	tilda.
+	tilda
+	.
 
 /*-------------------------------------------------------------------------*/
 skema_map<out SKEMAObject map>										(. Dictionary<string, SKEMAObject> mapElements; Dictionary<string, bool> optionalMap; .)

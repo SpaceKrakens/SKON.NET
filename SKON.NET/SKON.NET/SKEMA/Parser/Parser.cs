@@ -117,7 +117,6 @@ public SKONMetadata metadata = new SKONMetadata();
 
 	
 	void SKEMA() {
-		Dictionary<string, SKONObject> metadataElements = new Dictionary<string, SKONObject>();
 		Dictionary<string, SKEMAObject> mapElements;
 		Dictionary<string, bool> optionalMap;
 		int version; string docVersion; string skema; 
@@ -125,7 +124,7 @@ public SKONMetadata metadata = new SKONMetadata();
 		metadata.LanguageVersion = version; 
 		meta_docVersion(out docVersion);
 		metadata.DocuemntVersion = docVersion; 
-		if (la.kind == 1) {
+		if (la.kind == 19) {
 			meta_SKEMA(out skema);
 			metadata.SKEMA = skema; 
 		}
@@ -134,7 +133,6 @@ public SKONMetadata metadata = new SKONMetadata();
 	}
 
 	void meta_version(out int ver) {
-		Expect(1);
 		Expect(17);
 		Expect(2);
 		Expect(11);
@@ -143,7 +141,6 @@ public SKONMetadata metadata = new SKONMetadata();
 	}
 
 	void meta_docVersion(out string ver) {
-		Expect(1);
 		Expect(18);
 		Expect(2);
 		Expect(9);
@@ -152,7 +149,6 @@ public SKONMetadata metadata = new SKONMetadata();
 	}
 
 	void meta_SKEMA(out string skema) {
-		Expect(1);
 		Expect(19);
 		Expect(2);
 		Expect(9);
@@ -309,9 +305,9 @@ public class Errors {
 			case 14: s = "ref expected"; break;
 			case 15: s = "def expected"; break;
 			case 16: s = "opt expected"; break;
-			case 17: s = "\"Version\" expected"; break;
-			case 18: s = "\"DocumentVersion\" expected"; break;
-			case 19: s = "\"SKEMA\" expected"; break;
+			case 17: s = "\"~Version\" expected"; break;
+			case 18: s = "\"~DocumentVersion\" expected"; break;
+			case 19: s = "\"~SKEMA\" expected"; break;
 			case 20: s = "\"Any\" expected"; break;
 			case 21: s = "\"String\" expected"; break;
 			case 22: s = "\"Integer\" expected"; break;

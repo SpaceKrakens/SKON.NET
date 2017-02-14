@@ -22,11 +22,13 @@ namespace UnitTests
 
     class ParserTests
     {
-        string metadataString = "~Version: 1~\n~DocumentVersion: \"\"~\n";
+        const string metadataString = "~Version: 1~\n~DocumentVersion: \"\"~\n";
 
         [Test]
         public void EmptyInput()
         {
+            Assert.Throws<FormatException>(() => SKON.Parse(string.Empty));
+
             SKONObject emptyMap = SKON.Parse(metadataString + string.Empty);
 
             IsNotSimpleType(emptyMap);
@@ -121,19 +123,21 @@ namespace UnitTests
         }
 
         [Test]
-        public void DoubleObject()
+        public void FloatObject()
         {
-            string doubleSKON = metadataString + "DoubleKey: 1234.5678,";
+            string floatSKON = metadataString + "FloatKey: 1234.5678,";
 
-            SKONObject doubleMap = SKON.Parse(doubleSKON);
+            Console.WriteLine(floatSKON);
+
+            SKONObject doubleMap = SKON.Parse(floatSKON);
 
             IsNotEmpty(doubleMap);
 
             IsNotSimpleType(doubleMap);
 
-            Assert.IsTrue(doubleMap.ContainsKey("DoubleKey"));
+            Assert.IsTrue(doubleMap.ContainsKey("FloatKey"));
 
-            SKONObject doubleObj = doubleMap["DoubleKey"];
+            SKONObject doubleObj = doubleMap["FloatKey"];
 
             HasValue(1234.5678, doubleObj);
         }
@@ -142,8 +146,10 @@ namespace UnitTests
         public void BooleanObject()
         {
             string booleanSKON = metadataString + "BooleanKey: true,";
-
+            
             SKONObject booleanMap = SKON.Parse(booleanSKON);
+
+            Console.WriteLine(SKON.Write(booleanMap));
 
             IsNotEmpty(booleanMap);
 
@@ -159,7 +165,7 @@ namespace UnitTests
         [Test]
         public void DateTimeObject()
         {
-            string dateTimeSKON = metadataString + "DateTimeKey: @1970-01-01,";
+            string dateTimeSKON = metadataString + "DateTimeKey: 1970-01-01,";
 
             SKONObject dateTimeMap = SKON.Parse(dateTimeSKON);
 
@@ -213,7 +219,7 @@ namespace UnitTests
         [Test]
         public void NoSpaces()
         {
-            string noSpacesSKON = metadataString + "TestString:\"StringValue\",TestInt:1,TestDouble:1.2,TestBool:true,TestDateTime:@2016-10-09,";
+            string noSpacesSKON = metadataString + "TestString:\"StringValue\",TestInt:1,TestDouble:1.2,TestBool:true,TestDateTime:2016-10-09,";
 
             SKONObject noSpacesMap = SKON.Parse(noSpacesSKON);
 
@@ -242,6 +248,22 @@ namespace UnitTests
             SKONObject dateTimeVal = noSpacesMap["TestDateTime"];
 
             HasValue(new DateTime(2016, 10, 09), dateTimeVal);
+        }
+
+        [Test]
+        public void HardParsing()
+        {
+            string skon = metadataString + "DifficultTokens: \"_[{]}:;,\", _: 1,__:[\"]\",],";
+
+            SKONObject skonObj = SKON.Parse(skon);
+
+            Assert.IsTrue(skonObj.ContainsKey("DifficultTokens"));
+            Assert.IsTrue(skonObj.ContainsKey("_"));
+            Assert.IsTrue(skonObj.ContainsKey("__"));
+
+            Assert.AreEqual("_[{]}:;,", skonObj["DifficultTokens"].String);
+            Assert.AreEqual(1, skonObj["_"].Int);
+            Assert.AreEqual("]", skonObj["__"][0].String);
         }
     }
 }
