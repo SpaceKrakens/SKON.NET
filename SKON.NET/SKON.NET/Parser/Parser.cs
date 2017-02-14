@@ -47,7 +47,7 @@ public class Parser {
 	public Token la;   // lookahead token
 	int errDist = minErrDist;
 
-public SKONObject metadata = new SKONObject();
+public SKONMetadata metadata = new SKONMetadata();
 
     public SKONObject data = new SKONObject();
 

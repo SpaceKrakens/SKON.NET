@@ -22,10 +22,12 @@ namespace UnitTests
 
     class ParserTests
     {
+        string metadataString = "~Version: 1~\n~DocumentVersion: \"\"~\n";
+
         [Test]
         public void EmptyInput()
         {
-            SKONObject emptyMap = SKON.Parse(string.Empty);
+            SKONObject emptyMap = SKON.Parse(metadataString + string.Empty);
 
             IsNotSimpleType(emptyMap);
 
@@ -35,7 +37,7 @@ namespace UnitTests
         [Test]
         public void WhiteSpaceInput()
         {
-            SKONObject emptyMap = SKON.Parse(" \t\r\n");
+            SKONObject emptyMap = SKON.Parse(metadataString + " \t\r\n");
 
             IsNotSimpleType(emptyMap);
 
@@ -77,7 +79,7 @@ namespace UnitTests
         [Test]
         public void MissingComma()
         {
-            string stringSKON = "StringKey: \"StringValue\" IntKey: 1234";
+            string stringSKON = metadataString + "StringKey: \"StringValue\" IntKey: 1234";
 
             Assert.Throws<FormatException>(() => SKON.Parse(stringSKON));
         }
@@ -85,7 +87,7 @@ namespace UnitTests
         [Test]
         public void StringObject()
         {
-            string stringSKON = "StringKey: \"StringValue\",";
+            string stringSKON = metadataString + "StringKey: \"StringValue\",";
 
             SKONObject stringMap = SKON.Parse(stringSKON);
 
@@ -103,7 +105,7 @@ namespace UnitTests
         [Test]
         public void IntObject()
         {
-            string intSKON = "IntKey: 1234,";
+            string intSKON = metadataString + "IntKey: 1234,";
 
             SKONObject intMap = SKON.Parse(intSKON);
 
@@ -121,7 +123,7 @@ namespace UnitTests
         [Test]
         public void DoubleObject()
         {
-            string doubleSKON = "DoubleKey: 1234.5678,";
+            string doubleSKON = metadataString + "DoubleKey: 1234.5678,";
 
             SKONObject doubleMap = SKON.Parse(doubleSKON);
 
@@ -139,7 +141,7 @@ namespace UnitTests
         [Test]
         public void BooleanObject()
         {
-            string booleanSKON = "BooleanKey: true,";
+            string booleanSKON = metadataString + "BooleanKey: true,";
 
             SKONObject booleanMap = SKON.Parse(booleanSKON);
 
@@ -157,7 +159,7 @@ namespace UnitTests
         [Test]
         public void DateTimeObject()
         {
-            string dateTimeSKON = "DateTimeKey: @1970-01-01,";
+            string dateTimeSKON = metadataString + "DateTimeKey: @1970-01-01,";
 
             SKONObject dateTimeMap = SKON.Parse(dateTimeSKON);
 
@@ -211,7 +213,7 @@ namespace UnitTests
         [Test]
         public void NoSpaces()
         {
-            string noSpacesSKON = "TestString:\"StringValue\",TestInt:1,TestDouble:1.2,TestBool:true,TestDateTime:@2016-10-09,";
+            string noSpacesSKON = metadataString + "TestString:\"StringValue\",TestInt:1,TestDouble:1.2,TestBool:true,TestDateTime:@2016-10-09,";
 
             SKONObject noSpacesMap = SKON.Parse(noSpacesSKON);
 

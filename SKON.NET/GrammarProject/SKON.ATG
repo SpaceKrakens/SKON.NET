@@ -3,8 +3,8 @@ using System.Globalization;
 using SKON.Internal.Utils;
 
 COMPILER SKON
-
-	public SKONObject metadata = new SKONObject();
+	
+	public SKONMetadata metadata = new SKONMetadata();
 
     public SKONObject data = new SKONObject();
 
@@ -73,7 +73,7 @@ TOKENS
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit ('+'|'-') digit digit ':' digit digit
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('+'|'-') digit digit ':' digit digit ).
 
-COMMENTS FROM "/*" TO "*/" NESTED
+COMMENTS FROM "/*" TO "*/"
 COMMENTS FROM "//" TO lf
 
 IGNORE ' ' + '\r' + '\t' + '\n'
