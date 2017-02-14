@@ -48,6 +48,7 @@ CHARACTERS
   escapech    = "bnfrt/" + '\\' + '"'.  
   hex       = "0123456789abcdefABCDEF".
   dot       = '.'.
+  identch	= ANY - '{' - '}' - '[' - ']' - '"' - '.' - ','.
 
 TOKENS
   tilda     = '~'.
@@ -57,7 +58,7 @@ TOKENS
   rbrace    = '}'.
   lbracket  = '['.
   rbracket  = ']'.
-  ident     = stringch { stringch } ':'.
+  ident     = identch { identch } ':'.
   string_   = '"' { stringch | '\\' escapech } '"'.
   badString = '"' { stringch | '\\' escapech } (cr | lf).
   integer_  = ['-'] digit {digit}.
