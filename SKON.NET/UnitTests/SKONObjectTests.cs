@@ -211,6 +211,13 @@ namespace UnitTests
             Assert.AreEqual(expected, actual.DateTime);
         }
         
+        public static void HasKey(SKONObject obj, string key, SKONValueType type)
+        {
+            Assert.AreEqual(SKONValueType.MAP, obj.Type);
+            Assert.IsTrue(obj.ContainsKey(key));
+            Assert.AreEqual(type, obj[key].Type);
+        }
+
         [Test]
         public void EmptyValue()
         {

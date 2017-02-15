@@ -27,7 +27,13 @@ namespace UnitTests
         private static SKONObject ParseWithMetadata(string skon)
         {
             Console.WriteLine(metadataString + skon);
-            return SKON.Parse(metadataString + skon);
+            SKONMetadata meta;
+            return ParseWithMetadata(skon, out meta);
+        }
+
+        private static SKONObject ParseWithMetadata(string skon, out SKONMetadata meta)
+        {
+            return SKON.Parse(metadataString + skon, out meta);
         }
 
         [Test]
@@ -270,6 +276,32 @@ namespace UnitTests
             Assert.AreEqual("_[{]}:;,", skonObj["DifficultTokens"].String);
             Assert.AreEqual(1, skonObj["_"].Int);
             Assert.AreEqual("]", skonObj["__"][0].String);
+        }
+
+        [Test]
+        public void ParseWriteParse()
+        {
+            string skon = @"Boolean: true,
+                            Int: 12,
+                            Map: { Content: ""Hello"", },";
+
+            SKONMetadata meta;
+            SKONObject obj = ParseWithMetadata(skon, out meta);
+
+            string res = SKON.Write(obj, meta);
+
+            SKONMetadata meta2;
+            SKONObject objRes = SKON.Parse(res, out meta2);
+
+            HasKey(obj, "Boolean", SKONValueType.BOOLEAN);
+            HasKey(obj, "Int", SKONValueType.INTEGER);
+            HasKey(obj, "Map", SKONValueType.MAP);
+            HasKey(obj["Map"], "Content", SKONValueType.STRING);
+
+            Assert.IsTrue(meta.LanguageVersion == meta2.LanguageVersion);
+            Assert.IsTrue(meta.DocuemntVersion == meta2.DocuemntVersion);
+            Assert.IsTrue(meta.SKEMA == meta2.SKEMA);
+            Assert.IsTrue(obj == objRes);
         }
     }
 }
