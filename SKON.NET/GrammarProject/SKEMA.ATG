@@ -54,7 +54,7 @@ PRODUCTIONS
 /*-------------------------------------------------------------------------*/
 SKEMA																(.  Dictionary<string, SKEMAObject> mapElements;
 																		Dictionary<string, bool> optionalMap;
-																		int version; string docVersion; string skema; .)
+																		int version; string docVersion; .)
 =	meta_version<out version>										(. metadata.LanguageVersion = version; .)
 	meta_docVersion<out docVersion>									(. metadata.DocuemntVersion = docVersion; .)
 	open_skema_map<out mapElements, out optionalMap>				(. this.data = new SKEMAObject(mapElements, optionalMap); .)

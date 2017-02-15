@@ -24,12 +24,18 @@ namespace UnitTests
     {
         const string metadataString = "-Version: 1-\n-DocumentVersion: \"\"-\n";
 
+        private static SKONObject ParseWithMetadata(string skon)
+        {
+            Console.WriteLine(metadataString + skon);
+            return SKON.Parse(metadataString + skon);
+        }
+
         [Test]
         public void EmptyInput()
         {
             Assert.Throws<FormatException>(() => SKON.Parse(string.Empty));
 
-            SKONObject emptyMap = SKON.Parse(metadataString + string.Empty);
+            SKONObject emptyMap = ParseWithMetadata(string.Empty);
 
             IsNotSimpleType(emptyMap);
 
@@ -39,7 +45,7 @@ namespace UnitTests
         [Test]
         public void WhiteSpaceInput()
         {
-            SKONObject emptyMap = SKON.Parse(metadataString + " \t\r\n");
+            SKONObject emptyMap = ParseWithMetadata(" \t\r\n");
 
             IsNotSimpleType(emptyMap);
 
@@ -51,7 +57,7 @@ namespace UnitTests
         {
             string muliCommaSKON = "MultipleCommas: 1,, , ,";
 
-            Assert.Throws<FormatException>(() => SKON.Parse(muliCommaSKON));
+            Assert.Throws<FormatException>(() => ParseWithMetadata(muliCommaSKON));
         }
 
         [Test]
@@ -59,11 +65,11 @@ namespace UnitTests
         {
             string valueLessSKON = "FirstKey: ,";
 
-            Assert.Throws<FormatException>(() => SKON.Parse(valueLessSKON));
+            Assert.Throws<FormatException>(() => ParseWithMetadata(valueLessSKON));
 
             valueLessSKON = "FirstKey: , SecondKey: ,";
 
-            Assert.Throws<FormatException>(() => SKON.Parse(valueLessSKON));
+            Assert.Throws<FormatException>(() => ParseWithMetadata(valueLessSKON));
         }
 
         [Test]
@@ -71,27 +77,27 @@ namespace UnitTests
         {
             string keyLessValuesSKON = "\"Value\",";
 
-            Assert.Throws<FormatException>(() => SKON.Parse(keyLessValuesSKON));
+            Assert.Throws<FormatException>(() => ParseWithMetadata(keyLessValuesSKON));
 
             keyLessValuesSKON = "\"Value\", 1234, 1234.5678,";
 
-            Assert.Throws<FormatException>(() => SKON.Parse(keyLessValuesSKON));
+            Assert.Throws<FormatException>(() => ParseWithMetadata(keyLessValuesSKON));
         }
 
         [Test]
         public void MissingComma()
         {
-            string stringSKON = metadataString + "StringKey: \"StringValue\" IntKey: 1234";
+            string stringSKON = "StringKey: \"StringValue\" IntKey: 1234";
 
-            Assert.Throws<FormatException>(() => SKON.Parse(stringSKON));
+            Assert.Throws<FormatException>(() => ParseWithMetadata(stringSKON));
         }
 
         [Test]
         public void StringObject()
         {
-            string stringSKON = metadataString + "StringKey: \"StringValue\",";
+            string stringSKON = "StringKey: \"StringValue\",";
 
-            SKONObject stringMap = SKON.Parse(stringSKON);
+            SKONObject stringMap = ParseWithMetadata(stringSKON);
 
             IsNotEmpty(stringMap);
 
@@ -107,9 +113,9 @@ namespace UnitTests
         [Test]
         public void IntObject()
         {
-            string intSKON = metadataString + "IntKey: 1234,";
+            string intSKON = "IntKey: 1234,";
 
-            SKONObject intMap = SKON.Parse(intSKON);
+            SKONObject intMap = ParseWithMetadata(intSKON);
 
             IsNotEmpty(intMap);
 
@@ -125,11 +131,11 @@ namespace UnitTests
         [Test]
         public void FloatObject()
         {
-            string floatSKON = metadataString + "FloatKey: 1234.5678,";
+            string floatSKON = "FloatKey: 1234.5678,";
 
             Console.WriteLine(floatSKON);
 
-            SKONObject doubleMap = SKON.Parse(floatSKON);
+            SKONObject doubleMap = ParseWithMetadata(floatSKON);
 
             IsNotEmpty(doubleMap);
 
@@ -145,9 +151,9 @@ namespace UnitTests
         [Test]
         public void BooleanObject()
         {
-            string booleanSKON = metadataString + "BooleanKey: true,";
+            string booleanSKON = "BooleanKey: true,";
             
-            SKONObject booleanMap = SKON.Parse(booleanSKON);
+            SKONObject booleanMap = ParseWithMetadata(booleanSKON);
 
             Console.WriteLine(SKON.Write(booleanMap));
 
@@ -165,9 +171,9 @@ namespace UnitTests
         [Test]
         public void DateTimeObject()
         {
-            string dateTimeSKON = metadataString + "DateTimeKey: 1970-01-01,";
+            string dateTimeSKON = "DateTimeKey: 1970-01-01,";
 
-            SKONObject dateTimeMap = SKON.Parse(dateTimeSKON);
+            SKONObject dateTimeMap = ParseWithMetadata(dateTimeSKON);
 
             IsNotEmpty(dateTimeMap);
 
@@ -185,11 +191,11 @@ namespace UnitTests
         {
             string missingBraceSKON = "MissingBraceMap: {";
 
-            Assert.Throws<FormatException>(() => SKON.Parse(missingBraceSKON));
+            Assert.Throws<FormatException>(() => ParseWithMetadata(missingBraceSKON));
 
             missingBraceSKON = "MissingBraceMap: { AValue: \"Value\", ";
 
-            Assert.Throws<FormatException>(() => SKON.Parse(missingBraceSKON));
+            Assert.Throws<FormatException>(() => ParseWithMetadata(missingBraceSKON));
         }
 
         [Test]
@@ -197,11 +203,11 @@ namespace UnitTests
         {
             string missingBracketSKON = "MissingBracketArray: [";
 
-            Assert.Throws<FormatException>(() => SKON.Parse(missingBracketSKON));
+            Assert.Throws<FormatException>(() => ParseWithMetadata(missingBracketSKON));
 
             missingBracketSKON = "MissingBracketArray: [ \"Test\", \"Array\",";
 
-            Assert.Throws<FormatException>(() => SKON.Parse(missingBracketSKON));
+            Assert.Throws<FormatException>(() => ParseWithMetadata(missingBracketSKON));
         }
         
         [Test]
@@ -209,19 +215,19 @@ namespace UnitTests
         {
             string missingQuote = "StringKey: \"MissingADoubleQuote,";
 
-            Assert.Throws<FormatException>(() => SKON.Parse(missingQuote));
+            Assert.Throws<FormatException>(() => ParseWithMetadata(missingQuote));
 
             missingQuote = "StringKey: \"MisingQuote\\\",";
 
-            Assert.Throws<FormatException>(() => SKON.Parse(missingQuote));
+            Assert.Throws<FormatException>(() => ParseWithMetadata(missingQuote));
         }
 
         [Test]
         public void NoSpaces()
         {
-            string noSpacesSKON = metadataString + "TestString:\"StringValue\",TestInt:1,TestDouble:1.2,TestBool:true,TestDateTime:2016-10-09,";
+            string noSpacesSKON = "TestString:\"StringValue\",TestInt:1,TestDouble:1.2,TestBool:true,TestDateTime:2016-10-09,";
 
-            SKONObject noSpacesMap = SKON.Parse(noSpacesSKON);
+            SKONObject noSpacesMap = ParseWithMetadata(noSpacesSKON);
 
             Assert.AreEqual(SKONValueType.MAP, noSpacesMap.Type);
 
@@ -253,9 +259,9 @@ namespace UnitTests
         [Test]
         public void HardParsing()
         {
-            string skon = metadataString + "DifficultTokens: \"_[{]}:;,\", _: 1,__:[\"]\",],";
+            string skon = "DifficultTokens: \"_[{]}:;,\", _: 1,__:[\"]\",],";
 
-            SKONObject skonObj = SKON.Parse(skon);
+            SKONObject skonObj = ParseWithMetadata(skon);
 
             Assert.IsTrue(skonObj.ContainsKey("DifficultTokens"));
             Assert.IsTrue(skonObj.ContainsKey("_"));

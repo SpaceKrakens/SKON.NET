@@ -103,11 +103,11 @@ namespace SKON.SKEMA
 
             StringBuilder sb = new StringBuilder();
 
-            sb.Append($"~Version: {metadata.LanguageVersion}~");
-            sb.Append($"~DocumentVersion: \"{metadata.DocuemntVersion}\"~");
+            sb.Append($"{SKON.Metadelimit}Version: {metadata.LanguageVersion}{SKON.Metadelimit}\n");
+            sb.Append($"{SKON.Metadelimit}DocumentVersion: \"{metadata.DocuemntVersion}\"{SKON.Metadelimit}\n");
             if (metadata.SKEMA != null && metadata.SKEMA.Length > 0)
             {
-                sb.Append($"~SKEMA: \"{metadata.SKEMA}\"~");
+                sb.Append($"{SKON.Metadelimit}SKEMA: \"{metadata.SKEMA}\"{SKON.Metadelimit}\n");
             }
 
             List<LinkedList<SKEMAObject>> sccs = new ReferenceSolver().FindStronglyConnectedComponents(obj, (v) =>

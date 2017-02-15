@@ -79,9 +79,6 @@ TOKENS
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('+'|'-') digit digit ':' digit digit 
 			).
   
-
-  // FIXME: There is a problem with the ident token matching before the version, docver and skema tokens!
-
 COMMENTS FROM "/*" TO "*/"
 COMMENTS FROM "//" TO lf
 
@@ -109,7 +106,6 @@ meta_version<out int ver>
 /*-------------------------------------------------------------------------*/
 meta_docVersion<out string ver>
 =	docver colon
-	docver
 	string_														(. if (t.val.Length > 2) ver = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else ver = "INVALID"; .)
 	dash
 	.
@@ -146,6 +142,7 @@ open_map<. out Dictionary<string, SKONObject> mapElements .>	(. string key; SKON
 /*-------------------------------------------------------------------------*/
 map_element<out string key, out SKONObject obj>					(. string name; SKONObject skonObject; .)
 =	Ident<out name>												(. key = name; .)
+	colon
     value<out skonObject>										(. obj = skonObject; .)
     .
 

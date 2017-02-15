@@ -32,6 +32,8 @@ namespace SKON
     {
         public const int LanguageVersion = 1;
 
+        internal const char Metadelimit = '-';
+
         /// <summary>
         /// The indent spaces.
         /// </summary>
@@ -178,11 +180,11 @@ namespace SKON
 
             StringBuilder sb = new StringBuilder();
 
-            sb.Append($"~Version: {metadata.LanguageVersion}~");
-            sb.Append($"~DocumentVersion: \"{metadata.DocuemntVersion}\"~");
-            if (metadata.SKEMA != null || metadata.SKEMA.Length > 0)
+            sb.Append($"{Metadelimit}Version: {metadata.LanguageVersion}{Metadelimit}\n");
+            sb.Append($"{Metadelimit}DocumentVersion: \"{metadata.DocuemntVersion}\"{Metadelimit}\n");
+            if (metadata.SKEMA != null && metadata.SKEMA.Length > 0)
             {
-                sb.Append($"~SKEMA: {metadata.SKEMA}~");
+                sb.Append($"{Metadelimit}SKEMA: {metadata.SKEMA}{Metadelimit}\n");
             }
 
             foreach (string key in obj.Keys)

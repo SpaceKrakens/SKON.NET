@@ -119,7 +119,7 @@ public SKONMetadata metadata = new SKONMetadata();
 	void SKEMA() {
 		Dictionary<string, SKEMAObject> mapElements;
 		Dictionary<string, bool> optionalMap;
-		int version; string docVersion; string skema; 
+		int version; string docVersion; 
 		meta_version(out version);
 		metadata.LanguageVersion = version; 
 		meta_docVersion(out docVersion);

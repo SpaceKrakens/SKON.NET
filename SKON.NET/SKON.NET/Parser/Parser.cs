@@ -168,7 +168,6 @@ public SKONMetadata metadata = new SKONMetadata();
 	void meta_docVersion(out string ver) {
 		Expect(10);
 		Expect(2);
-		Expect(10);
 		Expect(12);
 		if (t.val.Length > 2) ver = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else ver = "INVALID"; 
 		Expect(1);
@@ -220,6 +219,7 @@ public SKONMetadata metadata = new SKONMetadata();
 		string name; SKONObject skonObject; 
 		Ident(out name);
 		key = name; 
+		Expect(2);
 		value(out skonObject);
 		obj = skonObject; 
 	}

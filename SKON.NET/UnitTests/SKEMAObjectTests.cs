@@ -17,7 +17,7 @@ namespace UnitTests
     using NUnit.Framework;
     using SKON.SKEMA;
     using SKON;
-    
+
     [TestFixture]
     class SKEMAObjectTests
     {
