@@ -23,7 +23,7 @@ CHARACTERS
   escapech    = "bnfrt" + '\\' + '"'.  
   hex       = "0123456789abcdefABCDEF".
   dot       = '.'.
-  identch	= ANY - '{' - '}' - '[' - ']' - '"' - '.' - ',' - '~' - ':' - '\r' - '\n' - '\t' - ' ' - '-'.
+  identch	= ANY - '{' - '}' - '[' - ']' - '"' - '.' - ',' - '~' - ':' - '\r' - '\n' - '\t' - ' ' - '-' - '#'.
   meta		= '-'.
 
 TOKENS
