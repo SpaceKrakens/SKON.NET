@@ -22,7 +22,7 @@ namespace UnitTests
 
     class ParserTests
     {
-        const string metadataString = "~Version: 1~\n~DocumentVersion: \"\"~\n";
+        const string metadataString = "-Version: 1-\n-DocumentVersion: \"\"-\n";
 
         [Test]
         public void EmptyInput()

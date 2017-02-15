@@ -49,20 +49,21 @@ CHARACTERS
   escapech    = "bnfrt" + '\\' + '"'.  
   hex       = "0123456789abcdefABCDEF".
   dot       = '.'.
-  identch	= ANY - '{' - '}' - '[' - ']' - '"' - '.' - ',' - '~' - ':' - '\r' - '\n' - '\t' - ' '.
+  identch	= ANY - '{' - '}' - '[' - ']' - '"' - '.' - ',' - '~' - ':' - '\r' - '\n' - '\t' - ' ' - '-'.
+  meta		= '-'.
 
 TOKENS
-  tilda     = '~'.
+  dash		= '-'.
   colon     = ':'.
   comma     = ','.
   lbrace    = '{'.
   rbrace    = '}'.
   lbracket  = '['.
   rbracket  = ']'.
-  ident     = identch { identch } CONTEXT (':').
-  version	= "Version".
-  docver	= "DocumentVersion".
-  skema		= "SKEMA".
+  ident     = identch { identch | '-' } CONTEXT (':').
+  version	= meta "Version" CONTEXT (':').
+  docver	= meta "DocumentVersion" CONTEXT (':').
+  skema		= meta "SKEMA" CONTEXT (':').
   string_   = '"' { stringch | '\\' escapech } '"'.
   badString = '"' { stringch | '\\' escapech } (cr | lf).
   integer_  = ['-'] digit {digit}.
@@ -100,26 +101,24 @@ SKON															(. Dictionary<string, SKONObject> mapElements = new Dictionar
 
 /*-------------------------------------------------------------------------*/
 meta_version<out int ver>
-=	tilda
-	version colon 
+=	version colon
 	integer_													(. if (int.TryParse(t.val, out ver) == false) ver = -1; .)
-	tilda
+	dash
 	.
 
 /*-------------------------------------------------------------------------*/
 meta_docVersion<out string ver>
-=	tilda
-	docver colon
+=	docver colon
+	docver
 	string_														(. if (t.val.Length > 2) ver = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else ver = "INVALID"; .)
-	tilda
+	dash
 	.
 
 /*-------------------------------------------------------------------------*/
 meta_SKEMA<out string skema>
-=	tilda
-	skema colon
+=	skema colon
 	string_														(. if (t.val.Length > 2) skema = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else skema = "INVALID"; .)
-	tilda
+	dash
 	.
 
 /*-------------------------------------------------------------------------*/

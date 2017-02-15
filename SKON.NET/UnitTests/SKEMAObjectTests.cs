@@ -21,7 +21,7 @@ namespace UnitTests
     [TestFixture]
     class SKEMAObjectTests
     {
-        const string metadataString = "~Version: 1~\n~DocumentVersion: \"\"~\n";
+        const string metadataString = "-Version: 1-\n-DocumentVersion: \"\"-\n";
 
         private static SKEMAObject ParseWithMetadata(string skema)
         {

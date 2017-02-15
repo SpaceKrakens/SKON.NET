@@ -21,7 +21,7 @@ namespace SKON.SKEMA.Internal {
 
 public class Parser {
 	public const int _EOF = 0;
-	public const int _tilda = 1;
+	public const int _dash = 1;
 	public const int _colon = 2;
 	public const int _comma = 3;
 	public const int _lbrace = 4;
@@ -29,15 +29,15 @@ public class Parser {
 	public const int _lbracket = 6;
 	public const int _rbracket = 7;
 	public const int _ident = 8;
-	public const int _string_ = 9;
-	public const int _badString = 10;
-	public const int _integer_ = 11;
-	public const int _double_ = 12;
-	public const int _datetime_ = 13;
+	public const int _version = 9;
+	public const int _docver = 10;
+	public const int _string_ = 11;
+	public const int _badString = 12;
+	public const int _integer_ = 13;
 	public const int _ref = 14;
 	public const int _def = 15;
 	public const int _opt = 16;
-	public const int maxT = 26;
+	public const int maxT = 23;
 
 	const bool _T = true;
 	const bool _x = false;
@@ -124,35 +124,23 @@ public SKONMetadata metadata = new SKONMetadata();
 		metadata.LanguageVersion = version; 
 		meta_docVersion(out docVersion);
 		metadata.DocuemntVersion = docVersion; 
-		if (la.kind == 19) {
-			meta_SKEMA(out skema);
-			metadata.SKEMA = skema; 
-		}
 		open_skema_map(out mapElements, out optionalMap);
 		this.data = new SKEMAObject(mapElements, optionalMap); 
 	}
 
 	void meta_version(out int ver) {
-		Expect(17);
+		Expect(9);
 		Expect(2);
-		Expect(11);
+		Expect(13);
 		if (int.TryParse(t.val, out ver) == false) ver = -1; 
 		Expect(1);
 	}
 
 	void meta_docVersion(out string ver) {
-		Expect(18);
+		Expect(10);
 		Expect(2);
-		Expect(9);
+		Expect(11);
 		if (t.val.Length > 2) ver = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else ver = "INVALID"; 
-		Expect(1);
-	}
-
-	void meta_SKEMA(out string skema) {
-		Expect(19);
-		Expect(2);
-		Expect(9);
-		if (t.val.Length > 2) skema = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else skema = "INVALID"; 
 		Expect(1);
 	}
 
@@ -197,7 +185,7 @@ public SKONMetadata metadata = new SKONMetadata();
 		} else if (la.kind == 14) {
 			Get();
 			skemaObj = new SKEMAObject(t.val.Substring(1)); 
-		} else SynErr(27);
+		} else SynErr(24);
 	}
 
 	void skema_map_element(out string key, out SKEMAObject obj, out bool optional) {
@@ -226,37 +214,37 @@ public SKONMetadata metadata = new SKONMetadata();
 	void type(out SKEMAObject skemaObj) {
 		skemaObj = null; 
 		switch (la.kind) {
-		case 20: {
+		case 17: {
 			Get();
 			skemaObj = SKEMAObject.Any; 
 			break;
 		}
-		case 21: {
+		case 18: {
 			Get();
 			skemaObj = SKEMAObject.String; 
 			break;
 		}
-		case 22: {
+		case 19: {
 			Get();
 			skemaObj = SKEMAObject.Integer; 
 			break;
 		}
-		case 23: {
+		case 20: {
 			Get();
 			skemaObj = SKEMAObject.Float; 
 			break;
 		}
-		case 24: {
+		case 21: {
 			Get();
 			skemaObj = SKEMAObject.Boolean; 
 			break;
 		}
-		case 25: {
+		case 22: {
 			Get();
 			skemaObj = SKEMAObject.DateTime; 
 			break;
 		}
-		default: SynErr(28); break;
+		default: SynErr(25); break;
 		}
 	}
 
@@ -272,9 +260,9 @@ public SKONMetadata metadata = new SKONMetadata();
 	}
 	
 	static readonly bool[,] set = {
-		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
-		{_T,_x,_x,_x, _x,_T,_x,_x, _T,_x,_x,_x, _x,_x,_x,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
-		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _T,_T,_T,_T, _T,_T,_x,_x}
+		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x},
+		{_T,_x,_x,_x, _x,_T,_x,_x, _T,_x,_x,_x, _x,_x,_x,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x},
+		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_T,_T,_T, _T,_T,_T,_x, _x}
 
 	};
 } // end Parser
@@ -289,7 +277,7 @@ public class Errors {
 		string s;
 		switch (n) {
 			case 0: s = "EOF expected"; break;
-			case 1: s = "tilda expected"; break;
+			case 1: s = "dash expected"; break;
 			case 2: s = "colon expected"; break;
 			case 3: s = "comma expected"; break;
 			case 4: s = "lbrace expected"; break;
@@ -297,26 +285,23 @@ public class Errors {
 			case 6: s = "lbracket expected"; break;
 			case 7: s = "rbracket expected"; break;
 			case 8: s = "ident expected"; break;
-			case 9: s = "string_ expected"; break;
-			case 10: s = "badString expected"; break;
-			case 11: s = "integer_ expected"; break;
-			case 12: s = "double_ expected"; break;
-			case 13: s = "datetime_ expected"; break;
+			case 9: s = "version expected"; break;
+			case 10: s = "docver expected"; break;
+			case 11: s = "string_ expected"; break;
+			case 12: s = "badString expected"; break;
+			case 13: s = "integer_ expected"; break;
 			case 14: s = "ref expected"; break;
 			case 15: s = "def expected"; break;
 			case 16: s = "opt expected"; break;
-			case 17: s = "\"~Version\" expected"; break;
-			case 18: s = "\"~DocumentVersion\" expected"; break;
-			case 19: s = "\"~SKEMA\" expected"; break;
-			case 20: s = "\"Any\" expected"; break;
-			case 21: s = "\"String\" expected"; break;
-			case 22: s = "\"Integer\" expected"; break;
-			case 23: s = "\"Float\" expected"; break;
-			case 24: s = "\"Boolean\" expected"; break;
-			case 25: s = "\"DateTime\" expected"; break;
-			case 26: s = "??? expected"; break;
-			case 27: s = "invalid skema_value"; break;
-			case 28: s = "invalid type"; break;
+			case 17: s = "\"Any\" expected"; break;
+			case 18: s = "\"String\" expected"; break;
+			case 19: s = "\"Integer\" expected"; break;
+			case 20: s = "\"Float\" expected"; break;
+			case 21: s = "\"Boolean\" expected"; break;
+			case 22: s = "\"DateTime\" expected"; break;
+			case 23: s = "??? expected"; break;
+			case 24: s = "invalid skema_value"; break;
+			case 25: s = "invalid type"; break;
 
 			default: s = "error " + n; break;
 		}

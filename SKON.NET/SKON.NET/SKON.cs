@@ -17,7 +17,6 @@ namespace SKON
 
     using Internal;
     using Internal.Utils;
-    using Serialization;
 
     public struct SKONMetadata
     {

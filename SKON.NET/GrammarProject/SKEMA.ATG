@@ -23,33 +23,25 @@ CHARACTERS
   escapech    = "bnfrt" + '\\' + '"'.  
   hex       = "0123456789abcdefABCDEF".
   dot       = '.'.
-  identch	= ANY - '{' - '}' - '[' - ']' - '"' - '.' - ',' - '~' - ':' - '\r' - '\n' - '\t' - ' '.
+  identch	= ANY - '{' - '}' - '[' - ']' - '"' - '.' - ',' - '~' - ':' - '\r' - '\n' - '\t' - ' ' - '-'.
+  meta		= '-'.
 
 TOKENS
-  tilda     = '~'.
+  dash		= '-'.
   colon     = ':'.
   comma     = ','.
   lbrace    = '{'.
   rbrace    = '}'.
   lbracket  = '['.
   rbracket  = ']'.
-  ident     = identch { identch } CONTEXT (":").
+  ident     = identch { identch | '-' } CONTEXT (":").
+  version	= meta "Version" CONTEXT (':').
+  docver	= meta "DocumentVersion" CONTEXT (':').
   string_   = '"' { stringch | '\\' escapech | '\\' 'u' hex hex hex hex} '"'.
   badString = '"' { stringch | '\\' escapech } (cr | lf).
   integer_  = ['-'] digit {digit}.
-  double_   = ['-'] digit {digit} (((dot digit {digit}) [('E' | 'e') [('+' | '-')] digit {digit}]) | (('E' | 'e') [('+' | '-')] digit {digit})).
-  datetime_	= ( digit digit digit digit '-' digit digit '-' digit digit
-			| digit digit ':' digit digit ':' digit digit ('Z'|'z')
-			| digit digit ':' digit digit ':' digit digit '.' digit digit digit ('Z'|'z')
-			| digit digit ':' digit digit ':' digit digit ('+'|'-') digit digit ':' digit digit
-			| digit digit ':' digit digit ':' digit digit '.' {digit} ('+'|'-') digit digit ':' digit digit
-			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit ('Z'|'z')
-			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('Z'|'z')
-			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit ('+'|'-') digit digit ':' digit digit
-			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('+'|'-') digit digit ':' digit digit
-			).
 
-  ref = '#' letter { letter | digit }.
+  ref = '#' identch { identch | '-' }.
   def = "define".
   opt = "optional".
 
@@ -65,31 +57,21 @@ SKEMA																(.  Dictionary<string, SKEMAObject> mapElements;
 																		int version; string docVersion; string skema; .)
 =	meta_version<out version>										(. metadata.LanguageVersion = version; .)
 	meta_docVersion<out docVersion>									(. metadata.DocuemntVersion = docVersion; .)
-	[ 
-		meta_SKEMA<out skema>										(. metadata.SKEMA = skema; .)
-	]
 	open_skema_map<out mapElements, out optionalMap>				(. this.data = new SKEMAObject(mapElements, optionalMap); .)
     .															
 
 /*-------------------------------------------------------------------------*/
 meta_version<out int ver>
-=	"~Version" colon
-	integer_													(. if (int.TryParse(t.val, out ver) == false) ver = -1; .)
-	tilda
+=	version colon
+	integer_														(. if (int.TryParse(t.val, out ver) == false) ver = -1; .)
+	dash
 	.
 
 /*-------------------------------------------------------------------------*/
 meta_docVersion<out string ver>
-=	"~DocumentVersion" colon 
-	string_														(. if (t.val.Length > 2) ver = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else ver = "INVALID"; .)
-	tilda
-	.
-
-/*-------------------------------------------------------------------------*/
-meta_SKEMA<out string skema>
-=	"~SKEMA" colon
-	string_														(. if (t.val.Length > 2) skema = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else skema = "INVALID"; .)
-	tilda
+=	docver colon
+	string_															(. if (t.val.Length > 2) ver = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else ver = "INVALID"; .)
+	dash
 	.
 
 /*-------------------------------------------------------------------------*/

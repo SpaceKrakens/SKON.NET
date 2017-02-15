@@ -21,7 +21,7 @@ namespace SKON.Internal {
 
 public class Parser {
 	public const int _EOF = 0;
-	public const int _tilda = 1;
+	public const int _dash = 1;
 	public const int _colon = 2;
 	public const int _comma = 3;
 	public const int _lbrace = 4;
@@ -149,7 +149,7 @@ public SKONMetadata metadata = new SKONMetadata();
 		metadata.LanguageVersion = version; 
 		meta_docVersion(out docVersion);
 		metadata.DocuemntVersion = docVersion; 
-		if (la.kind == 1) {
+		if (la.kind == 11) {
 			meta_SKEMA(out skema);
 			metadata.SKEMA = skema; 
 		}
@@ -158,7 +158,6 @@ public SKONMetadata metadata = new SKONMetadata();
 	}
 
 	void meta_version(out int ver) {
-		Expect(1);
 		Expect(9);
 		Expect(2);
 		Expect(14);
@@ -167,16 +166,15 @@ public SKONMetadata metadata = new SKONMetadata();
 	}
 
 	void meta_docVersion(out string ver) {
-		Expect(1);
 		Expect(10);
 		Expect(2);
+		Expect(10);
 		Expect(12);
 		if (t.val.Length > 2) ver = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else ver = "INVALID"; 
 		Expect(1);
 	}
 
 	void meta_SKEMA(out string skema) {
-		Expect(1);
 		Expect(11);
 		Expect(2);
 		Expect(12);
@@ -306,7 +304,7 @@ public class Errors {
 		string s;
 		switch (n) {
 			case 0: s = "EOF expected"; break;
-			case 1: s = "tilda expected"; break;
+			case 1: s = "dash expected"; break;
 			case 2: s = "colon expected"; break;
 			case 3: s = "comma expected"; break;
 			case 4: s = "lbrace expected"; break;
