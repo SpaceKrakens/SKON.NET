@@ -24,6 +24,7 @@ CHARACTERS
   hex       = "0123456789abcdefABCDEF".
   dot       = '.'.
   identch	= ANY - '{' - '}' - '[' - ']' - '"' - '.' - ',' - '~' - ':' - '\r' - '\n' - '\t' - ' ' - '-' - '#'.
+  s_identch = ANY - '{' - '}' - '[' - ']' - '"' - '.' - ',' - '~' - ':' - '\r' - '\n' - '\t' - ' ' - '-' - '#' - "0123456789".
   meta		= '-'.
 
 TOKENS
@@ -34,7 +35,7 @@ TOKENS
   rbrace    = '}'.
   lbracket  = '['.
   rbracket  = ']'.
-  ident     = identch { identch | '-' } CONTEXT (":").
+  ident     = s_identch { identch | '-' } CONTEXT (":").
   version	= meta "Version" CONTEXT (':').
   docver	= meta "DocumentVersion" CONTEXT (':').
   string_   = '"' { stringch | '\\' escapech | '\\' 'u' hex hex hex hex} '"'.
