@@ -20,35 +20,29 @@ CHARACTERS
   stringch  = ANY - '"' - '\\' - cr - lf.
   charch    = ANY - '\'' - '\\' - cr - lf.
   printable =  '\u0020' .. '\u007e'.
-  escapech    = "bnfrt/" + '\\' + '"'.  
+  escapech    = "bnfrt" + '\\' + '"'.  
   hex       = "0123456789abcdefABCDEF".
   dot       = '.'.
+  identch	= ANY - '{' - '}' - '[' - ']' - '"' - '.' - ',' - '~' - ':' - '\r' - '\n' - '\t' - ' ' - '-' - '#'.
+  s_identch = ANY - '{' - '}' - '[' - ']' - '"' - '.' - ',' - '~' - ':' - '\r' - '\n' - '\t' - ' ' - '-' - '#' - "0123456789".
+  meta		= '-'.
 
 TOKENS
-  tilda     = '~'.
+  dash		= '-'.
   colon     = ':'.
   comma     = ','.
   lbrace    = '{'.
   rbrace    = '}'.
   lbracket  = '['.
   rbracket  = ']'.
-  ident     = letter { letter | digit } CONTEXT (":").
+  ident     = s_identch { identch | '-' } CONTEXT (":").
+  version	= meta "Version" CONTEXT (':').
+  docver	= meta "DocumentVersion" CONTEXT (':').
   string_   = '"' { stringch | '\\' escapech | '\\' 'u' hex hex hex hex} '"'.
   badString = '"' { stringch | '\\' escapech } (cr | lf).
   integer_  = ['-'] digit {digit}.
-  double_   = ['-'] digit {digit} (((dot digit {digit}) [('E' | 'e') [('+' | '-')] digit {digit}]) | (('E' | 'e') [('+' | '-')] digit {digit})).
-  datetime_	= ( digit digit digit digit '-' digit digit '-' digit digit
-			| digit digit ':' digit digit ':' digit digit ('Z'|'z')
-			| digit digit ':' digit digit ':' digit digit '.' digit digit digit ('Z'|'z')
-			| digit digit ':' digit digit ':' digit digit ('+'|'-') digit digit ':' digit digit
-			| digit digit ':' digit digit ':' digit digit '.' {digit} ('+'|'-') digit digit ':' digit digit
-			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit ('Z'|'z')
-			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('Z'|'z')
-			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit ('+'|'-') digit digit ':' digit digit
-			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('+'|'-') digit digit ':' digit digit
-			).
 
-  ref = '#' letter { letter | digit }.
+  ref = '#' identch { identch | '-' }.
   def = "define".
   opt = "optional".
 
@@ -59,38 +53,27 @@ IGNORE ' ' + '\r' + '\t' + '\n'
 
 PRODUCTIONS
 /*-------------------------------------------------------------------------*/
-SKEMA																(. Dictionary<string, SKONObject> metadataElements = new Dictionary<string, SKONObject>();
-																		Dictionary<string, SKEMAObject> mapElements;
+SKEMA																(.  Dictionary<string, SKEMAObject> mapElements;
 																		Dictionary<string, bool> optionalMap;
-																		int version; string docVersion; string skema; .)
+																		int version; string docVersion; .)
 =	meta_version<out version>										(. metadata.LanguageVersion = version; .)
 	meta_docVersion<out docVersion>									(. metadata.DocuemntVersion = docVersion; .)
-	[ 
-		meta_SKEMA<out skema>										(. metadata.SKEMA = skema; .)
-	]
 	open_skema_map<out mapElements, out optionalMap>				(. this.data = new SKEMAObject(mapElements, optionalMap); .)
     .															
 
 /*-------------------------------------------------------------------------*/
 meta_version<out int ver>
-=	tilda
-	"Version" colon 
-	integer_													(. if (int.TryParse(t.val, out ver) == false) ver = -1; .)
-	tilda.
+=	version colon
+	integer_														(. if (int.TryParse(t.val, out ver) == false) ver = -1; .)
+	dash
+	.
 
 /*-------------------------------------------------------------------------*/
 meta_docVersion<out string ver>
-=	tilda
-	"DocumentVersion" colon 
-	string_														(. if (t.val.Length > 2) ver = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else ver = "INVALID"; .)
-	tilda.
-
-/*-------------------------------------------------------------------------*/
-meta_SKEMA<out string skema>
-=	tilda
-	"SKEMA" colon
-	string_														(. if (t.val.Length > 2) skema = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else skema = "INVALID"; .)
-	tilda.
+=	docver colon
+	string_															(. if (t.val.Length > 2) ver = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else ver = "INVALID"; .)
+	dash
+	.
 
 /*-------------------------------------------------------------------------*/
 skema_map<out SKEMAObject map>										(. Dictionary<string, SKEMAObject> mapElements; Dictionary<string, bool> optionalMap; .)

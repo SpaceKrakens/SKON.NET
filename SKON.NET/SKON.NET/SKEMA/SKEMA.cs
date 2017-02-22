@@ -19,6 +19,8 @@ namespace SKON.SKEMA
 
     public class SKEMA
     {
+        public const int LanguageVersion = 1;
+
         public static SKEMAObject LoadFile(string path, TextWriter errorStream = null)
         {
             if (File.Exists(path))
@@ -89,14 +91,24 @@ namespace SKON.SKEMA
         /// </summary>
         /// <param name="obj">The object to write.</param>
         /// <returns>A string to write into a file.</returns>
-        public static string Write(SKEMAObject obj)
+        public static string Write(SKEMAObject obj, SKONMetadata metadata = default(SKONMetadata))
         {
             if (obj.Type != SKEMAType.MAP)
             {
                 throw new ArgumentException("SKEMAObject to write must be of type map!");
             }
+            
+            // We might want to do something here?
+            metadata.LanguageVersion = LanguageVersion;
 
             StringBuilder sb = new StringBuilder();
+
+            sb.Append($"{SKON.Metadelimit}Version: {metadata.LanguageVersion}{SKON.Metadelimit}\n");
+            sb.Append($"{SKON.Metadelimit}DocumentVersion: \"{metadata.DocuemntVersion}\"{SKON.Metadelimit}\n");
+            if (metadata.SKEMA != null && metadata.SKEMA.Length > 0)
+            {
+                sb.Append($"{SKON.Metadelimit}SKEMA: \"{metadata.SKEMA}\"{SKON.Metadelimit}\n");
+            }
 
             List<LinkedList<SKEMAObject>> sccs = new ReferenceSolver().FindStronglyConnectedComponents(obj, (v) =>
             {

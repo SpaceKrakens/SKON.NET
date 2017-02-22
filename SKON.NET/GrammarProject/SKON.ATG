@@ -30,7 +30,8 @@ COMPILER SKON
         }
         else
         {
-			SynErr(13);
+			errors.errorStream.WriteLine("Could not parse DateTime: " + value);
+			errors.count++;
             return default(DateTime);
         }
     }
@@ -45,24 +46,29 @@ CHARACTERS
   stringch  = ANY - '"' - '\\' - cr - lf.
   charch    = ANY - '\'' - '\\' - cr - lf.
   printable =  '\u0020' .. '\u007e'.
-  escapech    = "bnfrt/" + '\\' + '"'.  
+  escapech    = "bnfrt" + '\\' + '"'.  
   hex       = "0123456789abcdefABCDEF".
   dot       = '.'.
-  identch	= ANY - '{' - '}' - '[' - ']' - '"' - '.' - ','.
+  identch	= ANY - '{' - '}' - '[' - ']' - '"' - '.' - ',' - '~' - ':' - '\r' - '\n' - '\t' - ' ' - '-' - '#'.
+  s_identch = ANY - '{' - '}' - '[' - ']' - '"' - '.' - ',' - '~' - ':' - '\r' - '\n' - '\t' - ' ' - '-' - '#' - "0123456789".
+  meta		= '-'.
 
 TOKENS
-  tilda     = '~'.
+  dash		= '-'.
   colon     = ':'.
-  comma     =  ','.
+  comma     = ','.
   lbrace    = '{'.
   rbrace    = '}'.
   lbracket  = '['.
   rbracket  = ']'.
-  ident     = identch { identch } ':'.
+  ident     = s_identch { identch | '-' } CONTEXT (':').
+  version	= meta "Version" CONTEXT (':').
+  docver	= meta "DocumentVersion" CONTEXT (':').
+  skema		= meta "SKEMA" CONTEXT (':').
   string_   = '"' { stringch | '\\' escapech } '"'.
   badString = '"' { stringch | '\\' escapech } (cr | lf).
   integer_  = ['-'] digit {digit}.
-  double_   = ['-'] digit {digit} (((dot digit {digit}) [('E' | 'e') [('+' | '-')] digit {digit}]) | (('E' | 'e') [('+' | '-')] digit {digit})).
+  float_	= ['-'] digit {digit} (((dot digit {digit}) [('E' | 'e') [('+' | '-')] digit {digit}]) | (('E' | 'e') [('+' | '-')] digit {digit})).
   datetime_	= ( digit digit digit digit '-' digit digit '-' digit digit
 			| digit digit ':' digit digit ':' digit digit ('Z'|'z')
 			| digit digit ':' digit digit ':' digit digit '.' digit digit digit ('Z'|'z')
@@ -71,8 +77,9 @@ TOKENS
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit ('Z'|'z')
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('Z'|'z')
 			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit ('+'|'-') digit digit ':' digit digit
-			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('+'|'-') digit digit ':' digit digit ).
-
+			| digit digit digit digit '-' digit digit '-' digit digit ('T' | 't') digit digit ':' digit digit ':' digit digit '.' digit digit digit ('+'|'-') digit digit ':' digit digit 
+			).
+  
 COMMENTS FROM "/*" TO "*/"
 COMMENTS FROM "//" TO lf
 
@@ -84,7 +91,7 @@ SKON															(. Dictionary<string, SKONObject> mapElements = new Dictionar
 																   int version; string docVersion; string skema; .)
 =	meta_version<out version>									(. metadata.LanguageVersion = version; .)
 	meta_docVersion<out docVersion>								(. metadata.DocuemntVersion = docVersion; .)
-	[ 
+	[
 		meta_SKEMA<out skema>									(. metadata.SKEMA = skema; .)
 	]
 	open_map<out mapElements>									(. this.data = new SKONObject(mapElements); .)
@@ -92,24 +99,24 @@ SKON															(. Dictionary<string, SKONObject> mapElements = new Dictionar
 
 /*-------------------------------------------------------------------------*/
 meta_version<out int ver>
-=	tilda
-	"Version" colon 
+=	version colon
 	integer_													(. if (int.TryParse(t.val, out ver) == false) ver = -1; .)
-	tilda.
+	dash
+	.
 
 /*-------------------------------------------------------------------------*/
 meta_docVersion<out string ver>
-=	tilda
-	"DocumentVersion" colon 
+=	docver colon
 	string_														(. if (t.val.Length > 2) ver = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else ver = "INVALID"; .)
-	tilda.
+	dash
+	.
 
 /*-------------------------------------------------------------------------*/
 meta_SKEMA<out string skema>
-=	tilda
-	"SKEMA" colon
+=	skema colon
 	string_														(. if (t.val.Length > 2) skema = ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2)); else skema = "INVALID"; .)
-	tilda.
+	dash
+	.
 
 /*-------------------------------------------------------------------------*/
 skon_map<out SKONObject map>									(. Dictionary<string, SKONObject> mapElements; .)
@@ -136,6 +143,7 @@ open_map<. out Dictionary<string, SKONObject> mapElements .>	(. string key; SKON
 /*-------------------------------------------------------------------------*/
 map_element<out string key, out SKONObject obj>					(. string name; SKONObject skonObject; .)
 =	Ident<out name>												(. key = name; .)
+	colon
     value<out skonObject>										(. obj = skonObject; .)
     .
 
@@ -155,12 +163,12 @@ open_array<. out List<SKONObject> arrayElements .>				(. SKONObject skonObject; 
 value<out SKONObject skonObject>								(. skonObject = null; .)
 =	string_														(. skonObject = new SKONObject(ParserUtils.EscapeString(t.val.Substring(1, t.val.Length - 2))); .)
     | integer_													(. skonObject = new SKONObject(int.Parse(t.val)); .)
-    | double_													(. skonObject = new SKONObject(double.Parse(t.val, CultureInfo.InvariantCulture)); .)
+    | float_													(. skonObject = new SKONObject(double.Parse(t.val, CultureInfo.InvariantCulture)); .)
     | datetime_													(. skonObject = new SKONObject(ParseDatetime(t.val)); .)
 	| skon_map<out skonObject>									
     | skon_array<out skonObject>										
     | "true"													(. skonObject = new SKONObject(true); .)
-    | "false"													(. skonObject = new SKONObject(false); .)
+	| "false"													(. skonObject = new SKONObject(false); .)
     .												
                
 END SKON.
