@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>https://github.com/SpaceKrakens/SKON.NET</projectUrl>
+    <iconUrl>https://avatars1.githubusercontent.com/u/21987553</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A SKON Parser for .NET</description>
+    <releaseNotes>Beta release</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>SKON Serialization</tags>
+  </metadata>
+</package>
