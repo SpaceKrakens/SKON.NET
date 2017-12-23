@@ -426,7 +426,7 @@ namespace SKON
         /// </returns>
         public static implicit operator SKONObject(List<string> list)
         {
-            return new SKONObject(list.ConvertAll(value => (SKONObject)value));
+            return new SKONObject(list?.ConvertAll(value => (SKONObject)value));
         }
 
         /// <summary>
@@ -454,7 +454,7 @@ namespace SKON
         /// </returns>
         public static implicit operator SKONObject(List<int> list)
         {
-            return new SKONObject(list.ConvertAll(value => (SKONObject)value));
+            return new SKONObject(list?.ConvertAll(value => (SKONObject)value));
         }
 
         /// <summary>
@@ -482,7 +482,7 @@ namespace SKON
         /// </returns>
         public static implicit operator SKONObject(List<double> list)
         {
-            return new SKONObject(list.ConvertAll(value => (SKONObject)value));
+            return new SKONObject(list?.ConvertAll(value => (SKONObject)value));
         }
 
         /// <summary>
@@ -510,7 +510,7 @@ namespace SKON
         /// </returns>
         public static implicit operator SKONObject(List<bool> list)
         {
-            return new SKONObject(list.ConvertAll(value => (SKONObject)value));
+            return new SKONObject(list?.ConvertAll(value => (SKONObject)value));
         }
 
         /// <summary>
@@ -538,7 +538,7 @@ namespace SKON
         /// </returns>
         public static implicit operator SKONObject(List<DateTime> list)
         {
-            return new SKONObject(list.ConvertAll(value => (SKONObject)value));
+            return new SKONObject(list?.ConvertAll(value => (SKONObject)value));
         }
 
         /// <summary>
