@@ -316,13 +316,15 @@ namespace SKON
                 case SKONValueType.ARRAY:
                     StringBuilder arraysb = new StringBuilder();
 
+                    arraysb.Append(indentString);
+
                     if (obj.Length <= 0)
                     {
                         arraysb.Append("[  ]\n");
                         return arraysb.ToString();
                     }
 
-                    arraysb.Append(indentString + "[\n");
+                    arraysb.Append("[\n");
 
                     for (int i = 0; i < obj.Length; i++)
                     {
