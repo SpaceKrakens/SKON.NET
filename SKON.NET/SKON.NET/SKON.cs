@@ -320,7 +320,7 @@ namespace SKON
 
                     if (obj.Length <= 0)
                     {
-                        arraysb.Append("[  ]\n");
+                        arraysb.Append("[  ],\n");
                         return arraysb.ToString();
                     }
 
