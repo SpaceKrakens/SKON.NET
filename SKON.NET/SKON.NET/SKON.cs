@@ -17,6 +17,7 @@ namespace SKON
 
     using Internal;
     using Internal.Utils;
+    using System.Globalization;
 
     public struct SKONMetadata
     {
@@ -187,9 +188,15 @@ namespace SKON
                 sb.Append($"{Metadelimit}SKEMA: {metadata.SKEMA}{Metadelimit}\n");
             }
 
+            sb.Append('\n');
+
             foreach (string key in obj.Keys)
             {
-                sb.Append(key + ": " + WriteObject(obj[key], 0) + ",\n");
+                sb.Append(key + ": ");
+
+                sb.Append(obj[key].IsComplex ? '\n' : ' ');
+
+                sb.Append(WriteObject(obj[key], 0));
             }
 
             return sb.ToString();
@@ -224,7 +231,7 @@ namespace SKON
                 case SKONValueType.MAP:
                     foreach (var key in obj.Keys)
                     {
-                        if (ContainsLoopsInternal(obj[key], contains))
+                        if (ContainsLoopsInternal(obj[key], new Dictionary<SKONObject, bool>(contains)))
                         {
                             return true;
                         }
@@ -234,7 +241,7 @@ namespace SKON
                 case SKONValueType.ARRAY:
                     foreach (var element in obj.Values)
                     {
-                        if (ContainsLoopsInternal(element, contains))
+                        if (ContainsLoopsInternal(element, new Dictionary<SKONObject, bool>(contains)))
                         {
                             return true;
                         }
@@ -269,34 +276,41 @@ namespace SKON
             switch (obj.Type)
             {
                 case SKONValueType.EMPTY:
-                    return "null";
+                    return indentString + "null,\n";
                 case SKONValueType.STRING:
-                    return "\"" + obj.String + "\"";
+                    return indentString + "\"" + obj.String + "\",\n";
                 case SKONValueType.INTEGER:
-                    return obj.Int.ToString();
+                    return indentString + obj.Int.ToString() + ",\n";
                 case SKONValueType.FLOAT:
-                    return obj.Double.ToString().Replace(',', '.');
+                    return indentString + obj.Double.Value.ToString(CultureInfo.InvariantCulture) + ",\n";
                 case SKONValueType.BOOLEAN:
-                    return obj.Boolean.ToString().ToLower();
+                    return indentString + obj.Boolean.ToString().ToLower() + ",\n";
                 case SKONValueType.DATETIME:
-                    return (obj.DateTime ?? default(DateTime)).ToString("yyyy-MM-ddThh:mm:ss.fffzzz");
+                    return indentString + (obj.DateTime ?? default(DateTime)).ToString("yyyy-MM-ddThh:mm:ss.fffzzz") + ",\n";
                 case SKONValueType.MAP:
                     StringBuilder mapsb = new StringBuilder();
 
+                    mapsb.Append(indentString);
+
                     if (obj.Keys.Count <= 0)
                     {
-                        mapsb.Append("{  }");
+                        mapsb.Append("{  },\n");
                         return mapsb.ToString();
                     }
 
-                    mapsb.Append("\n" + indentString + "{\n");
+                    mapsb.Append("{\n");
 
                     foreach (string key in obj.Keys)
                     {
-                        mapsb.Append(indentString + IndentString + $"{key}: {WriteObject(obj[key], indent + 1)},\n");
+                        mapsb.Append(indentString).Append(IndentString);
+                        mapsb.Append(key).Append(":");
+
+                        mapsb.Append(obj[key].IsComplex ? '\n' : ' ');
+
+                        mapsb.Append(WriteObject(obj[key], obj[key].IsComplex ? indent + 1 : 0));
                     }
 
-                    mapsb.Append(indentString + "}");
+                    mapsb.Append(indentString).Append("},\n");
 
                     return mapsb.ToString();
                 case SKONValueType.ARRAY:
@@ -304,22 +318,22 @@ namespace SKON
 
                     if (obj.Length <= 0)
                     {
-                        arraysb.Append("[  ]");
+                        arraysb.Append("[  ]\n");
                         return arraysb.ToString();
                     }
 
-                    arraysb.Append('\n' + indentString + "[\n");
+                    arraysb.Append(indentString + "[\n");
 
                     for (int i = 0; i < obj.Length; i++)
                     {
-                        arraysb.Append(indentString + IndentString + $"{WriteObject(obj[i], indent + 1)},\n");
+                        arraysb.Append($"{WriteObject(obj[i], indent + 1)}");
                     }
 
-                    arraysb.Append(indentString + "]");
+                    arraysb.Append(indentString).Append("],\n");
 
                     return arraysb.ToString();
                 default:
-                    return null;
+                    return "!!internal error!!";
             }
         }
     }

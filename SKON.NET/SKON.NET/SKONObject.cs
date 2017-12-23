@@ -190,9 +190,32 @@ namespace SKON
         /// </summary>
         public bool IsEmpty => this.Type == SKONValueType.EMPTY;
 
+        public bool IsSimple
+        {
+            get
+            {
+                switch (this.Type)
+                {
+                    case SKONValueType.STRING:
+                    case SKONValueType.INTEGER:
+                    case SKONValueType.FLOAT:
+                    case SKONValueType.BOOLEAN:
+                    case SKONValueType.DATETIME:
+                        return true;
+                    case SKONValueType.EMPTY:
+                    case SKONValueType.MAP:
+                    case SKONValueType.ARRAY:
+                    default:
+                        return false;
+                }
+            }
+        }
+
+        public bool IsComplex => !IsSimple && !IsEmpty;
+
         /// <summary>
-        /// Gets the collection of string keys, if this SKONObject is a Map, or an empty ICollection, if it isn't.
-        /// </summary>
+    /// Gets the collection of string keys, if this SKONObject is a Map, or an empty ICollection, if it isn't.
+    /// </summary>
         public ICollection<string> Keys => this.Type == SKONValueType.MAP ? new List<string>(mapValues.Keys) : new List<string>();
 
         /// <summary>

@@ -665,5 +665,24 @@ namespace UnitTests
 
             Assert.IsTrue(rec1.Equals(rec2));
         }
+
+        [Test]
+        public void NonReqursiveMapWithEqualMaps()
+        {
+            SKONObject skonObject = SKONObject.GetEmptyMap();
+
+            skonObject.Add("test", new List<SKONObject> {
+                new Dictionary<string, SKONObject> {
+                    { "test", 1 }
+                },
+                new Dictionary<string, SKONObject> {
+                    { "test", 1 }
+                }
+            });
+
+            Assert.IsFalse(SKON.ContainsLoops(skonObject));
+
+            Console.WriteLine(SKON.Write(skonObject));
+        }
     }
 }
