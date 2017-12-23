@@ -181,7 +181,7 @@ namespace SKON
         /// <param name="arrayValues">The SKONObject values making up that Array.</param>
         public SKONObject(IEnumerable<SKONObject> arrayValues)
         {
-            this.arrayValues = new List<SKONObject>(arrayValues);
+            this.arrayValues = new List<SKONObject>(arrayValues != null ? arrayValues : new SKONObject[0]);
             this.Type = SKONValueType.ARRAY;
         }
 
